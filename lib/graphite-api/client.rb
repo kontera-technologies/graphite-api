@@ -39,7 +39,7 @@ module GraphiteAPI
         socket.write(msg << "\n")
       rescue Errno::EPIPE
         @socket = nil
-	    retry
+      retry
       end
     end
     
