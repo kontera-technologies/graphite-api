@@ -44,7 +44,7 @@ module GraphiteAPI
     end
     
     def socket
-      if @socket.closed? || @socket.nil?
+      if @socket.nil? || @socket.closed?
         @socket = TCPSocket.new(*options.values_at(:host,:port))
       end
       @socket
