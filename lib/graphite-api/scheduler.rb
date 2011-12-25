@@ -26,7 +26,7 @@ module GraphiteAPI
       def start_reactor
         @@wrapper = Thread.new { EM.run }
         wrapper.abort_on_exception = true
-        Thread.pass until EM.reactor_running?
+        Thread.pass until reactor_running?
       end
 
       def reactor_running?
