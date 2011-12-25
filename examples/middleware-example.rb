@@ -1,4 +1,4 @@
-require 'graphite-api'
+# Graphite MiddleWare Server Example
 #
 # eran ~/github/graphite-api/examples [git::master]  graphite-middleware --help
 #
@@ -12,15 +12,7 @@ require 'graphite-api'
 #    -P, --pid-file FILE              pid file (default /var/run/graphite-middleware.pid)
 #    -d, --daemonize                  run in background
 #    -i, --interval INT               report every X seconds
-#
-# Start the server
-# + listing on port 2004
-# + graphite server @ graphite.kontera.com
-# + log level debug
-# + pid file @ /tmp/graphite-middleware.pid
-# + Run in the foreground
-# + Report the Graphite server every 10 seconds
-
+require 'graphite-api'
 pid = Process.spawn("graphite-middleware --port 2004 \
   --graphite graphite.kontera.com \
   --log-level debug \
@@ -39,12 +31,11 @@ client = GraphiteAPI::Client.new("127.0.0.1", # middleware running localy
   sleep 0.001
 end
 
-sleep 20;`kill -9 #{pid}`
+sleep 20
+system("kill -9 #{pid}")
 
 # Should print
 # I, [2011-12-25T17:07:55.150748 #35300]  INFO -- : Server running on port 2004
 # D, [2011-12-25T17:07:56.050979 #35300] DEBUG -- : Client connecting
 # D, [2011-12-25T17:08:05.241252 #35300] DEBUG -- : Sending 100 records to graphite (@graphite.kontera.com:2003)
 # D, [2011-12-25T17:08:05.243163 #35300] DEBUG -- : After Aggregation 10 records (reduced 90)
-#
-#

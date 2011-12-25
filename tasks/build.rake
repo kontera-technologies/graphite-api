@@ -25,18 +25,18 @@ Gem::PackageTask.new(GraphiteAPI::GemSpec) do |p|
 end
 
 namespace :gem do
-  desc "Update DevOpsCenterAPI gem version"
+  desc "Update GraphiteAPI gem version"
   task :update_version do
     GraphiteAPI::Version.increment_pre
     msg "Incrementing version to #{GraphiteAPI::Version.string}..."
   end
   
-  desc "Upload gem to Kontera's repo"
+  desc "Upload GraphiteAPI to Kontera's repo"
   task :upload => [:build] do
     sh "rake gem:push_gem"
   end
   
-  desc "Update DevOpsCenterAPI gem version and build gem"
+  desc "Update GraphiteAPI gem version and build gem"
   task :build => [:test,:update_version] do
     sh "rake gem"
   end 
