@@ -9,12 +9,14 @@ GraphiteAPI::GemSpec = Gem::Specification.new do |s|
   s.author                = "Eran Levi"
   s.email                 = 'eran@kontera.com'
   s.homepage              = 'http://www.kontera.com'
-  s.executables           = %w()
+  s.executables           = %w(graphite-middleware)
   s.required_ruby_version = '>= 1.8.6'
   s.rubyforge_project     = "graphite-api"
   s.files                 = %w(README.markdown Rakefile) + Dir.glob("{bin,lib,test,tasks}/**/*")
   s.require_path          = "lib"
   s.bindir                = "bin"
+
+  s.add_dependency 'eventmachine','>= 0.3.3'
 end
 
 task :gem => [:clobber_package]

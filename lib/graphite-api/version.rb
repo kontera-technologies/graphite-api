@@ -1,6 +1,6 @@
 module GraphiteAPI
   class Version
-    PFILE = File.join(GraphiteAPI::ROOT,"..",".gem_pre_version")
+    PFILE = File.join(GraphiteAPI::ROOT,"..",".pre_version")
     
     MAJOR = 0
     MINOR = 0
