@@ -23,29 +23,26 @@ module GraphiteAPI
     def run
       if options[:daemonize]
         fork do
-          write_pid
           Process.setsid
           exit if fork
           Dir.chdir('/tmp')
           STDOUT.reopen('/dev/null','a')
           STDIN.reopen('/dev/null')
           STDERR.reopen('/dev/null','a')
+          begin
+            File.open(options[:pid], 'w') { |f| f.write(Process.pid) }
+          rescue Exception
+          end
           run!
         end
       else
         run!
       end
-
     end
 
     private
-
     def run!
       GraphiteAPI::Middleware.start(options)
-    end
-
-    def write_pid
-      begin;File.open(options[:pid], 'w') { |file| file.write(Process.pid) };rescue;end
     end
 
     def validate_options
@@ -57,35 +54,13 @@ module GraphiteAPI
         opts.banner = "Graphite Middleware Server"
         opts.define_head "Usage: graphite-middleware [options]"
         opts.define_head ""
-
-        opts.on("-p", "--port PORT","listening port (default 2003)") do |val|
-          options[:port] = val
-        end
-
-        opts.on("-g", "--graphite HOST","graphite host") do |val|
-          options[:graphite_host] = val
-        end
-        
-        opts.on("-l", "--log-file FILE","log file") do |val|
-          options[:log_file] = File.expand_path(val)
-        end
-        
-        opts.on("-L", "--log-level LEVEL","log level (default warn)") do |val|
-          options[:log_level] = eval("Logger::#{val.upcase}")
-        end
-
-        opts.on("-P", "--pid-file FILE","pid file (default /var/run/graphite-middleware.pid)") do |val|
-          options[:pid] = val
-        end
-
-        opts.on("-d", "--daemonize","run in backgroud") do 
-          options[:daemonize] = true
-        end
-
-        opts.on("-i", "--interval INT","report every X seconds") do |val|
-          options[:interval] = val.to_i unless val.to_i == 0
-        end
-
+        opts.on("-p", "--port PORT","listening port (default 2003)"){|v| options[:port] = v}
+        opts.on("-g", "--graphite HOST","graphite host") {|v| options[:graphite_host] = v}
+        opts.on("-l", "--log-file FILE","log file") {|v| options[:log_file] = File.expand_path(v)}
+        opts.on("-L", "--log-level LEVEL","log level (default warn)") {|v|options[:log_level] = eval("Logger::#{v.upcase}")}
+        opts.on("-P", "--pid-file FILE","pid file (default /var/run/graphite-middleware.pid)"){|v|options[:pid] = v}
+        opts.on("-d", "--daemonize","run in background"){options[:daemonize] = true}
+        opts.on("-i", "--interval INT","report every X seconds"){|v|options[:interval] = v.to_i unless v.to_i == 0}
         opts.define_tail ""
         opts.define_tail ""
       end

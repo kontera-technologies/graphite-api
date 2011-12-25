@@ -15,16 +15,16 @@ module GraphiteAPI
 
       def stop
         timers.map(&:cancel)
-        wrapper or EM.stop
+        wrapper and EM.stop
       end
 
       def join
-        wrapper or wrapper.join
+        wrapper and wrapper.join
       end
 
       private
       def start_reactor
-        wrapper = Thread.new { EM.run }
+        @@wrapper = Thread.new { EM.run }
         wrapper.abort_on_exception = true
         Thread.pass until EM.reactor_running?
       end
