@@ -7,6 +7,7 @@ module GraphiteAPI
   autoload :Connector,  "#{ROOT}/graphite-api/connector"
   autoload :Middleware, "#{ROOT}/graphite-api/middleware"
   autoload :Runner,     "#{ROOT}/graphite-api/runner"
+  autoload :Utils,      "#{ROOT}/graphite-api/utils"
   
   def self.version
     GraphiteAPI::Version.string

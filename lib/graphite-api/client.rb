@@ -16,10 +16,10 @@ module GraphiteAPI
         GraphiteAPI::Scheduler.every(options[:interval]) {send_metrics}
       end
 
-      def add_metrics(m,time = nil)
-        buffer[time] << m
+      def add_metrics(m,time = Time.now)
+        buffer[Utils.normalize_time(time)] << m
       end
-
+      
       def join
         GraphiteAPI::Scheduler.join
       end
@@ -33,19 +33,18 @@ module GraphiteAPI
       end
 
       protected
+      
       def send_metrics
         records = []
         while !(record = buffer.shift).empty?
           records << record
         end
         records = aggregate_records(records) if options[:aggregate]
-
         records.each do |time,arr_metrics|
           arr_metrics.each do |metrics|
-            records_time = (time || Time.now).to_i / 60 * 60
             prefix = prefix_str options[:prefix]
             metrics.each do |key,val|
-              connector.puts "#{prefix}#{key} #{val.to_f} #{records_time}"
+              connector.puts "#{prefix}#{key} #{val.to_f} #{time}"
             end
           end
         end

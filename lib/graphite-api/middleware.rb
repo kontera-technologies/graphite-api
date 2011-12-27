@@ -59,7 +59,7 @@ module GraphiteAPI
             buffer.each do |val|
               key,val,time = val.split
               time ||= Time.now.to_i
-              obj[time.to_i / 60 * 60][key] += val.to_f
+              obj[Utils.normalize_time(time)][key] += val.to_f
             end
             
             obj.each do |time,hash|
