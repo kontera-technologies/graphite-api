@@ -2,16 +2,17 @@ require 'thread'
 
 module GraphiteAPI
   class Buffer
-    attr_reader :leftovers,:mutex
+    attr_reader :leftovers,:mutex,:options
     
-    def initialize
+    def initialize(options)
+      @options = options
       @leftovers = Hash.new {|h,k| h[k] = Array.new}
       @mutex = Mutex.new
     end
     
     def << hash
       mutex.synchronize do
-        time = Utils.normalize_time hash[:time]
+        time = Utils.normalize_time(hash[:time],options[:interval])
         hash[:metric].each { |k,v| buffer[time][k] += v.to_f }
       end
     end

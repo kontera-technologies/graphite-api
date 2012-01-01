@@ -31,7 +31,7 @@ module GraphiteAPI
       EM.run do  
         # Resources
         logger = ::Logger.new(opt[:log_file] || STDOUT)
-        buffer = GraphiteAPI::Buffer.new
+        buffer = GraphiteAPI::Buffer.new(opt)
         connector = GraphiteAPI::Connector.new(*opt.values_at(:graphite_host,:graphite_port))
         logger.level = opt[:log_level]
 

@@ -11,7 +11,7 @@ module GraphiteAPI
         :graphite_port => 2003,
         :port => 2003,
         :log_level => Logger::WARN,
-        :interval => 60,
+        :interval => 300,
         :pid => "/var/run/graphite-middleware.pid"
       }
       parser.parse! argv
@@ -62,7 +62,7 @@ module GraphiteAPI
         opts.on("-L", "--log-level LEVEL","log level (default warn)") {|v|options[:log_level] = eval("Logger::#{v.upcase}")}
         opts.on("-P", "--pid-file FILE","pid file (default /var/run/graphite-middleware.pid)"){|v|options[:pid] = v}
         opts.on("-d", "--daemonize","run in background"){options[:daemonize] = true}
-        opts.on("-i", "--interval INT","report every X seconds"){|v|options[:interval] = v.to_i unless v.to_i == 0}
+        opts.on("-i", "--interval INT","report every X seconds (default 300)"){|v|options[:interval] = v.to_i unless v.to_i == 0}
         opts.define_tail ""
         opts.define_tail ""
       end
