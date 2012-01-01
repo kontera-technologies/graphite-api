@@ -11,7 +11,7 @@ module GraphiteAPI
     
     def puts(msg)
       begin
-        socket.puts(msg << "\n")
+        socket.puts(msg)
       rescue Errno::EPIPE
         @socket = nil
       retry

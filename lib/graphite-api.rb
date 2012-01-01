@@ -8,6 +8,7 @@ module GraphiteAPI
   autoload :Middleware, "#{ROOT}/graphite-api/middleware"
   autoload :Runner,     "#{ROOT}/graphite-api/runner"
   autoload :Utils,      "#{ROOT}/graphite-api/utils"
+  autoload :Buffer,     "#{ROOT}/graphite-api/buffer"
   
   def self.version
     GraphiteAPI::Version.string

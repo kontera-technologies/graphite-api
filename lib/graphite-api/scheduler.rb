@@ -4,7 +4,7 @@ require 'eventmachine'
 module GraphiteAPI
   class Scheduler
     @@wrapper = nil
-    @@timers  =[]
+    @@timers  = []
     
     class << self
       def every(frequency,&block)

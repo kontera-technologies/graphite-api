@@ -12,9 +12,7 @@ module GraphiteAPI
         :port => 2003,
         :log_level => Logger::WARN,
         :interval => 60,
-        :port => 2003,
-        :pid => "/var/run/graphite-middleware.pid",
-        :log_level => Logger::WARN,
+        :pid => "/var/run/graphite-middleware.pid"
       }
       parser.parse! argv
       validate_options
@@ -29,10 +27,7 @@ module GraphiteAPI
           STDOUT.reopen('/dev/null','a')
           STDIN.reopen('/dev/null')
           STDERR.reopen('/dev/null','a')
-          begin
-            File.open(options[:pid], 'w') { |f| f.write(Process.pid) }
-          rescue Exception
-          end
+          write_pid
           run!
         end
       else
@@ -41,6 +36,13 @@ module GraphiteAPI
     end
 
     private
+    def write_pid
+      begin
+        File.open(options[:pid], 'w') { |f| f.write(Process.pid) }
+      rescue Exception
+      end
+    end
+
     def run!
       GraphiteAPI::Middleware.start(options)
     end
