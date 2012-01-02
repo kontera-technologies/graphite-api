@@ -3,7 +3,7 @@ module GraphiteAPI
     attr_reader :options,:buffer,:connector
 
     def initialize(host,opt = {})
-      @options = {:host => host,:port => 2003,:prefix => [],:interval => 300}.merge opt
+      @options = {:host => host,:port => 2003,:prefix => [],:interval => 60}.merge opt
       @options[:prefix] = ([@options[:prefix]].flatten.join('.')) << '.' if !@options[:prefix].empty?
       @buffer  = GraphiteAPI::Buffer.new(options)
       @connector = GraphiteAPI::Connector.new(*options.values_at(:host,:port))

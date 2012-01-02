@@ -11,7 +11,7 @@ module GraphiteAPI
         :graphite_port => 2003,
         :port => 2003,
         :log_level => Logger::WARN,
-        :interval => 300,
+        :interval => 60,
         :pid => "/var/run/graphite-middleware.pid"
       }
       parser.parse! argv
