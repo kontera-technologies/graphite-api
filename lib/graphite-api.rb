@@ -9,7 +9,8 @@ module GraphiteAPI
   autoload :Runner,     "#{ROOT}/graphite-api/runner"
   autoload :Utils,      "#{ROOT}/graphite-api/utils"
   autoload :Buffer,     "#{ROOT}/graphite-api/buffer"
-  
+  autoload :Logger,     "#{ROOT}/graphite-api/logger"
+    
   def self.version
     GraphiteAPI::Version.string
   end

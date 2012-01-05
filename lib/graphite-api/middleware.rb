@@ -27,26 +27,29 @@ module GraphiteAPI
       logger.debug "Client disconnecting"
     end
 
-    def self.start(opt)
-      EM.run do  
+    def self.start(options)
+      EM.run do
         # Resources
-        logger = ::Logger.new(opt[:log_file] || STDOUT)
-        buffer = GraphiteAPI::Buffer.new(opt)
-        connector = GraphiteAPI::Connector.new(*opt.values_at(:graphite_host,:graphite_port))
-        logger.level = opt[:log_level]
-
+        logger = ::Logger.new(options[:log_file] || STDOUT)
+        logger.level = eval("::Logger::#{options[:log_level].to_s.upcase}")
+        buffer = GraphiteAPI::Buffer.new(options)
+        connector = GraphiteAPI::Connector.new(*options.values_at(:graphite_host,:graphite_port))
+        GraphiteAPI::Logger.instance.logger = logger
+        
         # Starting server
-        EM.start_server('0.0.0.0',opt[:port],self,logger,buffer)
-        logger.info "Server running on port #{opt[:port]}"
+        EM.start_server('0.0.0.0',options[:listening_port],self,logger,buffer)
+        logger.info "Server running on port #{options[:listening_port]}"
         
         # Send metrics to graphite every X seconds
-        GraphiteAPI::Scheduler.every(opt[:interval]) do
-          unless buffer.empty?            
-            logger.debug "Sending #{buffer.size} records to graphite (@#{opt[:graphite_host]}:#{opt[:graphite_port]})"
-            buffer.each do |time,metrics|
-              metrics.map {|k,v| "#{k} #{v} #{time}"}.each {|o| logger.debug o;connector.puts o}
-            end # each metric
-          end # unless empty?
+        GraphiteAPI::Scheduler.every(options[:interval]) do
+          if buffer.got_new_records?
+            logger.debug "Sending #{buffer.size} records to graphite (@#{options[:graphite_host]}:#{options[:graphite_port]})"
+            buffer.each do |arr| 
+              line = arr.join(" ")
+              logger.debug line
+              connector.puts line
+            end # each
+          end # if got_new_records?
         end # every 
       end # run 
     end # start

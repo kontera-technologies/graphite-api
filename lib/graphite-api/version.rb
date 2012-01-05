@@ -1,14 +1,9 @@
 module GraphiteAPI
   class Version
     PFILE = File.join(GraphiteAPI::ROOT,"..",".pre_version")
-    
-    MAJOR = 0
-    MINOR = 0
-    BUILD = 0
-    
     class << self
       def string
-        [MAJOR,MINOR,BUILD,pre].join(".")
+        [0,0,0,pre].join(".")
       end
 
       def increment_pre

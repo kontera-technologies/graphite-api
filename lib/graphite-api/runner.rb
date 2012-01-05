@@ -6,18 +6,10 @@ module GraphiteAPI
     attr_reader :options
 
     def initialize(argv)
-      @options = {
-        :graphite_host => "127.0.0.1",
-        :graphite_port => 2003,
-        :port => 2003,
-        :log_level => Logger::WARN,
-        :interval => 60,
-        :pid => "/var/run/graphite-middleware.pid"
-      }
       parser.parse! argv
       validate_options
     end
-
+    
     def run
       if options[:daemonize]
         fork do
@@ -36,6 +28,10 @@ module GraphiteAPI
     end
 
     private
+    def options
+      @options ||= Utils.default_options
+    end
+    
     def write_pid
       begin
         File.open(options[:pid], 'w') { |f| f.write(Process.pid) }
@@ -56,13 +52,15 @@ module GraphiteAPI
         opts.banner = "Graphite Middleware Server"
         opts.define_head "Usage: graphite-middleware [options]"
         opts.define_head ""
-        opts.on("-p", "--port PORT","listening port (default 2003)"){|v| options[:port] = v}
+        opts.on("-p", "--port PORT","listening port (default 2003)"){|v| options[:listening_port] = v}
         opts.on("-g", "--graphite HOST","graphite host") {|v| options[:graphite_host] = v}
         opts.on("-l", "--log-file FILE","log file") {|v| options[:log_file] = File.expand_path(v)}
-        opts.on("-L", "--log-level LEVEL","log level (default warn)") {|v|options[:log_level] = eval("Logger::#{v.upcase}")}
+        opts.on("-L", "--log-level LEVEL","log level (default warn)") {|v|options[:log_level] = v}
         opts.on("-P", "--pid-file FILE","pid file (default /var/run/graphite-middleware.pid)"){|v|options[:pid] = v}
         opts.on("-d", "--daemonize","run in background"){options[:daemonize] = true}
-        opts.on("-i", "--interval INT","report every X seconds (default 300)"){|v|options[:interval] = v.to_i unless v.to_i == 0}
+        opts.on("-i", "--interval INT","report every X seconds (default 60)"){|v|options[:interval] = v.to_i unless v.to_i == 0}
+        opts.on("-s", "--slice SECONDS","send to graphite in X seconds slices (default is 60)") {|v| options[:slice] = v.to_i unless v.to_i == 0}
+        opts.on("-c", "--cache HOURS","cache expiration time in hours (default is 12 hours)") {|v| (options[:cache_exp] = v.to_i * 3600) unless v.to_i == 0}
         opts.define_tail ""
         opts.define_tail ""
       end
