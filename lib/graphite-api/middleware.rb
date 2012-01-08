@@ -4,7 +4,7 @@ require 'logger'
 require 'socket'
 
 module GraphiteAPI
-  class Middleware < EM::Connection
+  class Middleware < EventMachine::Connection
 
     attr_reader :logger,:buffer,:client_id
 
@@ -28,27 +28,23 @@ module GraphiteAPI
     end
 
     def self.start(options)
-      EM.run do
+      EventMachine.run do
         # Resources
-        logger = ::Logger.new(options[:log_file] || STDOUT)
-        logger.level = eval("::Logger::#{options[:log_level].to_s.upcase}")
-        buffer = GraphiteAPI::Buffer.new(options)
+        GraphiteAPI::Logger.logger = ::Logger.new(options[:log_file] || STDOUT)
+        GraphiteAPI::Logger.logger.level = eval "::Logger::#{options[:log_level].to_s.upcase}"
+        
+        buffer    = GraphiteAPI::Buffer.new(options)
         connector = GraphiteAPI::Connector.new(*options.values_at(:graphite_host,:graphite_port))
-        GraphiteAPI::Logger.logger = logger
         
         # Starting server
-        EM.start_server('0.0.0.0',options[:listening_port],self,logger,buffer)
-        logger.info "Server running on port #{options[:listening_port]}"
+        EventMachine.start_server('0.0.0.0',options[:listening_port],self,GraphiteAPI::Logger.logger,buffer)
+        GraphiteAPI::Logger.instance.info "Server running on port #{options[:listening_port]}"
         
         # Send metrics to graphite every X seconds
         GraphiteAPI::Scheduler.every(options[:interval]) do
           if buffer.got_new_records?
-            logger.debug "Sending #{buffer.size} records to graphite (@#{options[:graphite_host]}:#{options[:graphite_port]})"
-            buffer.each do |arr| 
-              line = arr.join(" ")
-              logger.debug line
-              connector.puts line
-            end # each
+            Logger.instance.debug "Sending #{buffer.size} records to graphite (@#{options[:graphite_host]}:#{options[:graphite_port]})"
+            buffer.each { |arr| connector.puts arr.join(" ") }
           end # if got_new_records?
         end # every 
       end # run 

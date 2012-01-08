@@ -6,7 +6,7 @@ module GraphiteAPI
       @options = Utils.default_options.merge opt
       @options[:host] = host
       @options[:prefix] = ([@options[:prefix]].flatten.join('.')) << '.' if !@options[:prefix].empty?
-      @buffer  = GraphiteAPI::Buffer.new(options)
+      @buffer = GraphiteAPI::Buffer.new(options)
       @connector = GraphiteAPI::Connector.new(*options.values_at(:host,:port))
       GraphiteAPI::Scheduler.every(options[:interval]) {send_metrics}
     end

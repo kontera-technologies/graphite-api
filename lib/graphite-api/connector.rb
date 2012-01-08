@@ -10,6 +10,7 @@ module GraphiteAPI
     end
     
     def puts(msg)
+      Logger.instance.debug msg
       begin
         socket.puts(msg)
       rescue Errno::EPIPE
