@@ -5,14 +5,14 @@ GraphiteAPI::GemSpec = Gem::Specification.new do |s|
   s.version               = GraphiteAPI.version
   s.platform              = Gem::Platform::RUBY
   s.summary               = "GraphiteAPI"
-  s.description           = "GraphiteAPI - Graphite api tools"
+  s.description           = "GraphiteAPI - Graphite API tools"
   s.author                = "Eran Levi"
   s.email                 = 'eran@kontera.com'
   s.homepage              = 'http://www.kontera.com'
   s.executables           = %w(graphite-middleware)
-  s.required_ruby_version = '>= 1.8.6'
+  s.required_ruby_version = '>= 1.8.7'
   s.rubyforge_project     = "graphite-api"
-  s.files                 = %w(README.markdown Rakefile) + Dir.glob("{bin,lib,test,tasks}/**/*")
+  s.files                 = %w(README.rdoc Rakefile) + Dir.glob("{bin,lib,test,tasks}/**/*")
   s.require_path          = "lib"
   s.bindir                = "bin"
 
@@ -33,16 +33,12 @@ namespace :gem do
   
   desc "Upload GraphiteAPI to Kontera's repo"
   task :upload => [:build] do
-    sh "rake gem:push_gem"
+    sh "gem inabox --host http://gems.kontera.com pkg/graphite-api-#{GraphiteAPI.version}.gem"
   end
   
   desc "Update GraphiteAPI gem version and build gem"
   task :build => [:test,:update_version] do
     sh "rake gem"
   end 
-  
-  task :push_gem do
-    sh "gem inabox --host http://gems.kontera.com pkg/#{GraphiteAPI::GemSpec.full_name}.gem"
-  end
   
 end
