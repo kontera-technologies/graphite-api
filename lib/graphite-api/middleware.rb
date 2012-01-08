@@ -34,7 +34,7 @@ module GraphiteAPI
         logger.level = eval("::Logger::#{options[:log_level].to_s.upcase}")
         buffer = GraphiteAPI::Buffer.new(options)
         connector = GraphiteAPI::Connector.new(*options.values_at(:graphite_host,:graphite_port))
-        GraphiteAPI::Logger.instance.logger = logger
+        GraphiteAPI::Logger.logger = logger
         
         # Starting server
         EM.start_server('0.0.0.0',options[:listening_port],self,logger,buffer)
