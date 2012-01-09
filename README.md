@@ -55,9 +55,12 @@ Usage: graphite-middleware [options]
 
 ## Installation
 install the latest from github
- 	git clone git://github.com/kontera-technologies/graphite-api.git
-  	cd graphite-api
-  	rake install
+
+```
+git clone git://github.com/kontera-technologies/graphite-api.git
+cd graphite-api
+rake install
+```
 
 ## Bugs
 
