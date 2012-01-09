@@ -1,6 +1,7 @@
 # GraphiteAPI
 
 A Ruby API tools kit for [Graphite](http://graphite.wikidot.com/):
+
 * Graphite ruby client.
 * Graphite middleware server, a lightweight, event-driven, aggregator daemon.
 
@@ -35,6 +36,7 @@ A Ruby API tools kit for [Graphite](http://graphite.wikidot.com/):
 ```	
 ## Middleware Usage
 `graphite-middleware --help`
+```
 Graphite Middleware Server
 
 Usage: graphite-middleware [options]
@@ -47,6 +49,7 @@ Usage: graphite-middleware [options]
     -i, --interval INT               report every X seconds (default 60)
     -s, --slice SECONDS              send to graphite in X seconds slices (default is 60)
     -c, --cache HOURS                cache expiration time in hours (default is 12 hours)
+```
 
 ## Installation
 install the latest from github
@@ -56,7 +59,7 @@ install the latest from github
 
 ## Bugs
 
-If you find a bug, feel free to report it @ our {issues tracker}[https://github.com/kontera-technologies/graphite-api/issues] on github.
+If you find a bug, feel free to report it @ our [issues tracker](https://github.com/kontera-technologies/graphite-api/issues) on github.
 
 ## License
 
