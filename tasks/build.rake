@@ -12,7 +12,7 @@ GraphiteAPI::GemSpec = Gem::Specification.new do |s|
   s.executables           = %w(graphite-middleware)
   s.required_ruby_version = '>= 1.8.7'
   s.rubyforge_project     = "graphite-api"
-  s.files                 = %w(README.rdoc Rakefile) + Dir.glob("{bin,lib,test,tasks}/**/*")
+  s.files                 = %w(README.md Rakefile) + Dir.glob("{bin,lib,test,tasks}/**/*")
   s.require_path          = "lib"
   s.bindir                = "bin"
 
@@ -22,6 +22,11 @@ end
 task :gem => [:clobber_package]
 Gem::PackageTask.new(GraphiteAPI::GemSpec) do |p|
   p.gem_spec = GraphiteAPI::GemSpec
+end
+
+task :install => [:gem] do
+   sh "gem install pkg/graphite-api"
+   Rake::Task['clobber_package'].execute
 end
 
 namespace :gem do

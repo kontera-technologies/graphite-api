@@ -10,8 +10,8 @@ module GraphiteAPI
     end
     
     def puts(msg)
-      Logger.instance.debug msg
       begin
+        logger.debug msg
         socket.puts(msg)
       rescue Errno::EPIPE
         @socket = nil
@@ -20,6 +20,10 @@ module GraphiteAPI
     end
     
     protected
+    def logger
+      Logger.instance
+    end
+    
     def socket
       if @socket.nil? || @socket.closed?
         @socket = TCPSocket.new(@host,@port)

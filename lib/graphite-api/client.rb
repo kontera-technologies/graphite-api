@@ -16,7 +16,7 @@ module GraphiteAPI
     end
 
     def join
-      Scheduler.join
+      sleep 1 while buffer.got_new_records?
     end
 
     def stop
