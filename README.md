@@ -35,7 +35,9 @@ A Ruby API tools kit for [Graphite](http://graphite.wikidot.com/):
  	client.join # wait...
 ```	
 ## Middleware Usage
+
 `graphite-middleware --help`
+
 ```
 Graphite Middleware Server
 
