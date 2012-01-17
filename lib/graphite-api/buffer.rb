@@ -45,6 +45,8 @@ module GraphiteAPI
       end
       new_records.clear
       buffer.clear unless in_cache_mode
+        yield [prefix << key,buffer[time][key],time]
+      end and clear
     end
 
     def valid(data)
@@ -64,6 +66,14 @@ module GraphiteAPI
     end
 
     private    
+    def prefix
+      @prefix ||= options[:prefix].empty? ? String.new : prefix_to_s 
+    end
+    
+    def prefix_to_s
+      [options[:prefix]].flatten.join('.') << "."
+    end
+    
     def buffer
       @buffer ||= Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
     end
