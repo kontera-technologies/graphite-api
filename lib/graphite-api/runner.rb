@@ -1,5 +1,4 @@
 require 'optparse'
-require 'logger'
 
 module GraphiteAPI
   class Runner

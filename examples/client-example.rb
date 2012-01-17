@@ -1,7 +1,8 @@
 require "graphite-api"
 
 # Setting up client
-client = GraphiteAPI::Client.new("127.0.0.1", # Graphite sever (can even be pointed to GraphiteAPI middleware instance)
+client = GraphiteAPI::Client.new(
+  :host => "127.0.0.1",                       # Graphite sever (can even be pointed to GraphiteAPI middleware instance)
   :port => 2003,                              # Graphite (or GraphiteAPI middleware) server port, default 2003
   :prefix => ["kontera","prefix","test"],     # Prefix, will add kontera.prefix.test to each key
   :interval => 60,                            # Send to Graphite every X seconds, default is 60

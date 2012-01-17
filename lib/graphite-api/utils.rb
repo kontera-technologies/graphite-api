@@ -3,7 +3,7 @@ module GraphiteAPI
     module_function
 
     def normalize_time(time,slice = 60)
-      (time.to_i / slice * slice).to_i
+      ((time || Time.now).to_i / slice * slice).to_i
     end
     
     def default_options

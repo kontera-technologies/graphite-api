@@ -1,5 +1,3 @@
-require 'thread'
-
 module GraphiteAPI
   class Buffer
     attr_reader :leftovers,:options,:new_records,:in_cache_mode
@@ -41,18 +39,10 @@ module GraphiteAPI
 
     def each
       new_records.uniq.each do |time,key|
-        yield [key,buffer[time][key],time]
-      end
-      new_records.clear
-      buffer.clear unless in_cache_mode
         yield [prefix << key,buffer[time][key],time]
       end and clear
     end
-
-    def valid(data)
-      data =~ /^[\w|\.]+ \d+(?:\.\d)* \d+$/
-    end
-
+    
     def empty?
       buffer.empty?
     end
@@ -65,7 +55,16 @@ module GraphiteAPI
       buffer.values.map(&:values).flatten.size
     end
 
-    private    
+    private
+    def clear
+      new_records.clear
+      buffer.clear unless in_cache_mode
+    end
+    
+    def valid(data)
+      data =~ /^[\w|\.]+ \d+(?:\.\d)* \d+$/
+    end
+    
     def prefix
       @prefix ||= options[:prefix].empty? ? String.new : prefix_to_s 
     end
@@ -78,21 +77,16 @@ module GraphiteAPI
       @buffer ||= Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
     end
 
-    def logger
-      GraphiteAPI::Logger.instance
-    end
-
     def clean(age)
-      size = buffer.size
-      now = Time.now.to_i
       [buffer,new_records].each {|o| o.delete_if {|t,k| now - t > age}}
-      logger.debug "[BufferCleaner] Cleaned entries older than #{age / 3600} hours,reduced #{size - buffer.size} (#{size}/#{buffer.size})"
     end
-
+    
+    def now
+      Time.now.to_i
+    end
+    
     def start_cleaner
-      GraphiteAPI::Scheduler.every(options[:cleaner_interval]) do
-        clean(options[:cache_exp])
-      end 
+      Scheduler.every(options[:cleaner_interval]) { clean options[:cache_exp] }
     end
 
   end
