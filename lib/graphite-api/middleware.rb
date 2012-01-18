@@ -20,7 +20,7 @@ module GraphiteAPI
     end
 
     def receive_data(data)
-      buffer.stream(client_id,data)
+      buffer.stream(data,client_id)
     end
 
     def unbind

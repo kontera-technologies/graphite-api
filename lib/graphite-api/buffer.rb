@@ -1,3 +1,20 @@
+# -----------------------------------------------------
+# Buffer Object
+# Handle Socket & Client data streams
+# -----------------------------------------------------
+# Usage:
+#     buff = GraphiteAPI::Buffer.new(GraphiteAPI::Utils.default_options)
+#     buff << {:metric => {"load_avg" => 10},:time => Time.now}
+#     buff.stream "mem.usage 1"
+#     buff.stream "90 1326842563\n"
+#     buff.stream "shuki.tuki 999 1326842563\n"
+#     buff.each {|o| p o} 
+#
+# Produce:
+#   ["load_avg", 10.0, 1326881160]
+#   ["mem.usage", 190.0, 1326842520]
+#   ["shuki.tuki", 999.0, 1326842520]
+# -----------------------------------------------------
 module GraphiteAPI
   class Buffer
     attr_reader :leftovers,:options,:new_records,:in_cache_mode
@@ -18,13 +35,12 @@ module GraphiteAPI
       end
     end
 
-    def stream(client_id,data)
+    def stream(data,client_id = nil)
       got_leftovers = data[-1,1] != "\n"
       data = data.split(/\n/)
-
       unless leftovers[client_id].empty?
-        if (valid leftovers[client_id].last << data.first rescue nil)
-          data.unshift(leftovers[client_id].pop << data.shift)
+        if (valid leftovers[client_id].last + data.first rescue nil)
+          data.unshift(leftovers[client_id].pop + data.shift)
         end
         leftovers[client_id].clear
       end
@@ -39,7 +55,7 @@ module GraphiteAPI
 
     def each
       new_records.uniq.each do |time,key|
-        yield [prefix << key,buffer[time][key],time]
+        yield [prefix + key,buffer[time][key],time]
       end and clear
     end
     
