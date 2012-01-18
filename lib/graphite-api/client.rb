@@ -3,28 +3,32 @@
 # Send metrics to graphite (or to some kind of middleware/proxy) 
 # -----------------------------------------------------
 # Usage
-#   client = GraphiteAPI::Client.new(
-#    :host => "127.0.0.1",                       # Graphite sever (can even be pointed to GraphiteAPI middleware instance)
-#    :port => 2003,                              # Graphite (or GraphiteAPI middleware) server port, default 2003
-#    :prefix => ["kontera","prefix","test"],     # Prefix, will add kontera.prefix.test to each key
-#    :interval => 60,                            # Send to Graphite every X seconds, default is 60
-#  )
 #
-#  client.add_metrics("shuki.tuki" => 10.7)      # will send kontera.prefix.test.shuki.tuki 10.7 11212312321
-#  client.add_metrics("shuki.tuki" => 10.7,"moshe.shlomo" => 22.9)
-#  client.add_metrics({"shuki.tuki" => 10.7,"moshe.shlomo" => 22.9},Time.at(11212312321)) # with timestamp 
-# 
-#  # every X seconds
-#  client.every(1) do 
-#    client.add_metrics("one_seconds#{rand 10}" => 10) # kontera.prefix.test.one_seconds 20.2 12321231312
+#  client = GraphiteAPI::Client.new(
+#    :host => "graphite.example.com",
+#    :port => 2003,
+#    :prefix => ["example","prefix"], # add example.prefix to each key
+#    :interval => 60                  # send to graphite every 60 seconds
+#    )
+#  
+#  # Simple:
+#  client.add_metrics("webServer.web01.loadAvg" => 10.7)
+#  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.stamp
+#  
+#  # Multiple with time:
+#  client.add_metrics({
+#	  "webServer.web01.loadAvg" => 10.7,
+#	  "webServer.web01.memUsage" => 40
+#  },Time.at(1326067060))
+#  # => example.prefix.webServer.web01.loadAvg  10.7 1326067060
+#  # => example.prefix.webServer.web01.memUsage 40 1326067060
+#  
+#  # Every 10 sec
+#  client.every(10) do
+#    client.add_metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
 #  end
-#
-#  client.every(5) do
-#    client.add_metrics("five_seconds" => 10) # kontera.prefix.test.five_seconds 20.2 12321231312
-#  end
-#
-#
-# client.join # wait until all metrics reported
+#  
+#  client.join # wait...
 # -----------------------------------------------------
 module GraphiteAPI
   class Client

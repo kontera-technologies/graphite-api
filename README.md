@@ -9,7 +9,8 @@ A Ruby API tool kit for [Graphite](http://graphite.wikidot.com/):
 ```ruby
  	require 'graphite-api'
 
- 	client = GraphiteAPI::Client.new("graphite.example.com",
+ 	client = GraphiteAPI::Client.new(
+	 :host => "graphite.example.com",
  	 :port => 2003,
  	 :prefix => ["example","prefix"], # add example.prefix to each key
  	 :interval => 60                  # send to graphite every 60 seconds
