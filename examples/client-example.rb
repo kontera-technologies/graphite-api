@@ -6,7 +6,6 @@ client = GraphiteAPI::Client.new(
   :port => 2003,                              # Graphite (or GraphiteAPI middleware) server port, default 2003
   :prefix => ["kontera","prefix","test"],     # Prefix, will add kontera.prefix.test to each key
   :interval => 60,                            # Send to Graphite every X seconds, default is 60
-  :aggregate => false                         # Aggregate data before send, default is true
 )
 
 # Simple one

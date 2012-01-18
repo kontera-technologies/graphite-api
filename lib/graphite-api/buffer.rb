@@ -5,13 +5,14 @@
 # Usage:
 #     buff = GraphiteAPI::Buffer.new(GraphiteAPI::Utils.default_options)
 #     buff << {:metric => {"load_avg" => 10},:time => Time.now}
+#     buff << {:metric => {"load_avg" => 30},:time => Time.now}
 #     buff.stream "mem.usage 1"
 #     buff.stream "90 1326842563\n"
 #     buff.stream "shuki.tuki 999 1326842563\n"
 #     buff.each {|o| p o} 
 #
 # Produce:
-#   ["load_avg", 10.0, 1326881160]
+#   ["load_avg", 40.0, 1326881160]
 #   ["mem.usage", 190.0, 1326842520]
 #   ["shuki.tuki", 999.0, 1326842520]
 # -----------------------------------------------------

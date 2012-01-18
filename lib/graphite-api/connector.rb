@@ -1,5 +1,14 @@
+# -----------------------------------------------------
+# TCP Socket connection
+# -----------------------------------------------------
+# Usage:
+#    connector = GraphiteAPI::Connector.new("localhost",2003)
+#    connector.puts("my.metric 1092 1232123231")
+#
+# Socket:
+# => my.metric 1092 1232123231\n
+# -----------------------------------------------------
 require 'socket'
-
 module GraphiteAPI
   class Connector
     attr_reader :options
@@ -27,6 +36,6 @@ module GraphiteAPI
       end
       @socket
     end
-    
+     
   end
 end
