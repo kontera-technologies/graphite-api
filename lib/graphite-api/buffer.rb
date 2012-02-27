@@ -12,9 +12,9 @@
 #     buff.each {|o| p o} 
 #
 # Produce:
-#   ["load_avg", 40.0, 1326881160]
-#   ["mem.usage", 190.0, 1326842520]
-#   ["shuki.tuki", 999.0, 1326842520]
+#    ["load_avg", 40.0, 1326881160]
+#    ["mem.usage", 190.0, 1326842520]
+#    ["shuki.tuki", 999.0, 1326842520]
 # -----------------------------------------------------
 module GraphiteAPI
   class Buffer
@@ -79,7 +79,7 @@ module GraphiteAPI
     end
     
     def valid(data)
-      data =~ /^[\w|\.]+ \d+(?:\.\d)* \d+$/
+      data =~ /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
     end
     
     def prefix

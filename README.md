@@ -1,6 +1,6 @@
 # GraphiteAPI
 
-A Ruby API tool kit for [Graphite](http://graphite.wikidot.com/):
+A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/)
 
 * Graphite ruby client.
 * Graphite middleware server, a lightweight, event-driven, aggregator daemon.

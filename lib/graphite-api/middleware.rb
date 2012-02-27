@@ -1,3 +1,22 @@
+# -----------------------------------------------------
+# Graphite Middleware Server
+# Should be placed between graphite server and graphite clients
+# - Data Aggregator
+# - Caching
+# - Data Manipulation
+# -----------------------------------------------------
+# Usage:
+#   GraphiteAPI::Middleware.start(options)
+# 
+# Options:
+#   graphite_host    target graphite hostname
+#   graphite_port    target graphite listening port (default 2003)
+#   cache_exp        cache lifetime in seconds  (default is 43200 seconds)
+#   prefix           add prefix to each key
+#   interval         report to graphite every X seconds (default is 60)
+#   slice            send to graphite in X seconds slices (default is 60)
+#   log_level        info # TODO: move this to runner.rb
+# -----------------------------------------------------
 require 'rubygems'
 require 'eventmachine'
 require 'logger'
