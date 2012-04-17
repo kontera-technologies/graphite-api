@@ -1,9 +1,13 @@
 # GraphiteAPI
-
 A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/)
 
-* Graphite ruby client.
-* Graphite middleware server, a lightweight, event-driven, aggregator daemon.
+## Description
+Graphite Client and Utilities For Ruby
+
+* **Simple** client for ruby.
+* Graphite **MiddleWare Server**, a lightweight, event-driven, aggregator daemon.
+* Light-Weight, only **ONE** depenency (event-machine)
+* **Utilities** like scheduling and caching.
 
 ## Client Usage
 ```ruby
