@@ -36,9 +36,9 @@ namespace :gem do
     msg "Incrementing version to #{GraphiteAPI::Version.string}..."
   end
   
-  desc "Upload GraphiteAPI to Kontera's repo"
+  desc "Upload GraphiteAPI to rubygems.org"
   task :upload => [:build] do
-    sh "gem inabox --host http://gems.kontera.com pkg/graphite-api-#{GraphiteAPI.version}.gem"
+    sh "gem push pkg/graphite-api-#{GraphiteAPI.version}.gem"
   end
   
   desc "Update GraphiteAPI gem version and build gem"
