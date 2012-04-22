@@ -54,6 +54,7 @@ module GraphiteAPI
         
         buffer    = GraphiteAPI::Buffer.new(options)
         connector = GraphiteAPI::Connector.new(*options.values_at(:graphite_host,:graphite_port))
+        connectors = GraphiteAPI::ConnectorGroup.new(options)
         
         # Starting server
         EventMachine.start_server('0.0.0.0',options[:listening_port],self,GraphiteAPI::Logger.logger,buffer)
@@ -65,6 +66,7 @@ module GraphiteAPI
             Logger.debug "Sending #{buffer.size} records to graphite (@#{options[:graphite_host]}:#{options[:graphite_port]})"
             buffer.each { |arr| connector.puts arr.join(" ") }
           end # if got_new_records?
+          connectors.publish buffer.pull(:string) if buffer.got_new_records?
         end # every 
       end # run 
     end # start

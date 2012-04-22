@@ -38,6 +38,7 @@ module GraphiteAPI
       @options   = GraphiteAPI::Utils.default_options.merge opt
       @buffer    = GraphiteAPI::Buffer.new(options)
       @connector = GraphiteAPI::Connector.new(*options.values_at(:host,:port))
+      @connectors = GraphiteAPI::ConnectorGroup.new(options)
       start_scheduler
     end
 
@@ -65,6 +66,7 @@ module GraphiteAPI
     def send_metrics
       buffer.each {|arr| connector.puts arr.join(" ")} 
     end 
+      connectors.publish buffer.pull(:string)
     
   end
 end
