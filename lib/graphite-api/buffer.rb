@@ -22,6 +22,7 @@ module GraphiteAPI
     attr_reader :options,:keys_to_send,:reanimation_mode, :streamer_buff
 
     CLOSING_STREAM_CHAR = "\n"                    # end of message - when streaming to buffer obj
+    IGNORING_CHARS      = "\r"                    # remove these chars from message
     FLOATS_ROUND_BY = 2                           # round(x) after joining floats 
     VALID_RECORD = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/ # how a valid record should look like
     
@@ -42,7 +43,8 @@ module GraphiteAPI
     
     def stream data, client_id = nil
       data.each_char do |char|
-        streamer_buff[client_id] += char
+        next if invalid_char? char
+        streamer_buff[client_id] += char 
         if char == CLOSING_STREAM_CHAR
           push build_metric(*streamer_buff[client_id].split) if valid streamer_buff[client_id]
           streamer_buff.delete client_id
@@ -70,6 +72,9 @@ module GraphiteAPI
     end # TODO: make it less painful
 
     private
+    def invalid_char?(char)
+      IGNORING_CHARS.include?(char)
+    end
     
     def cache_set(time, key, value)
       buffer_cache[time][key] = (buffer_cache[time][key] + value.to_f).round(FLOATS_ROUND_BY)
