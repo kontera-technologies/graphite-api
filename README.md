@@ -1,13 +1,18 @@
 # GraphiteAPI
 A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/)
 
+# TODO:
+* Documentation
+* Move command line parser to some kind of CLI
+* trap signals and shutdown server
+
 ## Description
-Graphite Client and Utilities For Ruby
+Graphite client and utilities for ruby
 
 * **Simple** client for ruby.
-* Graphite **MiddleWare Server**, a lightweight, event-driven, aggregator daemon.
-* Light-Weight, only **ONE** depenency (event-machine)
-* **Utilities** like scheduling and caching.
+* Ships with a **MiddleWare Server**, which is lightweight, event-driven, aggregator daemon.
+* only one dependency (EventMachine).
+* Utilities like scheduling and caching.
 
 ## Client Usage
 ```ruby
