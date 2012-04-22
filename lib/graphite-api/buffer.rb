@@ -9,7 +9,7 @@
 #     buff.stream "mem.usage 1"
 #     buff.stream "90 1326842563\n"
 #     buff.stream "shuki.tuki 999 1326842563\n"
-#     buff.each {|o| p o} 
+#     buff.pull.each {|o| p o} 
 #
 # Produce:
 #    ["load_avg", 40.0, 1326881160]
@@ -18,84 +18,96 @@
 # -----------------------------------------------------
 module GraphiteAPI
   class Buffer
-    attr_reader :leftovers,:options,:new_records,:in_cache_mode
 
-    def initialize(options)
+    attr_reader :options,:keys_to_send,:in_cache_mode, :streamer_buff
+
+    CLOSING_STREAM_CHAR = "\n"                    # end of message - when streaming to buffer obj
+    FLOATS_ROUND_BY = 2                           # round(x) after joining floats 
+    VALID_RECORD = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/ # how a valid record should look like
+    
+    def initialize options
       @options = options
-      @leftovers = Hash.new {|h,k| h[k] = Array.new}
-      @new_records = []
+      @keys_to_send  = Hash.new {|h,k| h[k] = []}
+      @streamer_buff = Hash.new {|h,k| h[k] = ""}
       @in_cache_mode = !options[:cache_exp].nil?
       start_cleaner if in_cache_mode
     end
 
-    def << hash
-      time = Utils.normalize_time(hash[:time],options[:slice])
-      hash[:metric].each do |k,v|
-        buffer[time][k] += v.to_f
-        new_records << [time,k]
-      end
+    def push hash
+      Logger.debug [:buffer,:add,hash]
+      time = Utils::normalize_time(hash[:time],options[:slice])
+      hash[:metric].each { |k,v| cache_set(time,k,v) }
     end
-
-    def stream(data,client_id = nil)
-      got_leftovers = data[-1,1] != "\n"
-      data = data.split(/\n/)
-      unless leftovers[client_id].empty?
-        if (valid leftovers[client_id].last + data.first rescue nil)
-          data.unshift(leftovers[client_id].pop + data.shift)
+    alias :<< :push
+    
+    def stream data, client_id = nil
+      data.each_char do |char|
+        streamer_buff[client_id] += char
+        if char == CLOSING_STREAM_CHAR
+          push build_metric(*streamer_buff[client_id].split) if valid streamer_buff[client_id]
+          streamer_buff.delete client_id
         end
-        leftovers[client_id].clear
-      end
-
-      leftovers[client_id] << data.pop if got_leftovers
-      data.each do |line|
-        next unless valid line
-        key,val,time = line.split
-        self << {:metric => {key => val},:time => (Time.at(time.to_i) rescue Time.now)}
       end
     end
-
-    def each
-      new_records.uniq.each do |time,key|
-        yield [prefix + key,buffer[time][key],time]
-      end and clear
+    
+    def pull as = nil
+      Array.new.tap do |obj|
+        keys_to_send.each { |t, k| k.each { |o| obj.push cache_get(t, o, as) } }
+        clear
+      end
     end
     
     def empty?
-      buffer.empty?
+      buffer_cache.empty?
     end
 
     def got_new_records?
-      !new_records.empty?
-    end
-
-    def size
-      buffer.values.map(&:values).flatten.size
-    end
-
-    private
-    def clear
-      new_records.clear
-      buffer.clear unless in_cache_mode
+      !keys_to_send.empty?
     end
     
-    def valid(data)
+    def size
+      buffer_cache.values.map {|o| o.values}.flatten.size
+    end # TODO: make it less painful
+
+    private
+    
+    def cache_set(time, key, value)
+      buffer_cache[time][key] = (buffer_cache[time][key] + value.to_f).round(FLOATS_ROUND_BY)
+      keys_to_send[time].push(key) unless keys_to_send[time].include?(key)
+    end
+    
+    def cache_get(time, key, as)
+      metric = [prefix + key,buffer_cache[time][key],time]
+      as == :string ? metric.join(" ") : metric
+    end
+        
+    def build_metric key, value, time
+      { :metric => { key => value },:time => Time.at(time.to_i) }
+    end
+
+    def clear
+      keys_to_send.clear
+      buffer_cache.clear unless in_cache_mode
+    end
+    
+    def valid data
       data =~ /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
     end
     
     def prefix
-      @prefix ||= options[:prefix].empty? ? String.new : prefix_to_s 
+      @prefix ||= options[:prefix].empty? ? '' : prefix_to_s 
     end
     
     def prefix_to_s
-      [options[:prefix]].flatten.join('.') << "."
+      Array(options[:prefix]).join('.') << '.'
     end
     
-    def buffer
-      @buffer ||= Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
+    def buffer_cache
+      @buffer_cache ||= Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
     end
 
-    def clean(age)
-      [buffer,new_records].each {|o| o.delete_if {|t,k| now - t > age}}
+    def clean age
+      [buffer_cache,keys_to_send].each {|o| o.delete_if {|t,k| now - t > age}}
     end
     
     def now
@@ -103,7 +115,7 @@ module GraphiteAPI
     end
     
     def start_cleaner
-      Scheduler.every(options[:cleaner_interval]) { clean options[:cache_exp] }
+      Scheduler.every(options[:cleaner_interval]) { clean(options[:cache_exp]) }
     end
 
   end
