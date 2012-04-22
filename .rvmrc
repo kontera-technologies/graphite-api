@@ -1,1 +1,1 @@
-rvm use 1.9.2@graphite-api-gems --create
+rvm use 1.9.3@graphite-api-gems --create
