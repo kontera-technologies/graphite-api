@@ -47,18 +47,20 @@ Graphite client and utilities for ruby
 `graphite-middleware --help`
 
 ```
-Graphite Middleware Server
+GraphiteAPI Middleware Server
 
 Usage: graphite-middleware [options]
-    -g, --graphite HOST              graphite host
+    -g, --graphite HOST:PORT         graphite host, in HOST:PORT format (can be specified multiple times)
     -p, --port PORT                  listening port (default 2003)
     -l, --log-file FILE              log file
     -L, --log-level LEVEL            log level (default warn)
     -P, --pid-file FILE              pid file (default /var/run/graphite-middleware.pid)
     -d, --daemonize                  run in background
     -i, --interval INT               report every X seconds (default 60)
-    -s, --slice SECONDS              send to graphite in X seconds slices (default is 60)
-    -c, --cache HOURS                cache expiration time in hours (default is 12 hours)
+    -s, --slice SECONDS              send to graphite in X seconds slices (default 60)
+    -r, --reanimation HOURS          reanimate records that are younger than X hours, please see README
+
+More Info @ https://github.com/kontera-technologies/graphite-api
 ```
 
 ## Installation

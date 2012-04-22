@@ -30,11 +30,11 @@ module GraphiteAPI
 
     def parser
       OptionParser.new do |opts| 
-        opts.banner = "Graphite Middleware Server"
+        opts.banner = "GraphiteAPI Middleware Server"
         opts.define_head "Usage: graphite-middleware [options]"
         opts.define_head ""
 
-        opts.on("-g", "--graphite HOST:PORT","graphite host, in HOST:PORT format") do |graphite|
+        opts.on("-g", "--graphite HOST:PORT","graphite host, in HOST:PORT format (can be specified multiple times)") do |graphite|
           options[:backends] << expand_host(graphite)
         end
 
@@ -69,7 +69,11 @@ module GraphiteAPI
         opts.on("-r", "--reanimation HOURS","reanimate records that are younger than X hours, please see README") do |exp|
           (options[:reanimation_exp] = exp.to_i * 3600) if exp.to_i > 0
         end
-
+        
+        opts.separator ""
+        opts.separator "More Info @ https://github.com/kontera-technologies/graphite-api"
+        opts.separator ""
+        
         opts.define_tail ""
         opts.define_tail ""
       end
