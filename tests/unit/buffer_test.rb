@@ -12,10 +12,10 @@ module GraphiteAPI
         assert_equal options,  buffer_obj.instance_variable_get(:@options)
         assert_equal Hash.new, buffer_obj.instance_variable_get(:@keys_to_send)
         assert_equal Hash.new, buffer_obj.instance_variable_get(:@streamer_buff)
-        assert_equal false,    buffer_obj.instance_variable_get(:@in_cache_mode)
+        assert_equal false,    buffer_obj.instance_variable_get(:@reanimation_mode)
       end
       
-      assert_equal(true,buffer(:cache_exp => 1).instance_variable_get(:@in_cache_mode))
+      assert_equal(true,buffer(:reanimation_exp => 1).instance_variable_get(:@reanimation_mode))
     end
     
     def test_push
