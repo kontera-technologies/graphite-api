@@ -120,7 +120,7 @@ module GraphiteAPI
     end
     
     def start_cleaner
-      Scheduler.every(options[:cleaner_interval]) { clean(options[:cache_exp]) }
+      Scheduler.every(options[:cleaner_interval]) { clean(options[:reanimation_exp]) }
     end
 
   end

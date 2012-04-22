@@ -19,7 +19,7 @@ module GraphiteAPI
         :cleaner_interval => 43200,
         :port => 2003,
         :log_level => :info,
-        :cache_exp => nil,
+        :reanimation_exp => nil,
         :host => "localhost",
         :prefix => [],
         :interval => 60,
