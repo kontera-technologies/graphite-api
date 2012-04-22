@@ -30,6 +30,10 @@ module GraphiteAPI
       end
     end
     
+    def inspect
+      "#{self.class} #{@host}:#{@port}"
+    end
+    
     protected
     
     def socket
