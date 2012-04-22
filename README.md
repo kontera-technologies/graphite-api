@@ -44,9 +44,9 @@ Graphite client and utilities for ruby
 ```	
 ## GraphiteAPI-Middleware Usage
 
-`graphite-middleware --help`
-
 ```
+[root@someplace]# graphite-middleware --help
+
 GraphiteAPI Middleware Server
 
 Usage: graphite-middleware [options]
