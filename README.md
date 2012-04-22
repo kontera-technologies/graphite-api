@@ -80,7 +80,6 @@ rake install
 
 # TODO:
 * Documentation
-* Move command line parser to some kind of CLI
 * trap signals and shutdown server
 * More tests
 
