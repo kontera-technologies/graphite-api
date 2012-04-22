@@ -28,22 +28,3 @@ task :install => [:gem] do
    sh "gem install pkg/graphite-api"
    Rake::Task['clobber_package'].execute
 end
-
-namespace :gem do
-  desc "Update GraphiteAPI gem version"
-  task :update_version do
-    GraphiteAPI::Version.increment_pre
-    msg "Incrementing version to #{GraphiteAPI::Version.string}..."
-  end
-  
-  desc "Upload GraphiteAPI to rubygems.org"
-  task :upload => [:build] do
-    sh "gem push pkg/graphite-api-#{GraphiteAPI.version}.gem"
-  end
-  
-  desc "Update GraphiteAPI gem version and build gem"
-  task :build => [:test,:update_version] do
-    sh "rake gem"
-  end 
-  
-end
