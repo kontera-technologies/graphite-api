@@ -5,8 +5,7 @@
 # Usage
 #
 #  client = GraphiteAPI::Client.new(
-#    :host => "graphite.example.com",
-#    :port => 2003,
+#    :graphite => "graphite.example.com:2003",
 #    :prefix => ["example","prefix"], # add example.prefix to each key
 #    :interval => 60                  # send to graphite every 60 seconds
 #    )
@@ -32,12 +31,13 @@
 # -----------------------------------------------------
 module GraphiteAPI
   class Client
-    attr_reader :options,:buffer,:connector
+    include Utils
     
-    def initialize(opt)
-      @options   = GraphiteAPI::Utils.default_options.merge opt
-      @buffer    = GraphiteAPI::Buffer.new(options)
-      @connector = GraphiteAPI::Connector.new(*options.values_at(:host,:port))
+    attr_reader :options,:buffer,:connectors
+    
+    def initialize opt
+      @options    = build_options opt.clone
+      @buffer     = GraphiteAPI::Buffer.new(options)
       @connectors = GraphiteAPI::ConnectorGroup.new(options)
       start_scheduler
     end
@@ -47,7 +47,7 @@ module GraphiteAPI
     end
 
     def join
-      sleep 1 while buffer.got_new_records?
+      sleep while buffer.got_new_records?
     end
     
     def stop
@@ -59,14 +59,23 @@ module GraphiteAPI
     end
 
     protected
+    
     def start_scheduler
-      Scheduler.every(options[:interval]) {send_metrics}
+      Scheduler.every(options[:interval]) { send_metrics }
     end
     
     def send_metrics
-      buffer.each {|arr| connector.puts arr.join(" ")} 
-    end 
       connectors.publish buffer.pull(:string)
+    end
+    
+    def build_options opt
+      default_options.tap do |options_hash|
+        options_hash[:backends] << expand_host(opt.delete(:host)) if opt.has_key? :host
+        options_hash[:backends] << expand_host(opt.delete(:graphite))
+        options_hash.merge! opt
+        options_hash.freeze
+      end
+    end
     
   end
 end
