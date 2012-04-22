@@ -13,6 +13,7 @@ module GraphiteAPI
     
   def self.version
     GraphiteAPI::Version.string
+    GraphiteAPI::Version::VERSION
   end
   
 end
