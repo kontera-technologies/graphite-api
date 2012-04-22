@@ -14,7 +14,7 @@ module GraphiteAPI
       end
 
       def stop
-        timers.map(&:cancel)
+        timers.map {|t| t.cancel}
         wrapper and EventMachine.stop
       end
 
