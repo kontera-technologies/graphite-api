@@ -19,7 +19,7 @@
 module GraphiteAPI
   class Buffer
 
-    attr_reader :options,:keys_to_send,:in_cache_mode, :streamer_buff
+    attr_reader :options,:keys_to_send,:reanimation_mode, :streamer_buff
 
     CLOSING_STREAM_CHAR = "\n"                    # end of message - when streaming to buffer obj
     FLOATS_ROUND_BY = 2                           # round(x) after joining floats 
@@ -29,8 +29,8 @@ module GraphiteAPI
       @options = options
       @keys_to_send  = Hash.new {|h,k| h[k] = []}
       @streamer_buff = Hash.new {|h,k| h[k] = ""}
-      @in_cache_mode = !options[:cache_exp].nil?
-      start_cleaner if in_cache_mode
+      @reanimation_mode = !options[:reanimation_exp].nil?
+      start_cleaner if reanimation_mode
     end
 
     def push hash
@@ -87,7 +87,7 @@ module GraphiteAPI
 
     def clear
       keys_to_send.clear
-      buffer_cache.clear unless in_cache_mode
+      buffer_cache.clear unless reanimation_mode
     end
     
     def valid data

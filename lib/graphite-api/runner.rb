@@ -66,8 +66,8 @@ module GraphiteAPI
           options[:slice] = slice.to_i if slice.to_i >= 0
         end
 
-        opts.on("-c", "--cache HOURS","cache expiration time in hours (default is 12 hours)") do |exp| 
-          (options[:cache_exp] = exp.to_i * 3600) if exp.to_i > 0
+        opts.on("-r", "--reanimation HOURS","reanimate records that are younger than X hours, please see README") do |exp|
+          (options[:reanimation_exp] = exp.to_i * 3600) if exp.to_i > 0
         end
 
         opts.define_tail ""
