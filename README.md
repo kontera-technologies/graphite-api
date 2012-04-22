@@ -1,26 +1,24 @@
-# GraphiteAPI
-A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/)
-
-# TODO:
-* Documentation
-* Move command line parser to some kind of CLI
-* trap signals and shutdown server
+# GraphiteAPI [Beta]
+A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 
 ## Description
 Graphite client and utilities for ruby
 
 * **Simple** client for ruby.
-* Ships with a **MiddleWare Server**, which is lightweight, event-driven, aggregator daemon.
+* Ships with a **GraphiteAPI-Middleware**, which is a lightweight, event-driven, aggregator daemon.
 * only one dependency (EventMachine).
 * Utilities like scheduling and caching.
+
+## Features
+* Multiple Graphite servers support - GraphiteAPI-Middleware supports sending aggregate data to multiple graphite servers, useful for large data centers and backup purposes
+* Reanimation mode - support cases which the same keys (with the same timestamps) can be received simultaneously and asynchronous from multiple input sources, in that cases GraphiteAPI-Middleware will "reanimate" old records that were already sent to Graphite server, and will send the sum of the reanimate record value + value of the just received record, to graphite server; this new summed record should override the key with the new summed value on Graphite database.
 
 ## Client Usage
 ```ruby
  	require 'graphite-api'
 
  	client = GraphiteAPI::Client.new(
-	 :host => "graphite.example.com",
- 	 :port => 2003,
+	 :graphite => "graphite.example.com:2003",
  	 :prefix => ["example","prefix"], # add example.prefix to each key
  	 :interval => 60                  # send to graphite every 60 seconds
  	)
@@ -44,7 +42,7 @@ Graphite client and utilities for ruby
 	
  	client.join # wait...
 ```	
-## Middleware Usage
+## GraphiteAPI-Middleware Usage
 
 `graphite-middleware --help`
 
@@ -77,6 +75,12 @@ git clone git://github.com/kontera-technologies/graphite-api.git
 cd graphite-api
 rake install
 ```
+
+# TODO:
+* Documentation
+* Move command line parser to some kind of CLI
+* trap signals and shutdown server
+* More tests
 
 ## Bugs
 
