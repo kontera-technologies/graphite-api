@@ -10,8 +10,8 @@ Graphite client and utilities for ruby
 * Utilities like scheduling and caching.
 
 ## Features
-* Multiple Graphite servers support - GraphiteAPI-Middleware supports sending aggregate data to multiple graphite servers, useful for large data centers and backup purposes
-* Reanimation mode - support cases which the same keys (with the same timestamps) can be received simultaneously and asynchronous from multiple input sources, in that cases GraphiteAPI-Middleware will "reanimate" old records that were already sent to Graphite server, and will send the sum of the reanimate record value + value of the just received record, to graphite server; this new summed record should override the key with the new value on Graphite database.
+* Multiple Graphite servers support - GraphiteAPI-Middleware supports sending aggregated data to multiple graphite servers, useful for large data centers and backup purposes
+* Reanimation mode - support cases which the same keys (same timestamps as well) can be received simultaneously and asynchronously from multiple input sources, in these cases GraphiteAPI-Middleware will "reanimate" old records (records that were already sent to Graphite server), and will send the sum of the reanimated record value + the value of the record that was just received to the graphite server; this new summed record should override the key with the new value on Graphite database.
 
 ## Client Usage
 ```ruby
