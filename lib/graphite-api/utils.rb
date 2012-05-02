@@ -1,6 +1,12 @@
 module GraphiteAPI
   module Utils
     
+    [:info,:error,:warn,:debug].each do |m|
+      define_method(m) do |*args,&block|
+        Logger.send(m,*args,&block)
+      end
+    end    
+    
     module_function
 
     def normalize_time(time,slice = 60)
@@ -40,8 +46,7 @@ module GraphiteAPI
         File.open(pid,'w') { |f| f.write(Process.pid) } rescue
         yield
       end
-
     end
-
+   
   end
 end
