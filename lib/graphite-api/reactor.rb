@@ -4,7 +4,6 @@ require 'eventmachine'
 module GraphiteAPI
   class Reactor
     @@wrapper = nil
-    @@timers  = []
     
     class << self
       def every(frequency,&block)
@@ -15,13 +14,18 @@ module GraphiteAPI
 
       def stop
         timers.each(&:cancel)
+        shutdown_hooks.each(&:call)
         wrapper and EventMachine.stop
       end
 
       def join
         wrapper and wrapper.join
       end
-
+      
+      def add_shutdown_hook(&block)
+        shutdown_hooks << block
+      end
+      
       private
       
       def start_reactor
@@ -34,8 +38,17 @@ module GraphiteAPI
         EventMachine.reactor_running?
       end
       
-      def wrapper;@@wrapper end
-      def timers; @@timers end
+      def wrapper 
+        @@wrapper
+      end
+      
+      def timers
+        @@timers ||= []
+      end
+      
+      def shutdown_hooks 
+        @@shutdown_hooks ||= []
+      end
       
     end
     
