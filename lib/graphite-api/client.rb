@@ -47,7 +47,7 @@ module GraphiteAPI
     end
 
     def join
-      sleep while buffer.new_records?
+      sleep 0.1 while buffer.new_records?
     end
     
     def stop
