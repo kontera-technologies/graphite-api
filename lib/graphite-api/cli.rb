@@ -43,6 +43,11 @@ module GraphiteAPI
         opts.on("-r", "--reanimation HOURS","reanimate records that are younger than X hours, please see README") do |exp|
           (options[:reanimation_exp] = exp.to_i * 3600) if exp.to_i > 0
         end
+        
+        opts.on("-v", "--version","Show version and exit") do |exp|
+          puts "Version #{GraphiteAPI.version}" 
+          exit
+        end
 
         opts.separator ""
         opts.separator "More Info @ https://github.com/kontera-technologies/graphite-api"
