@@ -19,7 +19,7 @@ module GraphiteAPI
       begin
         Middleware::start options
       rescue Interrupt
-        GraphiteAPI::Logger.info "Shuting down..."
+        GraphiteAPI::Logger.info "Shutting down..."
         GraphiteAPI::Reactor::stop
       end
     end
