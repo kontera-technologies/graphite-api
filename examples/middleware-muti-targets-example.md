@@ -42,7 +42,7 @@ example.middleware.value2 99 1334929231
 [root@graphite-middleware-node]
 ```
 
-## Checking log
+## Flow
 ```ruby
 [root@graphite-middleware-node] cat /tmp/graphite-middleware.out
  INFO -- : Server running on port 2005

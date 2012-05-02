@@ -43,7 +43,7 @@ example.value1 10 1335101880 # AFTER 10 MINUTES
 [root@graphite-middleware-node]
 ```
 
-## Checking log
+## Flow
 ```ruby
 [root@graphite-middleware-node] cat /tmp/graphite-middleware.out
  INFO -- : Server running on port 2005
@@ -55,7 +55,7 @@ example.value1 10 1335101880 # AFTER 10 MINUTES
  DEBUG -- : [:middleware, :message, "localhost:65364", "example.value1 10 1335101880\r\n"]
  DEBUG -- : [:buffer, :add, {:metric=>{"example.value1"=>"10"}, :time=>2012-04-22 06:38:00 -0700}]
  DEBUG -- : [:connector_group, :publish, 1, [GraphiteAPI::Connector graphite-server:2003]]
- DEBUG -- : [:connector, :puts, "graphite-server:2003", "example.value1 20.0 1335101880"] 			# RESEND example.value1 20.0 1335101880, with value of 20 (10 + 10)
+ DEBUG -- : [:connector, :puts, "graphite-server:2003", "example.value1 20.0 1335101880"] # <= Resend with value of 20 (10 + 10)
 ```
 
 ## Same flow w/o reanimation
@@ -69,5 +69,5 @@ example.value1 10 1335101880 # AFTER 10 MINUTES
  DEBUG -- : [:middleware, :message, "localhost:65364", "example.value1 10 1335101880\r\n"]
  DEBUG -- : [:buffer, :add, {:metric=>{"example.value1"=>"10"}, :time=>2012-04-22 06:38:00 -0700}]
  DEBUG -- : [:connector_group, :publish, 1, [GraphiteAPI::Connector graphite-server:2003]]
- DEBUG -- : [:connector, :puts, "graphite-server:2003", "example.value1 10.0 1335101880"]
+ DEBUG -- : [:connector, :puts, "graphite-server:2003", "example.value1 10.0 1335101880"] # <= Resend with value of 10
 ```
