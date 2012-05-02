@@ -27,8 +27,7 @@ module GraphiteAPI
     
     attr_reader :logger,:buffer,:client_id
 
-    def initialize logger, buffer
-      @logger = logger
+    def initialize buffer
       @buffer = buffer
       super
     end
@@ -53,7 +52,7 @@ module GraphiteAPI
         connectors = GraphiteAPI::ConnectorGroup.new(options)
         
         # Starting server
-        EventMachine.start_server('0.0.0.0',options[:port],self,GraphiteAPI::Logger.logger,buffer)
+        EventMachine.start_server('0.0.0.0',options[:port],self,buffer)
         GraphiteAPI::Logger.info "Server running on port #{options[:port]}"
         
         # Send metrics to graphite every X seconds
