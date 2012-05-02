@@ -81,7 +81,7 @@ module GraphiteAPI
     end
     
     def sum float1, float2
-      (float1 + float2).round FLOATS_ROUND_BY
+      ("%.#{FLOATS_ROUND_BY}f" % (float1 + float2)).to_f # can't use round on 1.8.7
     end
         
     def cache_get time, key, as
