@@ -24,7 +24,8 @@ require 'socket'
 
 module GraphiteAPI
   class Middleware < EventMachine::Connection
-
+    include GraphiteAPI::Utils
+    
     attr_reader :logger,:buffer,:client_id
 
     def initialize logger, buffer
@@ -35,16 +36,16 @@ module GraphiteAPI
 
     def post_init
       @client_id = Socket.unpack_sockaddr_in(get_peername).reverse.join(":")
-      logger.debug [:middleware,:connecting,client_id]
+      debug [:middleware,:connecting,client_id]
     end
 
     def receive_data data
-      logger.debug [:middleware,:message,client_id,data]
+      debug [:middleware,:message,client_id,data]
       buffer.stream data, client_id
     end
 
     def unbind
-      logger.debug [:middleware,:disconnecting,client_id]
+      debug [:middleware,:disconnecting,client_id]
     end
 
     def self.start options
@@ -63,7 +64,7 @@ module GraphiteAPI
         
         # Send metrics to graphite every X seconds
         GraphiteAPI::Scheduler.every( options[:interval] ) do
-          connectors.publish buffer.pull(:string) if buffer.got_new_records?
+          EventMachine::defer(proc { buffer.pull(:string) }, proc {|r| connectors.publish(r)} ) if buffer.new_records?
         end # every 
         
       end # run 

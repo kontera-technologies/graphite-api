@@ -36,18 +36,18 @@ module GraphiteAPI
     attr_reader :options,:buffer,:connectors
     
     def initialize opt
-      @options    = build_options opt.clone
+      @options    = build_options(validate(opt.clone))
       @buffer     = GraphiteAPI::Buffer.new(options)
       @connectors = GraphiteAPI::ConnectorGroup.new(options)
       start_scheduler
     end
 
     def add_metrics(m,time = Time.now)
-      buffer << {:metric => m, :time => time}
+      buffer.push(:metric => m, :time => time)
     end
 
     def join
-      sleep while buffer.got_new_records?
+      sleep while buffer.new_records?
     end
     
     def stop
@@ -65,12 +65,16 @@ module GraphiteAPI
     end
     
     def send_metrics
-      connectors.publish buffer.pull(:string)
+      EventMachine::defer(proc { buffer.pull(:string) }, proc { |r| connectors.publish(r) })
+    end
+    
+    def validate opt
+      raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil?
+      opt
     end
     
     def build_options opt
       default_options.tap do |options_hash|
-        options_hash[:backends] << expand_host(opt.delete(:host)) if opt.has_key? :host
         options_hash[:backends] << expand_host(opt.delete(:graphite))
         options_hash.merge! opt
         options_hash.freeze
