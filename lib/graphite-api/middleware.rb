@@ -63,7 +63,7 @@ module GraphiteAPI
         GraphiteAPI::Logger.info "Server running on port #{options[:port]}"
         
         # Send metrics to graphite every X seconds
-        GraphiteAPI::Scheduler.every( options[:interval] ) do
+        GraphiteAPI::Reactor::every( options[:interval] ) do
           EventMachine::defer(proc { buffer.pull(:string) }, proc {|r| connectors.publish(r)} ) if buffer.new_records?
         end # every 
         

@@ -3,7 +3,7 @@ module GraphiteAPI
 
   autoload :Version,         "#{ROOT}/graphite-api/version"
   autoload :Client,          "#{ROOT}/graphite-api/client"
-  autoload :Scheduler,       "#{ROOT}/graphite-api/scheduler"
+  autoload :Reactor,         "#{ROOT}/graphite-api/reactor"
   autoload :Connector,       "#{ROOT}/graphite-api/connector"
   autoload :Middleware,      "#{ROOT}/graphite-api/middleware"
   autoload :Runner,          "#{ROOT}/graphite-api/runner"

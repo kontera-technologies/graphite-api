@@ -2,7 +2,7 @@ require 'rubygems'
 require 'eventmachine'
 
 module GraphiteAPI
-  class Scheduler
+  class Reactor
     @@wrapper = nil
     @@timers  = []
     
@@ -14,7 +14,7 @@ module GraphiteAPI
       end
 
       def stop
-        timers.map {|t| t.cancel}
+        timers.each(&:cancel)
         wrapper and EventMachine.stop
       end
 
@@ -23,6 +23,7 @@ module GraphiteAPI
       end
 
       private
+      
       def start_reactor
         @@wrapper = Thread.new { EventMachine.run }
         wrapper.abort_on_exception = true

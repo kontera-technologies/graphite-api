@@ -51,17 +51,17 @@ module GraphiteAPI
     end
     
     def stop
-      Scheduler.stop
+      Reactor::stop
     end
     
     def every(frequency,&block)
-      Scheduler.every(frequency,&block)
+      Reactor::every(frequency,&block)
     end
 
     protected
     
     def start_scheduler
-      Scheduler.every(options[:interval]) { send_metrics }
+      Reactor::every(options[:interval]) { send_metrics }
     end
     
     def send_metrics
