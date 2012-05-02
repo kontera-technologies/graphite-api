@@ -18,13 +18,14 @@
 # -----------------------------------------------------
 module GraphiteAPI
   class Buffer
-
+    include Utils
+    
     attr_reader :options,:keys_to_send,:reanimation_mode, :streamer_buff
 
-    CLOSING_STREAM_CHAR = "\n"                    # end of message - when streaming to buffer obj
-    IGNORING_CHARS      = "\r"                    # remove these chars from message
-    FLOATS_ROUND_BY = 2                           # round(x) after joining floats 
-    VALID_RECORD = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/ # how a valid record should look like
+    CLOSING_STREAM_CHAR = "\n"                     # end of message - when streaming to buffer obj
+    IGNORING_CHARS      = "\r"                     # skip these chars when parsing new message
+    FLOATS_ROUND_BY = 2                            # round(x) after summing floats 
+    VALID_MESSAGE = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/ # how a valid message should look like
     
     def initialize options
       @options = options
@@ -35,53 +36,55 @@ module GraphiteAPI
     end
 
     def push hash
-      Logger.debug [:buffer,:add,hash]
+      debug [:buffer,:add,hash]
       time = Utils::normalize_time(hash[:time],options[:slice])
       hash[:metric].each { |k,v| cache_set(time,k,v) }
     end
+
     alias :<< :push
     
-    def stream data, client_id = nil
-      data.each_char do |char|
+    def stream message, client_id = nil
+      message.each_char do |char|
         next if invalid_char? char
-        streamer_buff[client_id] += char 
-        if char == CLOSING_STREAM_CHAR
+        streamer_buff[client_id] << char 
+        
+        if closed_stream? streamer_buff[client_id]
           push build_metric(*streamer_buff[client_id].split) if valid streamer_buff[client_id]
           streamer_buff.delete client_id
         end
+        
       end
     end
     
-    def pull as = nil
-      Array.new.tap do |obj|
-        keys_to_send.each { |t, k| k.each { |o| obj.push cache_get(t, o, as) } }
-        clear
+    def pull(as = nil)
+      [].tap do |data|
+        keys_to_send.each { |t, k| k.each { |o| data.push cache_get(t, o, as) } } and clear
       end
     end
     
-    def empty?
-      buffer_cache.empty?
-    end
-
-    def got_new_records?
+    def new_records?
       !keys_to_send.empty?
     end
     
-    def size
-      buffer_cache.values.map {|o| o.values}.flatten.size
-    end # TODO: make it less painful
-
     private
-    def invalid_char?(char)
-      IGNORING_CHARS.include?(char)
+    def closed_stream? string
+      string[-1,1] == CLOSING_STREAM_CHAR
     end
     
-    def cache_set(time, key, value)
-      buffer_cache[time][key] = (buffer_cache[time][key] + value.to_f).round(FLOATS_ROUND_BY)
+    def invalid_char? char
+      IGNORING_CHARS.include? char
+    end
+    
+    def cache_set time, key, value
+      buffer_cache[time][key] = sum(buffer_cache[time][key],value.to_f)
       keys_to_send[time].push(key) unless keys_to_send[time].include?(key)
     end
     
-    def cache_get(time, key, as)
+    def sum float1, float2
+      (float1 + float2).round FLOATS_ROUND_BY
+    end
+        
+    def cache_get time, key, as
       metric = [prefix + key,buffer_cache[time][key],time]
       as == :string ? metric.join(" ") : metric
     end
@@ -95,8 +98,8 @@ module GraphiteAPI
       buffer_cache.clear unless reanimation_mode
     end
     
-    def valid data
-      data =~ /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
+    def valid message
+      message =~ VALID_MESSAGE
     end
     
     def prefix
@@ -112,11 +115,7 @@ module GraphiteAPI
     end
 
     def clean age
-      [buffer_cache,keys_to_send].each {|o| o.delete_if {|t,k| now - t > age}}
-    end
-    
-    def now
-      Time.now.to_i
+      [buffer_cache,keys_to_send].each {|o| o.delete_if {|t,k| Time.now.to_i - t > age}}
     end
     
     def start_cleaner
