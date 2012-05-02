@@ -78,7 +78,7 @@ cd graphite-api
 rake install
 ```
 
-# TODO:
+## TODO:
 * Documentation
 * trap signals and shutdown server
 * More tests

@@ -1,6 +1,7 @@
 module GraphiteAPI
   class ConnectorGroup
-
+    include Utils
+    
     attr_reader :options, :connectors
 
     def initialize options
@@ -9,7 +10,7 @@ module GraphiteAPI
     end
 
     def publish messages
-      Logger.debug [:connector_group,:publish,messages.size, @connectors]
+      debug [:connector_group,:publish,messages.size, @connectors]
       Array(messages).each { |msg| connectors.map {|c| c.puts msg} }
     end
     
