@@ -2,7 +2,7 @@ require 'optparse'
 
 module GraphiteAPI
   class Runner
-
+        
     def initialize(argv)
       GraphiteAPI::CLI::parse(argv,options)
       validate_options
@@ -15,7 +15,13 @@ module GraphiteAPI
     private
     
     def run!
-       Middleware::start options
+      GraphiteAPI::Logger.init(:std => options[:log_file], :level => options[:log_level])
+      begin
+        Middleware::start options
+      rescue Interrupt
+        GraphiteAPI::Logger.info "Shuting down..."
+        GraphiteAPI::Reactor::stop
+      end
     end
 
     def options

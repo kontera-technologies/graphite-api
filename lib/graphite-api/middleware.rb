@@ -19,7 +19,6 @@
 
 require 'rubygems'
 require 'eventmachine'
-require 'logger'
 require 'socket'
 
 module GraphiteAPI
@@ -50,12 +49,7 @@ module GraphiteAPI
 
     def self.start options
       EventMachine.run do
-        # Resources
-        GraphiteAPI::Logger.logger = ::Logger.new(options[:log_file] || STDOUT)
-        GraphiteAPI::Logger.level = eval "::Logger::#{options[:log_level].to_s.upcase}"
-        # TODO: move logger logic to runner
-        
-        buffer    = GraphiteAPI::Buffer.new(options)
+        buffer = GraphiteAPI::Buffer.new(options)
         connectors = GraphiteAPI::ConnectorGroup.new(options)
         
         # Starting server
