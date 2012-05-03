@@ -65,10 +65,7 @@ module GraphiteAPI
     end
     
     def send_metrics
-      EventMachine::defer(
-        Proc.new { buffer.pull(:string) },
-        Proc.new { |data| connectors.publish(data) }
-      ) if buffer.new_records?
+      connectors.publish buffer.pull(:string) if buffer.new_records?
     end
     
     def validate opt

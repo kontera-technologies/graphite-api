@@ -57,10 +57,7 @@ module GraphiteAPI
         
         # Send metrics to graphite every X seconds
         GraphiteAPI::Reactor::every( options[:interval] ) do
-          EventMachine::defer(
-            Proc.new { buffer.pull(:string) },
-            Proc.new { |data| connectors.publish(data) }
-          ) if buffer.new_records?        
+          connectors.publish buffer.pull(:string) if buffer.new_records?
         end # every 
         
         GraphiteAPI::Reactor::add_shutdown_hook do           
