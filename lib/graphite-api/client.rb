@@ -11,11 +11,11 @@
 #    )
 #  
 #  # Simple:
-#  client.add_metrics("webServer.web01.loadAvg" => 10.7)
+#  client.metrics("webServer.web01.loadAvg" => 10.7)
 #  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.stamp
 #  
 #  # Multiple with time:
-#  client.add_metrics({
+#  client.metrics({
 #	  "webServer.web01.loadAvg" => 10.7,
 #	  "webServer.web01.memUsage" => 40
 #  },Time.at(1326067060))
@@ -24,7 +24,7 @@
 #  
 #  # Every 10 sec
 #  client.every(10) do
-#    client.add_metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
+#    client.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
 #  end
 #  
 #  client.join # wait...
@@ -45,17 +45,22 @@ module GraphiteAPI
     def add_metrics(m,time = Time.now)
       buffer.push(:metric => m, :time => time)
     end
-
+    alias :metrics :add_metrics
+    
     def join
       sleep 0.1 while buffer.new_records?
     end
     
+    def loop
+      Reactor.loop
+    end
+    
     def stop
-      Reactor::stop
+      Reactor.stop
     end
     
     def every(frequency,&block)
-      Reactor::every(frequency,&block)
+      Reactor.every(frequency,&block)
     end
 
     protected

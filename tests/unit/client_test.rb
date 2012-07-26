@@ -25,14 +25,14 @@ module GraphiteAPI
       
     end
 
-    def test_add_metrics
+    def test_metrics
        get_client.tap do |my_client|
          my_metrics = {"a" => 1232,:b => 232, "c" => "123ksadkhjdas"}
          my_time = Time.now
          my_buffer = Object.new
          my_client.expects(:buffer).returns(my_buffer)
          my_buffer.expects(:push).with(:metric => my_metrics, :time => my_time)
-         my_client.add_metrics(my_metrics, my_time)
+         my_client.metrics(my_metrics, my_time)
        end
     end
     

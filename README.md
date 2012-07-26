@@ -24,11 +24,11 @@ Graphite client and utilities for ruby
  	)
     
  	# Simple:
- 	client.add_metrics("webServer.web01.loadAvg" => 10.7)
+ 	client.metrics("webServer.web01.loadAvg" => 10.7)
  	# => example.prefix.webServer.web01.loadAvg 10.7 time.now.stamp
 	
  	# Multiple with time:
- 	client.add_metrics({
+ 	client.metrics({
  		"webServer.web01.loadAvg" => 10.7,
  		"webServer.web01.memUsage" => 40
  	},Time.at(1326067060))
@@ -37,7 +37,7 @@ Graphite client and utilities for ruby
  	
  	# Every 10 sec
  	client.every(10) do
- 	  client.add_metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
+ 	  client.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
  	end
 	
  	client.join # wait...
