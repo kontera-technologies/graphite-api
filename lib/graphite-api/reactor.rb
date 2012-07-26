@@ -26,6 +26,10 @@ module GraphiteAPI
         shutdown_hooks << block
       end
       
+      def loop
+        EventMachine.reactor_thread.join
+      end
+      
       private
       
       def start_reactor
