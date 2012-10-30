@@ -2,7 +2,8 @@ require 'optparse'
 
 module GraphiteAPI
   class Runner
-        
+    include Utils
+    
     def initialize(argv)
       GraphiteAPI::CLI::parse(argv,options)
       validate_options

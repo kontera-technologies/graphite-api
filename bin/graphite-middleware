@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
-$:.unshift File.join(File.dirname(__FILE__), '..','lib')
+$:.unshift File.expand_path('../../lib',__FILE__)
+
 require 'graphite-api'
 
 GraphiteAPI::Runner.new(ARGV).run
