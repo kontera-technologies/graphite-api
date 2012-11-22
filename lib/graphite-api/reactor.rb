@@ -8,7 +8,7 @@ module GraphiteAPI
     class << self
       def every(frequency,&block)
         reactor_running? or start_reactor
-        timers << EventMachine::PeriodicTimer.new(frequency) { yield }
+        timers << EventMachine::PeriodicTimer.new(frequency.to_i) { yield }
         timers.last
       end
 
