@@ -1,7 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class CoreExtensionsTester < ::MiniTest::Unit::TestCase
+  class CoreExtensionsTester < Unit::TestCase
     
     def test_number_should_act_like_a_year_duration
       assert_equal 1.year,  365 * 24 * 3600

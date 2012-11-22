@@ -1,7 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class ClientTester < MiniTest::Unit::TestCase
+  class ClientTester < Unit::TestCase
 
     def test_initialize
       assert_raises(ArgumentError) { Client.new }

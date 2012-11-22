@@ -1,7 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class BufferTester < MiniTest::Unit::TestCase
+  class BufferTester < Unit::TestCase
 
     def test_initialize    
       assert_raises(ArgumentError) { Buffer.new }

@@ -1,7 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class RunnerTester < MiniTest::Unit::TestCase
+  class RunnerTester < Unit::TestCase
 
     def test_initialize
       GraphiteAPI::CLI.expects(:parse).with([:shuki,:tuki],{a: :b})
