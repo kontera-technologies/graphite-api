@@ -77,15 +77,42 @@ module GraphiteAPI
       sleep while buffer.new_records?
     end
     
+    def method_missing m, *args, &block
+      Proxy.new( self ).send m, *args, &block
     end
     
     protected
     
+    class Proxy
+      extend Utils::ClassMethods
+      
+      def initialize client
+        @client = client
+        @keys = []
+      end
+      
+      attr_private_reader :client, :keys
+      
+      def method_missing m, *args, &block
+        keys.push m
+        if keys.size > 10 # too deep
+          super
+        elsif !args.empty?
+          client.metrics(
+            Hash[keys.join("."),args.first],
+            *args[1..-1]
+          ) 
+        else
+          self
+        end
+      end
+      
     end
             
     def validate options
       options.tap do |opt|
         raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil?
+      end
     end
     
     def build_options opt
