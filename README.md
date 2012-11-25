@@ -2,50 +2,90 @@
 A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 
 ## Description
-Graphite client and utilities for ruby
+**GraphiteAPI** is a library written in Ruby that provides two ways for interacting with **Graphite's Carbon Daemon**, the first is for Ruby applications using the **GraphiteAPI::Client**, the second is through **GraphiteAPI-Middleware** daemon, that shipped with the gem; anyway both methods implements Graphite's [plaintext protocol](http://graphite.readthedocs.org/en/1.0/feeding-carbon.html).
 
-* **Simple** client for ruby.
+## Package Content
+* Includes a **simple** client for ruby.
 * Ships with a **GraphiteAPI-Middleware**, which is a lightweight, event-driven, aggregator daemon.
 * only one dependency (EventMachine).
 * Utilities like scheduling and caching.
 
-## Features
-* Multiple Graphite Servers Support - GraphiteAPI-Middleware supports sending aggregated data to multiple graphite servers, useful for large data centers and backup purposes
-* Reanimation mode - support cases which the same keys (same timestamps as well) can be received simultaneously and asynchronously from multiple input sources, in these cases GraphiteAPI-Middleware will "reanimate" old records (records that were already sent to Graphite server), and will send the sum of the reanimated record value + the value of the record that was just received to the graphite server; this new summed record should override the key with the new value on Graphite database.
+## Key Features
+* **Multiple Graphite Servers Support** - GraphiteAPI-Middleware supports sending aggregated data to multiple graphite servers, useful for large data centers and backup purposes
+* **Reanimation mode** - support cases which the same keys (same timestamps as well) can be received simultaneously and asynchronously from multiple input sources, in these cases GraphiteAPI-Middleware will "reanimate" old records (records that were already sent to Graphite server), and will send the sum of the reanimated record value + the value of the record that was just received to the graphite server; this new summed record should override the key with the new value on Graphite database.
+
+## Installation
+Install stable version
+
+```
+gem install graphite-api
+```
+
+Install the latest from github
+
+```
+git clone git://github.com/kontera-technologies/graphite-api.git
+cd graphite-api
+rake install
+```
 
 ## Client Usage
 ```ruby
- 	require 'graphite-api'
-
- 	client = GraphiteAPI::Client.new(
-	 :graphite => "graphite.example.com:2003",
- 	 :prefix => ["example","prefix"], # add example.prefix to each key
- 	 :interval => 60                  # send to graphite every 60 seconds
- 	)
-    
- 	# Simple:
- 	client.metrics("webServer.web01.loadAvg" => 10.7)
- 	# => example.prefix.webServer.web01.loadAvg 10.7 time.now.stamp
-	
- 	# Multiple with time:
- 	client.metrics({
- 		"webServer.web01.loadAvg" => 10.7,
- 		"webServer.web01.memUsage" => 40
- 	},Time.at(1326067060))
- 	# => example.prefix.webServer.web01.loadAvg  10.7 1326067060
- 	# => example.prefix.webServer.web01.memUsage 40 1326067060
- 	
- 	# Every 10 sec
- 	client.every(10) do
- 	  client.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
- 	end
-	
- 	client.join # wait...
+  require 'graphite-api'
+  require 'logger'
+  
+  # Turn on the logging ( optional )
+  GraphiteAPI::Logger.logger = ::Logger.new(STDOUT)
+  GraphiteAPI::Logger.logger.level = ::Logger::DEBUG
+  
+  # Setup client
+  client = GraphiteAPI::Client.new(  
+   :graphite => "graphite.example.com:2003",
+   :prefix   => ["example","prefix"], # add example.prefix to each key
+   :slice    => 60.seconds            # results are aggregated in 60 seconds slices
+   :interval => 60.seconds            # send to graphite every 60 seconds
+  )
+  
+  # Simple
+  client.webServer.web01.loadAvg 10.7 
+  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
+  
+  # "Same Same But Different" ( http://en.wikipedia.org/wiki/Tinglish )
+  client.metrics "webServer.web01.loadAvg" => 10.7
+  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
+  
+  # With event time
+  client.webServer.web01.blaBlaBla(29.1, Time.at(9999999999))
+  # => example.prefix.webServer.web01.blaBlaBla 29.1 9999999999
+  
+  # Multiple with event time
+  client.metrics({
+    "webServer.web01.loadAvg"  => 10.7,
+    "webServer.web01.memUsage" => 40
+  },Time.at(1326067060))
+  # => example.prefix.webServer.web01.loadAvg  10.7 1326067060
+  # => example.prefix.webServer.web01.memUsage 40 1326067060
+  
+  # Timers
+  client.every 10.seconds do |c|
+    c.webServer.web01.uptime `uptime`.split.first.to_i
+    # => example.prefix.webServer.web01.uptime 40 1326067060
+  end
+  
+  client.every 52.minutes do |c|
+    c.abcd.efghi.jklmnop.qrst 12 
+    # => example.prefix.abcd.efghi.jklmnop.qrst 12 1326067060
+  end
+  
+  client.join # wait...
 ```	
+> more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
+
 ## GraphiteAPI-Middleware Usage
+* After installing GraphiteAPI gem, the `graphite-middleware` command should be available.
 
 ```
-[root@someplace]# graphite-middleware --help
+[root@graphite-middleware-node]# graphite-middleware --help
 
 GraphiteAPI Middleware Server
 
@@ -63,20 +103,54 @@ Usage: graphite-middleware [options]
 More Info @ https://github.com/kontera-technologies/graphite-api
 ```
 
-## Installation
-Install stable version
+* launch **GraphiteAPI-Middleware** daemon
 
 ```
-gem install graphite-api
+[root@graphite-middleware-node]# graphite-middleware  \
+  --port 2005                                         \
+  --interval 60                                       \
+  --log-level debug                                   \
+  --log-file /tmp/graphite-middleware.out             \
+  --daemonize                                         \
+  --graphite graphite-server:2003                     \
+  --graphite graphite-backup-server:2003   
 ```
 
-Install the latest from github
+* Send metrics via **UDP/TCP sockets**
 
 ```
-git clone git://github.com/kontera-technologies/graphite-api.git
-cd graphite-api
-rake install
+[root@graphite-middleware-node] telnet localhost 2005
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+example.middleware.value 10.2 1335008343
+example.middleware.value2 99 1334929231
+^C
+[root@graphite-middleware-node]
 ```
+
+* Send metrics via **GraphtieAPI client**
+
+```ruby
+require 'graphite-api'
+client = GraphiteAPI::Client.new(:graphite => graphite-middleware-node)
+client.example.middleware.value 10.2 
+client.example.middleware.value2 27
+client.bla.bla.value2 27
+```
+>
+> more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
+>
+
+## Recommended GraphiteAPI-Middleware Topologies
+
+[![Build Status](https://jenkins.kontera.com/images/graphite-middleware-star.jpg)](https://jenkins.kontera.com/images/graphite-middleware-example.jpg)
+
+<hr/>
+
+[![Build Status](https://jenkins.kontera.com/images/graphite-middleware-mesh.jpg)](https://jenkins.kontera.com/images/graphite-middleware-example.jpg)
+
+<hr/>
 
 ## TODO:
 * Documentation
