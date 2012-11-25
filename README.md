@@ -106,13 +106,13 @@ More Info @ https://github.com/kontera-technologies/graphite-api
 * launch **GraphiteAPI-Middleware** daemon
 
 ```
-[root@graphite-middleware-node]# graphite-middleware  \
-  --port 2005                                         \
-  --interval 60                                       \
-  --log-level debug                                   \
-  --log-file /tmp/graphite-middleware.out             \
-  --daemonize                                         \
-  --graphite graphite-server:2003                     \
+[root@graphite-middleware-node]# graphite-middleware              \
+  --port 2005                                                     \
+  --interval 60                                                   \
+  --log-level debug                                               \
+  --log-file /tmp/graphite-middleware.out                         \
+  --daemonize                                                     \
+  --graphite graphite-server:2003                                 \
   --graphite graphite-backup-server:2003   
 ```
 
@@ -145,12 +145,12 @@ client.bla.bla.value2 27
 ## Recommended Topologies
 <br/>
 
-[![STAR](https://raw.github.com/kontera-technologies/graphite-api/master/examples/graphite-middleware-star.jpg)](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-example.jpg)
+<img src="https://raw.github.com/kontera-technologies/graphite-api/master/examples/graphite-middleware-star.jpg" align="center">
 
 <hr/>
 <br/>
 
-[![MESH](https://raw.github.com/kontera-technologies/graphite-api/master/examples/graphite-middleware-mesh.jpg)](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-example.jpg)
+<img src="https://raw.github.com/kontera-technologies/graphite-api/master/examples/graphite-middleware-mesh.jpg" align="center">
 
 <hr/>
 
