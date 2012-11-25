@@ -138,17 +138,19 @@ client.example.middleware.value 10.2
 client.example.middleware.value2 27
 client.bla.bla.value2 27
 ```
->
+
 > more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
->
+
 
 ## Recommended GraphiteAPI-Middleware Topologies
+<br/>
 
-[![Build Status](https://jenkins.kontera.com/images/graphite-middleware-star.jpg)](https://jenkins.kontera.com/images/graphite-middleware-example.jpg)
+[![Build Status](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-star.jpg)](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-example.jpg)
 
 <hr/>
+<br/>
 
-[![Build Status](https://jenkins.kontera.com/images/graphite-middleware-mesh.jpg)](https://jenkins.kontera.com/images/graphite-middleware-example.jpg)
+[![Build Status](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-mesh.jpg)](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-example.jpg)
 
 <hr/>
 
