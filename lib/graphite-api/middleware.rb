@@ -17,7 +17,6 @@
 #   log_level        info 
 # -----------------------------------------------------
 
-require 'rubygems'
 require 'eventmachine'
 require 'socket'
 require File.expand_path '../utils', __FILE__
@@ -72,8 +71,8 @@ module GraphiteAPI
           GraphiteAPI::Reactor.every options[:interval], &block
           GraphiteAPI::Reactor.add_shutdown_hook &block
         end
-      end
-      
-    end # start
+      end  
+    end
+    
   end # Middleware
 end # GraphiteAPI

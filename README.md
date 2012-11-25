@@ -129,11 +129,11 @@ example.middleware.value2 99 1334929231
 [root@graphite-middleware-node]
 ```
 
-* Send metrics via **GraphtieAPI client**
+* Or via **GraphtieAPI client**
 
 ```ruby
 require 'graphite-api'
-client = GraphiteAPI::Client.new(:graphite => graphite-middleware-node)
+client = GraphiteAPI::Client.new(:graphite => 'graphite-middleware-node:2005')
 client.example.middleware.value 10.2 
 client.example.middleware.value2 27
 client.bla.bla.value2 27

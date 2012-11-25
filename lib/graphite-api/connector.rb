@@ -12,13 +12,14 @@ require 'socket'
 
 module GraphiteAPI
   class Connector
-
-    attr_reader :options, :host, :port
+    extend Utils::ClassMethods
     
     def initialize host, port
       @host = host
       @port = port
     end
+    
+    attr_private_reader :host, :port
     
     def puts message
       begin

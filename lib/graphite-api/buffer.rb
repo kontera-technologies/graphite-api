@@ -18,9 +18,8 @@
 # -----------------------------------------------------
 module GraphiteAPI
   class Buffer
-    include Utils
-    
-    attr_reader :options,:keys_to_send,:reanimation_mode, :streamer_buff
+    include Utils    
+    extend Utils::ClassMethods
 
     CLOSING_STREAM_CHAR = "\n"                     # end of message - when streaming to buffer obj
     CHARS_TO_IGNORE     = ["\r"]                   # skip these chars when parsing new message
@@ -34,6 +33,8 @@ module GraphiteAPI
       @reanimation_mode = !options[:reanimation_exp].nil?
       start_cleaner if reanimation_mode
     end
+
+    attr_private_reader :options, :keys_to_send, :reanimation_mode, :streamer_buff
 
     def push hash
       debug [:buffer,:add, hash]

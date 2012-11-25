@@ -1,8 +1,9 @@
 module GraphiteAPI
   class ConnectorGroup
     include Utils
+    extend Utils::ClassMethods
     
-    attr_reader :options, :connectors
+    attr_private_reader :options, :connectors
 
     def initialize options
       @options = options
