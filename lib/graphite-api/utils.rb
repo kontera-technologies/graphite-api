@@ -65,10 +65,10 @@ module GraphiteAPI
         STDIN.reopen('/dev/null')
         STDOUT.reopen('/dev/null','a')
         STDERR.reopen('/dev/null','a')
-        File.open(pid,'w') { |f| f.write(Process.pid) } rescue
+        File.open(pid,'w') { |f| f.write(Process.pid) } rescue nil
         yield
       end
     end
-   
+
   end
 end
