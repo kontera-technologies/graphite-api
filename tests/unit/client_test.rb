@@ -57,7 +57,17 @@ module GraphiteAPI
       Reactor::expects(:every).with(frequency,&block)
       client.every(frequency,&block)
     end
+    
+    def test_fancy_metrics
+      get_client.tap do |client|
+        client.expects(:metrics).with("a.b.c.d.e.f.g" => 9)
+        client.a.b.c.d.e.f.g 9
         
+        client.expects(:metrics).with({"a.b.c.d.e.f.g" => 9}, Time.at(11111))
+        client.a.b.c.d.e.f.g(9, Time.at(11111))
+      end
+    end
+    
     private
     
     def get_client(options = Utils::default_options) 
