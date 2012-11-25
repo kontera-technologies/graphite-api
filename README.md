@@ -142,7 +142,7 @@ client.bla.bla.value2 27
 > more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
 
 
-## Recommended GraphiteAPI-Middleware Topologies
+## Recommended Topologies
 <br/>
 
 [![STAR](https://raw.github.com/kontera-technologies/graphite-api/master/examples/graphite-middleware-star.jpg)](https://github.com/kontera-technologies/config-server/raw/master/examples/graphite-middleware-example.jpg)
