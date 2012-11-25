@@ -15,7 +15,7 @@ module GraphiteAPI
 
     attr_reader :options, :host, :port
     
-    def initialize(host,port)
+    def initialize host, port
       @host = host
       @port = port
     end
@@ -38,7 +38,7 @@ module GraphiteAPI
     
     def socket
       if @socket.nil? || @socket.closed?
-        @socket = ::TCPSocket.new(host,port)
+        @socket = ::TCPSocket.new host, port
       end
       @socket
     end

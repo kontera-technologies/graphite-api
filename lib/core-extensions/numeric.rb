@@ -8,9 +8,9 @@ class Numeric
     :minute => 60,
     :second => 1
   }.each do |m,val|
-      define_method m do 
+      respond_to? m or define_method m do 
         self * val
-      end unless respond_to? m
+      end
       
       "#{m}s".tap do |plural|
         respond_to? plural or alias_method plural, m

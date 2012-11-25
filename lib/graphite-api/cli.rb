@@ -1,4 +1,5 @@
 require 'optparse'
+
 module GraphiteAPI
   class CLI
     

@@ -7,20 +7,19 @@ module GraphiteAPI
       assert_raises(ArgumentError) { Client.new }
       assert_raises(ArgumentError) { Client.new("a" => 1) }
       
-      opt = {:shuki => "tuki"}
+      opt = {:shuki => :tuki, :interval => 22}
       
       Client::any_instance.expects(:validate).with(opt).returns(opt)
       Client::any_instance.expects(:build_options).with(opt).returns(opt)
-      Client::any_instance.expects(:start_scheduler).with()
       
       # Should initialize these two also
-      GraphiteAPI::Buffer::expects(:new).with(opt).returns("buffer")
-      GraphiteAPI::ConnectorGroup::expects(:new).with(opt).returns("connector_group")
-
+      GraphiteAPI::Buffer.expects(:new).with(opt).returns(:buffer)
+      GraphiteAPI::ConnectorGroup.expects(:new).with(opt).returns(:connector_group)
+      
       Client.new(opt).tap do |client|
         assert_equal opt, client.instance_variable_get(:@options)
-        assert_equal "buffer", client.instance_variable_get(:@buffer)
-        assert_equal "connector_group", client.instance_variable_get(:@connectors)
+        assert_equal :buffer, client.instance_variable_get(:@buffer)
+        assert_equal :connector_group, client.instance_variable_get(:@connectors)
       end
       
     end
@@ -58,14 +57,7 @@ module GraphiteAPI
       Reactor::expects(:every).with(frequency,&block)
       client.every(frequency,&block)
     end
-    
-    def test_start_scheduler
-      get_client(Utils::default_options.merge(:interval => 212)).tap do |client|
-        Reactor::expects(:every).with(212)
-        client.__send__(:start_scheduler)
-      end
-    end
-    
+        
     private
     
     def get_client(options = Utils::default_options) 

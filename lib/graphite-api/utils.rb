@@ -1,5 +1,26 @@
 module GraphiteAPI
   module Utils
+    module ClassMethods
+      def attr_private_reader *args
+        args.each { |o| attr_reader o or private o }
+      end
+
+      def delegate *sources, options
+        instance_eval do
+          options.fetch(:to).tap do |target|
+            sources.each do |source|
+              define_method source do |*args, &block|
+                if target.is_a? Symbol
+                  eval String target 
+                else
+                  target
+                end.send source,*args, &block
+              end # define
+            end # sources
+          end # options
+        end # instance_eval
+      end # def delegate
+    end # ClassMethods
     
     [:info,:error,:warn,:debug].each do |m|
       define_method(m) do |*args,&block|
@@ -9,7 +30,7 @@ module GraphiteAPI
     
     module_function
 
-    def normalize_time(time,slice = 60)
+    def normalize_time time, slice = 60
       ((time || Time.now).to_i / slice * slice).to_i
     end
  
@@ -30,12 +51,13 @@ module GraphiteAPI
         :prefix => [],
         :interval => 60,
         :slice => 60,
-        :pid => "/var/run/graphite-middleware.pid"
+        :pid => "/tmp/graphite-middleware.pid"
       }
     end
     
     def daemonize pid
       block_given? or raise ArgumentError.new "the block is missing..."
+
       fork do
         Process.setsid
         exit if fork

@@ -4,83 +4,93 @@
 # -----------------------------------------------------
 # Usage
 #
-#  client = GraphiteAPI::Client.new(
-#    :graphite => "graphite.example.com:2003",
-#    :prefix => ["example","prefix"], # add example.prefix to each key
-#    :interval => 60                  # send to graphite every 60 seconds
-#    )
+#  client = GraphiteAPI::Client.new(  
+#   :graphite => "graphite.example.com:2003",
+#   :prefix   => ["example","prefix"], # add example.prefix to each key
+#   :slice    => 60.seconds            # results are aggregated in 60 seconds slices
+#   :interval => 60.seconds            # send to graphite every 60 seconds
+#  )
 #  
-#  # Simple:
-#  client.metrics("webServer.web01.loadAvg" => 10.7)
-#  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.stamp
+#  # Simple
+#  client.webServer.web01.loadAvg 10.7 
+#  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
+
+#  # "Same Same But Different" ( http://en.wikipedia.org/wiki/Tinglish )
+#  client.metrics "webServer.web01.loadAvg" => 10.7
+#  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
 #  
-#  # Multiple with time:
+#  # Multiple with event time
 #  client.metrics({
-#	  "webServer.web01.loadAvg" => 10.7,
-#	  "webServer.web01.memUsage" => 40
+#   "webServer.web01.loadAvg"  => 10.7,
+#   "webServer.web01.memUsage" => 40
 #  },Time.at(1326067060))
 #  # => example.prefix.webServer.web01.loadAvg  10.7 1326067060
 #  # => example.prefix.webServer.web01.memUsage 40 1326067060
-#  
-#  # Every 10 sec
-#  client.every(10) do
-#    client.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i) 
-#  end
-#  
-#  client.join # wait...
+# 
+#  #  Timers
+# client.every 10.seconds do |c|
+#   c.webServer.web01.uptime `uptime`.split.first.to_i
+#   # => example.prefix.webServer.web01.uptime 40 1326067060
+# end
+# 
+# client.every 52.minutes do |c|
+#   c.abcd.efghi.jklmnop.qrst 12 
+#   # => example.prefix.abcd.efghi.jklmnop.qrst 12 1326067060
+# end
+# 
+# client.join # wait...
 # -----------------------------------------------------
+
+require File.expand_path '../utils', __FILE__
+
 module GraphiteAPI
   class Client
     include Utils
     
-    attr_reader :options,:buffer,:connectors
-    
+    extend Utils::ClassMethods
+      
     def initialize opt
-      @options    = build_options(validate(opt.clone))
-      @buffer     = GraphiteAPI::Buffer.new(options)
-      @connectors = GraphiteAPI::ConnectorGroup.new(options)
-      start_scheduler
+      @options = build_options validate opt.clone
+      @buffer  = GraphiteAPI::Buffer.new options
+      @connectors = GraphiteAPI::ConnectorGroup.new options
+      
+      every options.fetch :interval do
+        connectors.publish buffer.pull :string if buffer.new_records?
+      end
+      
     end
 
-    def add_metrics(m,time = Time.now)
-      buffer.push(:metric => m, :time => time)
-    end
-    alias :metrics :add_metrics
+    attr_private_reader :options, :buffer, :connectors
+    delegate :loop, :stop, :to => :Reactor
     
+    def every interval, &block
+      Reactor.every interval do 
+        block.call self
+      end
+    end
+    
+    def metrics metric, time = Time.now 
+      buffer.push :metric => metric, :time => time
+    end
+
     def join
-      sleep 0.1 while buffer.new_records?
+      sleep while buffer.new_records?
     end
     
-    def loop
-      Reactor.loop
     end
     
-    def stop
-      Reactor.stop
-    end
-    
-    def every(frequency,&block)
-      Reactor.every(frequency,&block)
-    end
-
     protected
     
-    def start_scheduler
-      Reactor::every(options[:interval]) { send_metrics }
     end
-    
-    def send_metrics
-      connectors.publish buffer.pull(:string) if buffer.new_records?
-    end
-    
-    def validate opt
-      raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil?
-      opt
+            
+    def validate options
+      options.tap do |opt|
+        raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil?
     end
     
     def build_options opt
       default_options.tap do |options_hash|
-        options_hash[:backends] << expand_host(opt.delete(:graphite))
+        options_hash[:backends].push expand_host opt.delete :graphite
         options_hash.merge! opt
         options_hash.freeze
       end

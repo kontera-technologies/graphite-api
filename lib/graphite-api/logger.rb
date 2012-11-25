@@ -5,6 +5,11 @@
 #     Graphite::Logger.logger = ::Logger.new(STDOUT) 
 #     Graphite::Logger.info "shuki tuki"
 #     Graphite::Logger.debug "hihi"
+# 
+# Or:
+#     Graphite::Logger.init :level => :debug
+#     Graphite::Logger.info "shuki tuki"
+#     Graphite::Logger.debug "hihi"
 # -----------------------------------------------------
 require 'logger'
 
