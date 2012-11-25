@@ -20,51 +20,60 @@
 require 'rubygems'
 require 'eventmachine'
 require 'socket'
+require File.expand_path '../utils', __FILE__
 
 module GraphiteAPI
   class Middleware < EventMachine::Connection
-    include GraphiteAPI::Utils
+
+    include Utils
+    extend  Utils::ClassMethods
     
-    attr_reader :logger,:buffer,:client_id
-
     def initialize buffer
-      @buffer = buffer
-      super
+      @buffer = buffer and super
     end
-
+    
+    attr_private_reader :buffer,:client_id
+    
     def post_init
-      @client_id = Socket.unpack_sockaddr_in(get_peername).reverse.join(":")
-      debug [:middleware,:connecting,client_id]
+      @client_id = peername
+      debug [:middleware, :connecting, client_id]
     end
 
     def receive_data data
-      debug [:middleware,:message,client_id,data]
+      debug [:middleware, :message, client_id, data]
       buffer.stream data, client_id
     end
 
     def unbind
-      debug [:middleware,:disconnecting,client_id]
+      debug [:middleware, :disconnecting, client_id]
     end
-
+    
+    def peername
+      port, *ip = get_peername[2,6].unpack "nC4"
+      [ip.join("."),port].join ":"
+    end
+    
+    private :peername
+    
     def self.start options
       EventMachine.run do
-        buffer = GraphiteAPI::Buffer.new(options)
-        connectors = GraphiteAPI::ConnectorGroup.new(options)
-        
-        # Starting server
-        EventMachine.start_server('0.0.0.0',options[:port],self,buffer)
         GraphiteAPI::Logger.info "Server running on port #{options[:port]}"
         
-        # Send metrics to graphite every X seconds
-        GraphiteAPI::Reactor::every( options[:interval] ) do
-          connectors.publish buffer.pull(:string) if buffer.new_records?
-        end # every 
+        buffer = GraphiteAPI::Buffer.new options
+        group  = GraphiteAPI::ConnectorGroup.new options
         
-        GraphiteAPI::Reactor::add_shutdown_hook do           
-          connectors.publish buffer.pull(:string)
+        # Starting server
+        [:start_server, :open_datagram_socket].each do |m|
+          EventMachine.send(m,'0.0.0.0',options[:port],self,buffer)
         end
-        
-      end # run 
+
+        # Send metrics to graphite every X seconds
+        proc { group.publish buffer.pull :string if buffer.new_records? }.tap do |block|
+          GraphiteAPI::Reactor.every options[:interval], &block
+          GraphiteAPI::Reactor.add_shutdown_hook &block
+        end
+      end
+      
     end # start
   end # Middleware
 end # GraphiteAPI
