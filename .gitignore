@@ -2,3 +2,4 @@ pkg
 graphite-api_build
 *.swo
 *.swp
+coverage
