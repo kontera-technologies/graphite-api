@@ -11,7 +11,8 @@ module GraphiteAPI
     end
     
     def test_run
-      get_obj(daemonize: true, pid: 10).tap do |obj|
+      get_obj(daemonize: true, pid: 10, log_file: 'log', log_level: :debug).tap do |obj|
+        Logger.expects(:init).with(std: 'log', level: :debug)
         obj.expects(:daemonize).with(10)
         obj.run
       end
@@ -34,7 +35,6 @@ module GraphiteAPI
     
     def test_run!
       options = default_options(log_file: 'log', log_level: :debug)
-      Logger.expects(:init).with(std: 'log', level: :debug)
       Middleware.expects(:start).with(options)
       get_obj(options).__send__(:run!)
     end
