@@ -1,4 +1,4 @@
-# GraphiteAPI
+# GraphiteAPI ( [![Gem Version](https://fury-badge.herokuapp.com/rb/graphite-api.png)](http://badge.fury.io/rb/graphite-api) )
 A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 
 ## Description
