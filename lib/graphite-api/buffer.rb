@@ -16,6 +16,8 @@
 #    ["mem.usage", 190.0, 1326842520]
 #    ["shuki.tuki", 999.0, 1326842520]
 # -----------------------------------------------------
+require 'set'
+
 module GraphiteAPI
   class Buffer
     include Utils    
@@ -28,7 +30,7 @@ module GraphiteAPI
     
     def initialize options
       @options = options
-      @keys_to_send  = Hash.new {|h,k| h[k] = []}
+      @keys_to_sync  = Hash.new { |h,k| h[k] = Set.new }
       @streamer_buff = Hash.new {|h,k| h[k] = ""}
       @reanimation_mode = !options[:reanimation_exp].nil?
       start_cleaner if reanimation_mode
@@ -60,7 +62,7 @@ module GraphiteAPI
     
     def pull as = nil
       Array.new.tap do |data|
-        keys_to_send.each do |time,keys|
+        keys_to_sync.each do |time,keys|
           keys.each do |key|
             data.push cache_get(time, key, as)
           end
@@ -71,7 +73,7 @@ module GraphiteAPI
     end
     
     def new_records?
-      !keys_to_send.empty?
+      !keys_to_sync.empty?
     end
     
     private
@@ -86,24 +88,24 @@ module GraphiteAPI
     
     def cache_set time, key, value
       buffer_cache[time][key] = sum buffer_cache[time][key], value.to_f 
-      keys_to_send[time].push key unless keys_to_send[time].include? key
+      keys_to_sync[time].add key
     end
     
     def sum float1, float2
-      ("%.#{FLOATS_ROUND_BY}f" % (float1 + float2)).to_f # can't use round on 1.8.X
+      ("%.#{FLOATS_ROUND_BY}f" % (float1 + float2)).to_f
     end
         
     def cache_get time, key, as
       metric = [prefix + key,buffer_cache[time][key],time]
       as == :string ? metric.join(" ") : metric
     end
-        
+
     def build_metric key, value, time
       { :metric => { key => value },:time => Time.at(time.to_i) }
     end
 
     def clear
-      keys_to_send.clear
+      keys_to_sync.clear
       buffer_cache.clear unless reanimation_mode
     end
     
@@ -124,7 +126,7 @@ module GraphiteAPI
     end
 
     def clean age
-      [buffer_cache,keys_to_send].each {|o| o.delete_if {|t,k| Time.now.to_i - t > age}}
+      [buffer_cache,keys_to_sync].each {|o| o.delete_if {|t,k| Time.now.to_i - t > age}}
     end
     
     def start_cleaner

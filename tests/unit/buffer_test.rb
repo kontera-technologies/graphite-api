@@ -10,7 +10,7 @@ module GraphiteAPI
       
       buffer(options).tap do |buffer_obj|
         assert_equal options,  buffer_obj.instance_variable_get(:@options)
-        assert_equal Hash.new, buffer_obj.instance_variable_get(:@keys_to_send)
+        assert_equal Hash.new, buffer_obj.instance_variable_get(:@keys_to_sync)
         assert_equal Hash.new, buffer_obj.instance_variable_get(:@streamer_buff)
         assert_equal false,    buffer_obj.instance_variable_get(:@reanimation_mode)
       end
@@ -30,7 +30,7 @@ module GraphiteAPI
         message = {:time => today, :metric => metric}
         buffer_obj << message
         assert_equal({today => metric},buffer_obj.instance_variable_get(:@buffer_cache))
-        assert_equal({today => [:shuki,:blabla]},buffer_obj.instance_variable_get(:@keys_to_send))
+        assert_equal({today => Set.new([:shuki,:blabla])},buffer_obj.instance_variable_get(:@keys_to_sync))
       end
             
       buffer.tap do |buffer_obj|
@@ -41,7 +41,7 @@ module GraphiteAPI
         buffer_obj << {:metric => {'a' => 10},:time => today}
         buffer_obj << {:metric => {'a' => 10},:time => today}
         assert_equal({today=>{"a"=>60.0}},buffer_obj.instance_variable_get(:@buffer_cache))
-        assert_equal({today => ['a']},buffer_obj.instance_variable_get(:@keys_to_send))
+        assert_equal({today => Set.new(['a'])},buffer_obj.instance_variable_get(:@keys_to_sync))
       end
 
       buffer.tap do |buffer_obj|
@@ -52,7 +52,7 @@ module GraphiteAPI
         buffer_obj << {:metric => {'a' => 10.1},:time => today}
         buffer_obj << {:metric => {'a' => 10.4},:time => today}
         assert_equal({today=>{"a"=>61.1}},buffer_obj.instance_variable_get(:@buffer_cache))
-        assert_equal({today => ['a']},buffer_obj.instance_variable_get(:@keys_to_send))
+        assert_equal({today => Set.new(['a'])},buffer_obj.instance_variable_get(:@keys_to_sync))
       end
       
       buffer.tap do |buffer_obj|
@@ -112,16 +112,16 @@ module GraphiteAPI
         }.sort
         
         expected_keys = {
-          1334850240 => ["test.shuki.tuki"],
-          1326842520 => ["mem.usage"],
-          231231300  => ["ken.tov"],
-          213180     => ["client1", "client2"],
-          121200     => ["a.b", "c.d"],
-          1334771040 => ["test.x", "test.z"]
+          1334850240 => Set.new(["test.shuki.tuki"]),
+          1326842520 => Set.new(["mem.usage"]),
+          231231300  => Set.new(["ken.tov"]),
+          213180     => Set.new(["client1", "client2"]),
+          121200     => Set.new(["a.b", "c.d"]),
+          1334771040 => Set.new(["test.x", "test.z"])
         }.sort
         
         assert_equal(expected_buffer,buff.instance_variable_get(:@buffer_cache).sort)
-        assert_equal(expected_keys,buff.instance_variable_get(:@keys_to_send).sort)
+        assert_equal(expected_keys,buff.instance_variable_get(:@keys_to_sync).sort)
         
         buff.instance_variable_get(:@streamer_buff).tap do |streamer|
           assert !streamer.has_key?(nil)
@@ -156,7 +156,7 @@ module GraphiteAPI
         assert_equal([],buff.pull)
         
         buff.instance_variable_set(:@buffer_cache,input.clone)
-        buff.instance_variable_set(:@keys_to_send,keys.clone)
+        buff.instance_variable_set(:@keys_to_sync,keys.clone)
 
         buff.pull.sort.tap do |array|
           assert_equal(["a.b", 1211.0, 121200],array[0])
@@ -172,7 +172,7 @@ module GraphiteAPI
         end
     
         buff.instance_variable_set(:@buffer_cache,input.clone)
-        buff.instance_variable_set(:@keys_to_send,keys.clone)
+        buff.instance_variable_set(:@keys_to_sync,keys.clone)
         
         buff.pull(:string).sort.tap do |array|
           assert_equal("a.b 1211.0 121200",array[0])
