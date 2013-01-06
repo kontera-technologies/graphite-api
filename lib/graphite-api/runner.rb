@@ -16,6 +16,21 @@ module GraphiteAPI
 
     private
     
+    def daemonize pid
+      block_given? or raise ArgumentError.new "the block is missing..."
+
+      fork do
+        Process.setsid
+        exit if fork
+        Dir.chdir '/tmp'
+        STDIN.reopen('/dev/null')
+        STDOUT.reopen('/dev/null','a')
+        STDERR.reopen('/dev/null','a')
+        File.open(pid,'w') { |f| f.write(Process.pid) } rescue nil
+        yield
+      end
+    end
+    
     def run!
       begin
         Middleware.start options
