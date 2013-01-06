@@ -46,7 +46,7 @@ module GraphiteAPI
     end
     
     def test_stop
-      Reactor::expects(:stop)
+      Reactor.expects :stop
       get_client.stop
     end
     

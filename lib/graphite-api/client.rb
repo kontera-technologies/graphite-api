@@ -46,9 +46,7 @@ require File.expand_path '../utils', __FILE__
 module GraphiteAPI
   class Client
     include Utils
-    
-    extend Utils::ClassMethods
-      
+
     def initialize opt
       @options = build_options validate opt.clone
       @buffer  = GraphiteAPI::Buffer.new options
@@ -60,13 +58,13 @@ module GraphiteAPI
       
     end
 
-    attr_private_reader :options, :buffer, :connectors
-    delegate :loop, :stop, :to => :Reactor
+    private_reader :options, :buffer, :connectors
+
+    def_delegator :"GraphiteAPI::Reactor", :loop, :loop
+    def_delegator :"GraphiteAPI::Reactor", :stop, :stop
     
     def every interval, &block
-      Reactor.every interval do 
-        block.call self
-      end
+      Reactor.every( interval ) { block.call self }
     end
     
     def metrics metric, time = Time.now 
@@ -84,14 +82,14 @@ module GraphiteAPI
     protected
     
     class Proxy
-      extend Utils::ClassMethods
+      include Utils
       
       def initialize client
         @client = client
         @keys = []
       end
       
-      attr_private_reader :client, :keys
+      private_reader :client, :keys
       
       def method_missing m, *args, &block
         keys.push m

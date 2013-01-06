@@ -25,13 +25,12 @@ module GraphiteAPI
   class Middleware < EventMachine::Connection
 
     include Utils
-    extend  Utils::ClassMethods
     
     def initialize buffer
       @buffer = buffer and super
     end
     
-    attr_private_reader :buffer,:client_id
+    private_reader :buffer, :client_id
     
     def post_init
       @client_id = peername

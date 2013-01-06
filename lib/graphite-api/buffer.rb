@@ -21,12 +21,12 @@ require 'set'
 module GraphiteAPI
   class Buffer
     include Utils    
-    extend Utils::ClassMethods
 
-    CLOSING_STREAM_CHAR = "\n"                     # end of message - when streaming to buffer obj
-    CHARS_TO_IGNORE     = ["\r"]                   # skip these chars when parsing new message
-    FLOATS_ROUND_BY = 2                            # round(x) after summing floats 
-    VALID_MESSAGE = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/ # how a valid message should look like
+    CLOSING_STREAM  = "\n"   # end of message - when streaming to buffer obj
+    CHARS_TO_IGNORE = %w(\r) # skip these chars when parsing new message
+    FLOATS_ROUND_BY = 2      # round(x) after summing floats 
+
+    VALID_MESSAGE   = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
     
     def initialize options
       @options = options
@@ -36,7 +36,7 @@ module GraphiteAPI
       start_cleaner if reanimation_mode
     end
 
-    attr_private_reader :options, :keys_to_send, :reanimation_mode, :streamer_buff
+    private_reader :options, :keys_to_sync, :reanimation_mode, :streamer_buff
 
     def push hash
       debug [:buffer,:add, hash]
@@ -79,7 +79,7 @@ module GraphiteAPI
     private
     
     def closed_stream? string
-      string[-1,1] == CLOSING_STREAM_CHAR
+      string[-1,1] == CLOSING_STREAM
     end
     
     def invalid_char? char
