@@ -95,11 +95,8 @@ module GraphiteAPI
         keys.push m
         if keys.size > 10 # too deep
           super
-        elsif !args.empty?
-          client.metrics(
-            Hash[keys.join("."),args.first],
-            *args[1..-1]
-          ) 
+        elsif args.any?
+          client.metrics(Hash[keys.join("."),args.first],*args[1..-1])
         else
           self
         end
