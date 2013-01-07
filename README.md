@@ -1,8 +1,8 @@
-# GraphiteAPI [Beta]
+# GraphiteAPI ( [![Gem Version](https://fury-badge.herokuapp.com/rb/graphite-api.png)](http://badge.fury.io/rb/graphite-api) )
 A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 
 ## Description
-**GraphiteAPI** is a library written in Ruby that provides two ways for interacting with **Graphite's Carbon Daemon**, the first is for Ruby applications using the **GraphiteAPI::Client**, the second is through **GraphiteAPI-Middleware** daemon, both methods implements Graphite's [plaintext protocol](http://graphite.readthedocs.org/en/1.0/feeding-carbon.html).
+**GraphiteAPI** provides two ways for interacting with **Graphite's Carbon Daemon**, the first is for Ruby applications using the **GraphiteAPI::Client**, the second is through **GraphiteAPI-Middleware** daemon, both methods implements Graphite's [plaintext protocol](http://graphite.readthedocs.org/en/1.0/feeding-carbon.html).
 
 ## Package Content
 * Includes a **simple** client for ruby.
