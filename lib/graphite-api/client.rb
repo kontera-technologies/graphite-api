@@ -60,8 +60,8 @@ module GraphiteAPI
 
     private_reader :options, :buffer, :connectors
 
-    def_delegator :"GraphiteAPI::Reactor", :loop, :loop
-    def_delegator :"GraphiteAPI::Reactor", :stop, :stop
+    def_delegator :"GraphiteAPI::Reactor", :loop
+    def_delegator :"GraphiteAPI::Reactor", :stop
     
     def every interval, &block
       Reactor.every( interval ) { block.call self }
