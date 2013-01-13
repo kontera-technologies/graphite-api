@@ -31,5 +31,3 @@ module GraphiteAPI
     end
   end
 end
-p GraphiteAPI::Logger.init(:level => :debug)
-GraphiteAPI::Logger.info "Dsasad"
