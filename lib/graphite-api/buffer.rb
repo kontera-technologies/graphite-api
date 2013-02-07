@@ -47,7 +47,7 @@ module GraphiteAPI
     alias_method :<<, :push
     
     def stream message, client_id = nil
-      message.each_char do |char|
+      message.gsub(/\t/,' ').each_char do |char|
         next if invalid_char? char
         streamer_buff[client_id] += char 
         

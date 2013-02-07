@@ -93,6 +93,7 @@ module GraphiteAPI
         buff.stream "tov"
         buff.stream "\n"
         buff.stream "ken.tov 11.2332 231231321\n"
+        buff.stream "ken.tovv\t11.2332\t231231321\n"                
         buff.stream("client1",:client1)
         buff.stream("client2",:client2)
         buff.stream(" 1",:client1)
@@ -105,7 +106,7 @@ module GraphiteAPI
         expected_buffer = { 
           1334850240 => {"test.shuki.tuki"=>246.0},
           1326842520 => {"mem.usage"=>190.0},
-          231231300  => {"ken.tov"=>11.23},
+          231231300  => {"ken.tov"=>11.23, "ken.tovv"=>11.23},
           213180     => {"client1"=>1.0, "client2"=>2.0},
           121200     => {"a.b"=>1211.0, "c.d"=>1211.0},
           1334771040 => {"test.x"=>10.0, "test.z"=>10.0}
@@ -114,7 +115,7 @@ module GraphiteAPI
         expected_keys = {
           1334850240 => Set.new(["test.shuki.tuki"]),
           1326842520 => Set.new(["mem.usage"]),
-          231231300  => Set.new(["ken.tov"]),
+          231231300  => Set.new(["ken.tov","ken.tovv"]),
           213180     => Set.new(["client1", "client2"]),
           121200     => Set.new(["a.b", "c.d"]),
           1334771040 => Set.new(["test.x", "test.z"])
