@@ -49,7 +49,7 @@ module GraphiteAPI
 
     def initialize opt
       @options = build_options validate opt.clone
-      @buffer  = GraphiteAPI::Buffer.new options
+      @buffer  = GraphiteAPI::SafeBuffer.new options
       @connectors = GraphiteAPI::ConnectorGroup.new options
       
       every options.fetch :interval do
