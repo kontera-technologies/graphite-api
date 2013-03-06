@@ -1,3 +1,4 @@
+__END__
 require_relative "../minitest_helper"
 
 module GraphiteAPI
@@ -135,6 +136,7 @@ module GraphiteAPI
 
     def test_pull
       buffer.tap do |buff|
+        p buff
         input = { 
           1334850240 => {"test.shuki.tuki"=>246.0},
           1326842520 => {"mem.usage"=>190.0},
@@ -158,7 +160,7 @@ module GraphiteAPI
         
         buff.instance_variable_set(:@buffer_cache,input.clone)
         buff.instance_variable_set(:@keys_to_sync,keys.clone)
-
+        
         buff.pull.sort.tap do |array|
           assert_equal(["a.b", 1211.0, 121200],array[0])
           assert_equal(["c.d", 1211.0, 121200],array[1])
