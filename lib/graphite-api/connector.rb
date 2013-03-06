@@ -23,7 +23,7 @@ module GraphiteAPI
     
     def puts message
       begin
-        Logger.debug [:connector,:puts,[host,port].join(":"),message]
+        debug [:connector,:puts,[host,port].join(":"),message]
         socket.puts message + "\n"
       rescue Errno::EPIPE, Errno::EINVAL
         @socket = nil
