@@ -57,7 +57,7 @@ module GraphiteAPI
       EventMachine.run do
         GraphiteAPI::Logger.info "Server running on port #{options[:port]}"
         
-        buffer = GraphiteAPI::Buffer.new options
+        buffer = GraphiteAPI::SafeBuffer.new options
         group  = GraphiteAPI::ConnectorGroup.new options
         
         # Starting server

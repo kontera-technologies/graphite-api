@@ -1,9 +1,10 @@
 module GraphiteAPI
   module Cache
     class Memory
-
+      include Utils
+      
       def initialize options
-        Reactor.every(60) { clean(options[:age]) }
+        Reactor.every(120) { clean(options[:reanimation_exp]) }
       end
       
       def get time, key
@@ -14,8 +15,8 @@ module GraphiteAPI
         cache[time][key] = value.to_f 
       end
       
-      def incr *args
-        set(value.to_f + get(*args))
+      def incr time, key, value
+        set(time, key, value.to_f + get(time, key))
       end
       
       private
@@ -25,7 +26,9 @@ module GraphiteAPI
       end
       
       def clean age
+        debug [:MemoryCache, :before_clean, cache]
         cache.delete_if {|t,k| Time.now.to_i - t > age}
+        debug [:MemoryCache, :after_clean, cache]
       end
       
     end

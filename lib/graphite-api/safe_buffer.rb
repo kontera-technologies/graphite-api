@@ -1,3 +1,22 @@
+# -----------------------------------------------------
+# Buffer Object
+# Handle Socket & Client data streams
+# -----------------------------------------------------
+# Usage:
+#     buff = GraphiteAPI::SafeBuffer.new(GraphiteAPI::Utils.default_options)
+#     buff << {:metric => {"load_avg" => 10},:time => Time.now}
+#     buff << {:metric => {"load_avg" => 30},:time => Time.now}
+#     buff.stream "mem.usage 1"
+#     buff.stream "90 1326842563\n"
+#     buff.stream "shuki.tuki 999 1326842563\n"
+#     buff.pull.each {|o| p o} 
+#
+# Produce:
+#    ["load_avg", 40.0, 1326881160]
+#    ["mem.usage", 190.0, 1326842520]
+#    ["shuki.tuki", 999.0, 1326842520]
+# -----------------------------------------------------
+
 require 'thread'
 require 'set'
 
@@ -5,30 +24,24 @@ module GraphiteAPI
   class SafeBuffer
     include Utils
     
+    CHARS_TO_BE_IGNORED = ["\r"]
+    END_OF_STREAM = "\n"
+    VALID_MESSAGE = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
+    
     def initialize options
       @options = options
       @queue = Queue.new
       @streamer = Hash.new {|h,k| h[k] = ""}
 
       if options[:reanimation_exp]
-        @cache = Cache::Memory.new options[:reanimation_exp]
-      end      
+        @cache = Cache::Memory.new options
+      end
     end
     
     private_reader :queue, :options, :streamer, :cache
     
-    # {:metric => {'a' => 10},:time => today}
-    def push hash
-      debug [:buffer,:add, hash]
-      time = Utils.normalize_time(hash[:time],options[:slice])
-      hash[:metric].each { |k,v| queue.push [time,k,v] }
-    end
-    
-    alias_method :<<, :push
-
     # this method isn't thread safe
-    # if you are running with multiple threads
-    # use #push instead
+    # use #push for multiple threads support
     def stream message, client_id = nil
       message.gsub(/\t/,' ').each_char do |char|
         next if invalid_char? char
@@ -43,12 +56,27 @@ module GraphiteAPI
       end
     end
     
+    # Add records to buffer
+    # push({:metric => {'a' => 10},:time => Time.now})
+    def push obj
+      debug [:buffer,:add, obj]
+      queue.push obj
+      nil
+    end    
+
+    alias_method :<<, :push
+
     def pull format = nil
-      data = Hash.new { |h,k| h[k] = Hash.new { |h,k| h[k] = 0} }
+      data = Hash.new {|h,k| h[k] = Hash.new {|h,k| h[k] = 0} }
+
+      counter = 0
       while new_records?
-        time, key, value = queue.pop
-        data[time][key] += value.to_f
+        break if ( counter += 1 ) > 10_000
+        hash = queue.pop
+        time = normalize_time(hash[:time],options[:slice])
+        hash[:metric].each { |k,v| data[time][k] += v.to_f }
       end
+      
       data.map do |time, hash|
         hash.map do |key, value|
           value = cache.incr(time,key,value) if cache
@@ -64,21 +92,25 @@ module GraphiteAPI
     
     private
     
+    def inspect
+      "#<GraphiteAPI::SafeBuffer:#{object_id} @quque#size=#{queue.size} @streamer=#{streamer.inspect}>"
+    end
+    
     def stream_message_to_obj message
       parts = message.split
       {:metric => { parts[0] => parts[1] },:time => Time.at(parts[2].to_i) }
     end
     
     def invalid_char? char
-      ["\r"].include? char
+      CHARS_TO_BE_IGNORED.include? char
     end
     
     def closed_stream? string
-      string[-1,1] == "\n"
+      string[-1,1] == END_OF_STREAM
     end
     
     def valid_stream_message message
-      message =~ /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
+      message =~ VALID_MESSAGE
     end
     
     def prefix

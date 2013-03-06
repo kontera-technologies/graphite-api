@@ -30,7 +30,7 @@ module GraphiteAPI
     
     def initialize options
       @options = options
-      @keys_to_sync  = Hash.new { |h,k| h[k] = Set.new }
+      @keys_to_sync = Hash.new { |h,k| h[k] = Set.new }
       @streamer_buff = Hash.new {|h,k| h[k] = ""}
       @reanimation_mode = !options[:reanimation_exp].nil?
       start_cleaner if reanimation_mode
