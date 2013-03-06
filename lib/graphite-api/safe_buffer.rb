@@ -16,7 +16,6 @@
 #    ["mem.usage", 190.0, 1326842520]
 #    ["shuki.tuki", 999.0, 1326842520]
 # -----------------------------------------------------
-
 require 'thread'
 require 'set'
 
@@ -48,7 +47,7 @@ module GraphiteAPI
         streamer[client_id] += char 
         
         if closed_stream? streamer[client_id]
-          if valid_stream_message streamer[client_id]
+          if valid_stream_message? streamer[client_id]
             push stream_message_to_obj streamer[client_id]
           end
           streamer.delete client_id
@@ -62,7 +61,7 @@ module GraphiteAPI
       debug [:buffer,:add, obj]
       queue.push obj
       nil
-    end    
+    end
 
     alias_method :<<, :push
 
@@ -109,7 +108,7 @@ module GraphiteAPI
       string[-1,1] == END_OF_STREAM
     end
     
-    def valid_stream_message message
+    def valid_stream_message? message
       message =~ VALID_MESSAGE
     end
 
