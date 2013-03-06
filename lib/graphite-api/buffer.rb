@@ -32,7 +32,7 @@ module GraphiteAPI
       @options = options
       @keys_to_sync = Hash.new { |h,k| h[k] = Set.new }
       @streamer_buff = Hash.new {|h,k| h[k] = ""}
-      @reanimation_mode = !options[:reanimation_exp].nil?
+      @reanimation_mode = !options[:cache].nil?
       start_cleaner if reanimation_mode
     end
 
@@ -40,7 +40,7 @@ module GraphiteAPI
 
     def push hash
       debug [:buffer,:add, hash]
-      time = Utils.normalize_time(hash[:time],options[:slice])
+      time = normalize_time(hash[:time],options[:slice])
       hash[:metric].each { |k,v| cache_set(time,k,v) }
     end
 
@@ -130,7 +130,7 @@ module GraphiteAPI
     end
     
     def start_cleaner
-      Reactor::every(options[:cleaner_interval]) { clean(options[:reanimation_exp]) }
+      Reactor::every(options[:cleaner_interval]) { clean(options[:cache]) }
     end
 
   end

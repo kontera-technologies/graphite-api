@@ -33,7 +33,7 @@ module GraphiteAPI
       @queue = Queue.new
       @streamer = Hash.new {|h,k| h[k] = ""}
 
-      if options[:reanimation_exp]
+      if options[:cache]
         @cache = Cache::Memory.new options
       end
     end
@@ -112,9 +112,13 @@ module GraphiteAPI
     def valid_stream_message message
       message =~ VALID_MESSAGE
     end
-    
+
     def prefix
-      @prefix ||= options[:prefix].empty? ? '' : Array(options[:prefix]).join('.') << '.'
+      @prefix ||= if options[:prefix] and !options[:prefix].empty?
+        Array(options[:prefix]).join('.') << '.'
+      else
+        ""
+      end
     end
         
   end

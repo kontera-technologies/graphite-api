@@ -4,7 +4,7 @@ module GraphiteAPI
       include Utils
       
       def initialize options
-        Reactor.every(120) { clean(options[:reanimation_exp]) }
+        Reactor.every(120) { clean(options[:cache]) }
       end
       
       def get time, key

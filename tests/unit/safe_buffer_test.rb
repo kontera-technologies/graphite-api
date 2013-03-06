@@ -14,7 +14,7 @@ module GraphiteAPI
         assert_nil buff.instance_variable_get(:@cache)
       end
 
-      buffer(:reanimation_exp => 1234).tap do |buff|
+      buffer(:cache => 1234).tap do |buff|
         assert_kind_of Cache::Memory, buff.instance_variable_get(:@cache)
       end
       
@@ -22,6 +22,28 @@ module GraphiteAPI
     
     def test_push_shouldnt_expose_the_queue
       refute buffer.push(:metric => {:shuki => 10})
+    end
+    
+    def test_push_with_cache
+      buffer(:cache => 100000).tap do |buff|
+        buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362568320)
+        buff.pull
+        buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362568320)
+        expected = [
+          ["shuki",   20.0, 1362568320],
+          ["blabla", 160.0, 1362568320]
+        ]
+        assert_equal expected, buff.pull
+        
+        buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1234567389)
+        buff.push(:metric => {:blabla => 10}, :time => 1362568320)
+        expected = [
+          ["shuki", 10.0,  1234567380],
+          ["blabla", 80.0, 1234567380],
+          ["blabla", 170.0, 1362568320]
+        ]
+        assert_equal expected, buff.pull
+      end
     end
     
     def test_push

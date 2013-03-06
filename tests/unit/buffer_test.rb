@@ -15,15 +15,15 @@ module GraphiteAPI
         assert_equal false,    buffer_obj.instance_variable_get(:@reanimation_mode)
       end
       
-      assert_equal(true,buffer(:reanimation_exp => 1).instance_variable_get(:@reanimation_mode))
+      assert_equal(true,buffer(:cache => 1).instance_variable_get(:@reanimation_mode))
     end
     
     def test_push
       today = Time.now
       tommorow = Time.now + 24 * 60 * 60
       options = Utils.default_options
-      Utils.stubs(:normalize_time).with(today, 60).returns(today)
-      Utils.stubs(:normalize_time).with(tommorow, 60).returns(tommorow)
+      buffer.stubs(:normalize_time).with(today, 60).returns(today)
+      buffer.stubs(:normalize_time).with(tommorow, 60).returns(tommorow)
       
       buffer.tap do |buffer_obj|
         metric  = {:shuki => 10, :blabla => 80}
