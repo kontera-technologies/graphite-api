@@ -90,11 +90,11 @@ module GraphiteAPI
       !queue.empty?
     end
     
-    private
-    
     def inspect
       "#<GraphiteAPI::SafeBuffer:#{object_id} @quque#size=#{queue.size} @streamer=#{streamer.inspect}>"
     end
+    
+    private
     
     def stream_message_to_obj message
       parts = message.split
