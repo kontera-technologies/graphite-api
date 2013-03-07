@@ -19,7 +19,8 @@ GraphiteAPI::GemSpec = Gem::Specification.new do |s|
   s.add_dependency 'eventmachine','>= 0.3.3'
 end
 
-task :gem => [:clobber_package]
+task :gem => [:test,:clobber_package]
+
 Gem::PackageTask.new(GraphiteAPI::GemSpec) do |p|
   p.gem_spec = GraphiteAPI::GemSpec
 end

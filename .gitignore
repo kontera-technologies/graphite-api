@@ -5,3 +5,4 @@ graphite-api_build
 coverage
 *.rbx
 delme.rb
+middleware.out
