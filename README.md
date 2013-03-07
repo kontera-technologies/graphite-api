@@ -20,11 +20,11 @@ A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 <table>
   <tr>
     <td> Version </td>
-    <td><img src=https://fury-badge.herokuapp.com/rb/graphite-api.png></td>
+    <td><a href="https://rubygems.org/gems/graphite-api"><img src=https://fury-badge.herokuapp.com/rb/graphite-api.png></a> </td>
   </tr>
   <tr>
     <td> Build </td>
-    <td><img src=https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master>
+    <td><a href="https://travis-ci.org/kontera-technologies/graphite-api"><img src=https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master></a>
       </td>
   </tr>
 </table>
