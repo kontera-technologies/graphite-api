@@ -22,7 +22,7 @@ module GraphiteAPI
       private
       
       def cache
-        @cache ||= Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
+        @cache ||= nested_zero_hash
       end
       
       def clean max_age

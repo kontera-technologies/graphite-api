@@ -66,7 +66,7 @@ module GraphiteAPI
     alias_method :<<, :push
 
     def pull format = nil
-      data = Hash.new {|h,k| h[k] = Hash.new {|h,k| h[k] = 0} }
+      data = nested_zero_hash
 
       counter = 0
       while new_records?

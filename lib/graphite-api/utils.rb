@@ -28,7 +28,11 @@ module GraphiteAPI
       slice = 60 if slice.nil?
       ((time || Time.now).to_i / slice * slice).to_i
     end
- 
+    
+    def nested_zero_hash
+      Hash.new {|h,k| h[k] = Hash.new {|h,k| h[k] = 0} }
+    end
+    
     module_function
  
     def expand_host host
