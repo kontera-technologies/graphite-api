@@ -76,7 +76,7 @@ module GraphiteAPI
       time1 = Time.at(1234567) # 1234560
       time2 = Time.at(12345678) # 12345660      
       
-      (1..50).map do
+      (1..10).map do
         Thread.new do
           1.upto(1000) do
             client.shuki1(1,time1)
@@ -88,10 +88,10 @@ module GraphiteAPI
       end.map(&:join)
       
       expected = [
-        ["shuki1", 50000.0, 1234560],
-        ["shuki2", 50000.0, 1234560],
-        ["shuki3", 50000.0, 12345660],
-        ["shuki4", 50000.0, 12345660]
+        ["shuki1", 10000.0, 1234560],
+        ["shuki2", 10000.0, 1234560],
+        ["shuki3", 10000.0, 12345660],
+        ["shuki4", 10000.0, 12345660]
       ]
       
       assert_equal expected, client.__send__(:buffer).pull
