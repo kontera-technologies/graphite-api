@@ -24,7 +24,8 @@ A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
   </tr>
   <tr>
     <td> Build </td>
-    <td>[![Build Status](https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master)](https://travis-ci.org/kontera-technologies/graphite-api)</td>
+    <td><img src=https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master>
+      </td>
   </tr>
 </table>
 
