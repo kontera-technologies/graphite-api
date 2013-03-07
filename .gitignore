@@ -3,3 +3,5 @@ graphite-api_build
 *.swo
 *.swp
 coverage
+*.rbx
+delme.rb

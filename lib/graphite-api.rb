@@ -3,6 +3,8 @@ module GraphiteAPI
 
   autoload :Version,         "#{ROOT}/graphite-api/version"
   autoload :Client,          "#{ROOT}/graphite-api/client"
+  autoload :Cache,           "#{ROOT}/graphite-api/cache"
+  autoload :SafeBuffer,      "#{ROOT}/graphite-api/safe_buffer"
   autoload :Reactor,         "#{ROOT}/graphite-api/reactor"
   autoload :Connector,       "#{ROOT}/graphite-api/connector"
   autoload :Middleware,      "#{ROOT}/graphite-api/middleware"
@@ -17,5 +19,4 @@ module GraphiteAPI
     GraphiteAPI::Version::VERSION
   end
   
-  Dir.glob( "#{ROOT}/core-extensions/**" ).each &method( :require )
 end

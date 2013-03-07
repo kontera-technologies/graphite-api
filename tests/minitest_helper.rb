@@ -24,4 +24,7 @@ module GraphiteAPI
     class TestCase < ::Minitest::Unit::TestCase
     end
   end
+  class Reactor
+    def self.every(*);end
+  end
 end

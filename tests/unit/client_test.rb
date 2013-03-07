@@ -13,9 +13,10 @@ module GraphiteAPI
       Client::any_instance.expects(:build_options).with(opt).returns(opt)
       
       # Should initialize these two also
-      GraphiteAPI::Buffer.expects(:new).with(opt).returns(:buffer)
+      GraphiteAPI::SafeBuffer.expects(:new).with(opt).returns(:buffer)
       GraphiteAPI::ConnectorGroup.expects(:new).with(opt).returns(:connector_group)
-      
+
+      Reactor.expects(:every)
       Client.new(opt).tap do |client|
         assert_equal opt, client.instance_variable_get(:@options)
         assert_equal :buffer, client.instance_variable_get(:@buffer)
@@ -67,12 +68,42 @@ module GraphiteAPI
         client.a.b.c.d.e.f.g(9, Time.at(11111))
       end
     end
-    
+
+    def test_client_should_be_thread_safe
+      now = Time.now
+      
+      client = get_client#(:cache => 1000000)
+      time1 = Time.at(1234567) # 1234560
+      time2 = Time.at(12345678) # 12345660      
+      
+      (1..10).map do
+        Thread.new do
+          1.upto(1000) do
+            client.shuki1(1,time1)
+            client.shuki2(1,time1)
+            client.shuki3(1,time2)
+            client.shuki4(1,time2)
+          end
+        end
+      end.map(&:join)
+      
+      expected = [
+        ["shuki1", 10000.0, 1234560],
+        ["shuki2", 10000.0, 1234560],
+        ["shuki3", 10000.0, 12345660],
+        ["shuki4", 10000.0, 12345660]
+      ]
+      
+      assert_equal expected, client.__send__(:buffer).pull
+      #p(Time.now.to_i - now.to_i)
+    end
+
     private
-    
+
     def get_client(options = Utils::default_options) 
+      Reactor.expects(:every)
       Client.new(options.merge(:graphite => "localhost"))
     end
-    
+
   end
 end
