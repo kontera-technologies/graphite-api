@@ -229,11 +229,10 @@ client.bla.bla.value2 27
 ## Recommended Topology
 <br/>
 <img src="https://raw.github.com/kontera-technologies/graphite-api/thread-safe/examples/middleware_t1.png" align="center">
-<hr/>
 
 ## TODO:
-* Documentation
-* Use Redis
+* Better documentation
+* Use Redis for caching
 * Multiple backends via client as well
 
 ## Bugs
