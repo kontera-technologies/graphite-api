@@ -24,7 +24,7 @@ A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
   </tr>
   <tr>
     <td> Build </td>
-    <td></td>
+    <td>[![Build Status](https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master)](https://travis-ci.org/kontera-technologies/graphite-api)</td>
   </tr>
 </table>
 
@@ -228,7 +228,7 @@ client.bla.bla.value2 27
 
 ## Example Setup
 <br/>
-<img src="https://raw.github.com/kontera-technologies/graphite-api/thread-safe/examples/middleware_t1.png" align="center">
+<img src="https://raw.github.com/kontera-technologies/graphite-api/master/examples/middleware_t1.png" align="center">
 
 ## TODO:
 * Better documentation
