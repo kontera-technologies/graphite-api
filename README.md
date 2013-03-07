@@ -220,7 +220,7 @@ client.bla.bla.value2 27
 
 ### Recommended Topology
 <br/>
-<img src="https://github.com/kontera-technologies/graphite-api/blob/thread-safe/examples/middleware_t1.png" align="center">
+<img src="https://raw.github.com/kontera-technologies/graphite-api/thread-safe/examples/middleware_t1.png" align="center">
 <hr/>
 
 ## TODO:
