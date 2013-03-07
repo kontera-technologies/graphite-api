@@ -19,5 +19,4 @@ module GraphiteAPI
     GraphiteAPI::Version::VERSION
   end
   
-  Dir.glob( "#{ROOT}/core-extensions/**" ).each &method( :require )
 end
