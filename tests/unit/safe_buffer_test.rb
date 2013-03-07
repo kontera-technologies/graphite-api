@@ -149,7 +149,7 @@ module GraphiteAPI
       end
 
     end
-
+    
     private
     
     def buffer options = Utils.default_options

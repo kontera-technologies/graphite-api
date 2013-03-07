@@ -16,7 +16,7 @@
 
 #  client.metrics "webServer.web01.loadAvg" => 10.7
 #  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
-# 
+#  
 #  client.metrics({
 #   "webServer.web01.loadAvg"  => 10.7,
 #   "webServer.web01.memUsage" => 40
