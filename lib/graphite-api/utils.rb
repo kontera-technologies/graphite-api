@@ -23,12 +23,17 @@ module GraphiteAPI
         private     *args
       end
     end
-        
-    module_function
-
-    def normalize_time time, slice = 60
+    
+    def normalize_time time, slice
+      slice = 60 if slice.nil?
       ((time || Time.now).to_i / slice * slice).to_i
     end
+    
+    def nested_zero_hash
+      Hash.new {|h,k| h[k] = Hash.new {|h,k| h[k] = 0} }
+    end
+    
+    module_function
  
     def expand_host host
       host,port = host.split(":")
@@ -42,7 +47,7 @@ module GraphiteAPI
         :cleaner_interval => 43200,
         :port => 2003,
         :log_level => :info,
-        :reanimation_exp => nil,
+        :cache => nil,
         :host => "localhost",
         :prefix => [],
         :interval => 60,

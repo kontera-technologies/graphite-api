@@ -1,4 +1,5 @@
 require_relative "../minitest_helper"
+require_relative "../../lib/graphite-api/core_ext/numeric"
 
 module GraphiteAPI
   class CoreExtensionsTester < Unit::TestCase
