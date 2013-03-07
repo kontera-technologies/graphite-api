@@ -36,10 +36,7 @@ task :functional do
     end
   end
   message "Done Executing GraphiteAPI Functional Tests"
-  if some_failed
-    print "Some functional tests failed, do you wish to continue? "
-    exit unless gets =~ /y/i
-  end
+  abort "Some functional tests failed..." if some_failed
 end
 
 task :default => :test
