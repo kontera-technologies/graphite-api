@@ -16,6 +16,18 @@ A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 * **non-blocking I/O** ( EventMachine aware ).
 * **Thread-Safe** client.
 
+## Status
+<table>
+  <tr>
+    <td> Version </td>
+    <td><img src=https://fury-badge.herokuapp.com/rb/graphite-api.png></td>
+  </tr>
+  <tr>
+    <td> Build </td>
+    <td></td>
+  </tr>
+</table>
+
 ## Installation
 Install stable version
 
@@ -30,10 +42,6 @@ git clone git://github.com/kontera-technologies/graphite-api.git
 cd graphite-api
 rake install
 ```
-<table><tr>
-    <td> Current gem version </td>
-    <td><img src=https://fury-badge.herokuapp.com/rb/graphite-api.png></td>
-</tr></table>
 
 ## Client Usage
 Creating a new client instance
@@ -218,7 +226,7 @@ client.bla.bla.value2 27
 > more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
 
 
-### Recommended Topology
+## Recommended Topology
 <br/>
 <img src="https://raw.github.com/kontera-technologies/graphite-api/thread-safe/examples/middleware_t1.png" align="center">
 <hr/>

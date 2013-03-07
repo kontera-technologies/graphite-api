@@ -11,15 +11,12 @@
 #   :interval => 60.seconds            # send to graphite every 60 seconds
 #  )
 #  
-#  # Simple
 #  client.webServer.web01.loadAvg 10.7 
 #  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
 
-#  # "Same Same But Different" ( http://en.wikipedia.org/wiki/Tinglish )
 #  client.metrics "webServer.web01.loadAvg" => 10.7
 #  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
-#  
-#  # Multiple with event time
+# 
 #  client.metrics({
 #   "webServer.web01.loadAvg"  => 10.7,
 #   "webServer.web01.memUsage" => 40
