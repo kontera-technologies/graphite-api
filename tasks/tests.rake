@@ -12,6 +12,11 @@ task :functional do
   some_failed = false
   
   next unless ENV['SKIP_FUNC'].nil?
+
+  unless RUBY_COPYRIGHT.end_with?("Matsumoto")
+    puts("Functional tests are enabled only on MRI...")
+    next
+  end
   
   message "Executing GraphiteAPI Functional Tests"
   message "( You can skip them by passing SKIP_FUNC=true )"

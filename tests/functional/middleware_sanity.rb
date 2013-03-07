@@ -26,7 +26,7 @@ options = %W(--port #{middleware_port} --graphite localhost:#{fake_carbon_port} 
 
 pid = Process.spawn("ruby","./../../bin/graphite-middleware",*options)
 
-sleep 1
+sleep 5
 
 begin
   data = []
