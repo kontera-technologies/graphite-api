@@ -226,7 +226,7 @@ client.bla.bla.value2 27
 > more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
 
 
-## Recommended Topology
+## Example Setup
 <br/>
 <img src="https://raw.github.com/kontera-technologies/graphite-api/thread-safe/examples/middleware_t1.png" align="center">
 
