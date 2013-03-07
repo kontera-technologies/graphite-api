@@ -8,11 +8,11 @@ module GraphiteAPI
       end
       
       def get time, key
-        cache[time][key]
+        cache[time.to_i][key]
       end
       
       def set time, key, value
-        cache[time][key] = value.to_f 
+        cache[time.to_i][key] = value.to_f 
       end
       
       def incr time, key, value
@@ -25,9 +25,9 @@ module GraphiteAPI
         @cache ||= Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
       end
       
-      def clean age
+      def clean max_age
         debug [:MemoryCache, :before_clean, cache]
-        cache.delete_if {|t,k| Time.now.to_i - t > age}
+        cache.delete_if {|t,k| Time.now.to_i - t > max_age }
         debug [:MemoryCache, :after_clean, cache]
       end
       
