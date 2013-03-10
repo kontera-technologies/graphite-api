@@ -22,7 +22,7 @@ middleware_log_file = File.expand_path("../../../middleware.out",__FILE__)
 
 File.new(middleware_log_file,'w').close
 
-options = %W(--port #{middleware_port} --graphite localhost:#{fake_carbon_port} -r 99999999999999999 --interval 5 -L debug -l #{middleware_log_file})
+options = %W(--port #{middleware_port} --graphite localhost:#{fake_carbon_port} --interval 10 -L debug -l #{middleware_log_file})
 
 pid = Process.spawn("ruby","./../../bin/graphite-middleware",*options)
 
