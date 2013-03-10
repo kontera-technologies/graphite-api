@@ -23,6 +23,7 @@ PLATFORMS
 
 DEPENDENCIES
   eventmachine (>= 0.3.3)
+  jruby-openssl
   minitest
   mocha
   rake
