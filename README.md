@@ -1,3 +1,4 @@
+
 # GraphiteAPI
 A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
 
