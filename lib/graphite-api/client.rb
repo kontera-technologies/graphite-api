@@ -67,6 +67,7 @@ module GraphiteAPI
     def metrics metric, time = Time.now 
       buffer.push :metric => metric, :time => time
     end
+    alias_method :add_metrics, :metrics
 
     def join
       sleep while buffer.new_records?
