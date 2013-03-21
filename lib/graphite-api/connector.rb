@@ -39,6 +39,7 @@ module GraphiteAPI
     
     def socket
       if @socket.nil? || @socket.closed?
+        debug [:connector,[host,port]]
         @socket = ::TCPSocket.new host, port
       end
       @socket

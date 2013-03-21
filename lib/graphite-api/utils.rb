@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'uri'
 
 module GraphiteAPI
   module Utils
@@ -36,9 +37,14 @@ module GraphiteAPI
     module_function
  
     def expand_host host
-      host,port = host.split(":")
-      port = port.nil? ? default_options[:port] : port.to_i
-      [host,port]
+      if host =~ /:\/\//
+        uri = URI.parse host
+        [ uri.host, uri.port || default_options[:port] ]
+      else
+        host, port = host.split(":")
+        port = port.nil? ? default_options[:port] : port.to_i
+        [ host, port]
+      end
     end
 
     def default_options
