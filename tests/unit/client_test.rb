@@ -70,9 +70,7 @@ module GraphiteAPI
     end
 
     def test_client_should_be_thread_safe
-      now = Time.now
-      
-      client = get_client#(:cache => 1000000)
+      client = get_client
       time1 = Time.at(1234567) # 1234560
       time2 = Time.at(12345678) # 12345660      
       
@@ -95,7 +93,16 @@ module GraphiteAPI
       ]
       
       assert_equal expected, client.__send__(:buffer).pull
-      #p(Time.now.to_i - now.to_i)
+    end
+    
+    def test_increment
+      get_client.tap do |client|
+        client.expects(:metrics).with({"key1" => 999, "key2" => 999},Time.at(1010))
+        client.increment("key1","key2", {:by => 999, :time => Time.at(1010)})
+        
+        client.expects(:metrics).with({"key1" => 1, "key2" => 1},Time.at(123456))
+        client.increment("key1","key2", {:time => Time.at(123456)})
+      end
     end
 
     private
