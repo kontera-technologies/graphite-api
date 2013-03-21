@@ -90,6 +90,26 @@ client.metrics({
 # => webServer.web01.memUsage 40 1326067060
 ```
 
+Increment records
+```ruby
+require 'graphite-api'
+
+client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+
+client.increment("jobs_in_queue", "num_errors")
+# => jobs_in_queue 1 Time.now.to_i
+# => num_errors 1 Time.now.to_i
+
+client.increment("jobs_in_queue", "num_errors", by: 999)
+# => jobs_in_queue 999 Time.now.to_i
+# => num_errors 999 Time.now.to_i
+
+client.increment("jobs_in_queue", "num_errors", by: 20, time: Time.at(123456))
+# => jobs_in_queue 20 123456
+# => num_errors 20 123456
+
+```
+
 Some DSL sweetness
 ```ruby
 require 'graphite-api'
