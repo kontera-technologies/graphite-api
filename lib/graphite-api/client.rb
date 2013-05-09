@@ -55,13 +55,11 @@ module GraphiteAPI
       
     end
 
-    private_reader :options, :buffer, :connectors
+    def_delegator Zscheduler, :loop, :join
+    def_delegator Zscheduler, :stop
 
-    def_delegator :"GraphiteAPI::Reactor", :loop
-    def_delegator :"GraphiteAPI::Reactor", :stop
-    
     def every interval, &block
-      Reactor.every( interval ) { block.call self }
+      Zscheduler.every( interval ) { block.call self }
     end
     
     def metrics metric, time = Time.now 

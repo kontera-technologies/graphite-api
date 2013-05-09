@@ -37,7 +37,7 @@ module GraphiteAPI
     private
 
     def cache
-      Reactor.expects(:every).with(120)
+      Zscheduler.expects(:every).with(120)
       Cache::Memory.new(:options)
     end
   end

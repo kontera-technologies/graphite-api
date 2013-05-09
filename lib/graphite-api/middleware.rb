@@ -66,10 +66,10 @@ module GraphiteAPI
         end
 
         # Send metrics to graphite every X seconds
-        proc { group.publish buffer.pull :string if buffer.new_records? }.tap do |block|
-          GraphiteAPI::Reactor.every options[:interval], &block
-          GraphiteAPI::Reactor.add_shutdown_hook &block
+        Zscheduler.every(options[:interval],:on_shutdown => true) do
+          group.publish buffer.pull :string if buffer.new_records?
         end
+
       end  
     end
     

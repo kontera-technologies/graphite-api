@@ -17,6 +17,8 @@ GEM
       simplecov (>= 0.4.1)
     turn (0.9.5)
       ansi
+    zscheduler (0.0.3)
+      eventmachine
 
 PLATFORMS
   ruby
@@ -30,3 +32,4 @@ DEPENDENCIES
   simplecov
   simplecov-rcov
   turn
+  zscheduler (>= 0.0.3)

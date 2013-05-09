@@ -16,7 +16,7 @@ module GraphiteAPI
       GraphiteAPI::SafeBuffer.expects(:new).with(opt).returns(:buffer)
       GraphiteAPI::ConnectorGroup.expects(:new).with(opt).returns(:connector_group)
 
-      Reactor.expects(:every)
+      Zscheduler.expects(:every)
       Client.new(opt).tap do |client|
         assert_equal opt, client.instance_variable_get(:@options)
         assert_equal :buffer, client.instance_variable_get(:@buffer)
@@ -47,7 +47,7 @@ module GraphiteAPI
     end
     
     def test_stop
-      Reactor.expects :stop
+      Zscheduler.expects :stop
       get_client.stop
     end
     
@@ -55,7 +55,7 @@ module GraphiteAPI
       client = get_client
       block = proc {'zubi'}
       frequency = 21
-      Reactor::expects(:every).with(frequency,&block)
+      Zscheduler::expects(:every).with(frequency,&block)
       client.every(frequency,&block)
     end
     
@@ -108,8 +108,8 @@ module GraphiteAPI
     private
 
     def get_client(options = Utils::default_options) 
-      Reactor.expects(:every)
-      Client.new(options.merge(:graphite => "localhost"))
+      Zscheduler.expects(:every)
+      Client.new(options.merge(:graphite => "localhost", :interval => 60))
     end
 
   end

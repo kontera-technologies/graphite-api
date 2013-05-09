@@ -24,7 +24,7 @@ module GraphiteAPI
     class TestCase < ::Minitest::Unit::TestCase
     end
   end
-  class Reactor
+  class Zscheduler
     def self.every(*);end
   end
 end
