@@ -105,6 +105,14 @@ module GraphiteAPI
       end
     end
 
+    def test_direct_send
+      get_client.tap do |client|
+        client.instance_variable_set(:@direct_send, true)
+        client.expects(:send_metrics)
+        client.metrics("blabla" => 1)
+      end
+    end
+
     private
 
     def get_client(options = Utils::default_options) 

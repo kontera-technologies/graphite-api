@@ -41,7 +41,7 @@ module GraphiteAPI
     end
 
     def options
-      @options ||= Utils.default_options
+      @options ||= Utils.default_middleware_options
     end
 
     def validate_options

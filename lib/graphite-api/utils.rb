@@ -56,10 +56,14 @@ module GraphiteAPI
         :cache => nil,
         :host => "localhost",
         :prefix => [],
-        :interval => 60,
+        :interval => 0,
         :slice => 60,
         :pid => "/tmp/graphite-middleware.pid"
       }
+    end
+
+    def default_middleware_options
+      default_options.merge(:interval => 60)
     end
 
   end

@@ -44,16 +44,20 @@ module GraphiteAPI
   class Client
     include Utils
 
+    private_reader :options, :buffer, :connectors, :direct_send
+
     def initialize opt
       @options = build_options validate opt.clone
-      @buffer  = GraphiteAPI::SafeBuffer.new options
-      @connectors = GraphiteAPI::ConnectorGroup.new options
-      
-      every options.fetch :interval do
-        connectors.publish buffer.pull :string if buffer.new_records?
       @buffer  = GraphiteAPI::Buffer.new options
+      @connectors = GraphiteAPI::Connector::Group.new options
+      @direct_send = @options[:interval] == 0
+
+      if direct_send
+        options[:slice] = 1
+      else
+        every(options.fetch(:interval),&method(:send_metrics))
       end
-      
+
     end
 
     def_delegator Zscheduler, :loop, :join
@@ -62,13 +66,14 @@ module GraphiteAPI
     def every interval, &block
       Zscheduler.every( interval ) { block.call self }
     end
-    
+
     def metrics metric, time = Time.now 
       buffer.push :metric => metric, :time => time
+      send_metrics if direct_send
     end
-    
+
     alias_method :add_metrics, :metrics
-    
+
     # increment keys
     #
     # increment("key1","key2")
@@ -87,27 +92,27 @@ module GraphiteAPI
       metric = keys.inject({}) {|h,k| h.tap { h[k] = by}}
       metrics(metric, time)
     end
-    
+
     def join
       sleep while buffer.new_records?
     end
-    
+
     def method_missing m, *args, &block
-      Proxy.new( self ).send m, *args, &block
+      Proxy.new( self ).send(m,*args,&block)
     end
-    
+
     protected
-    
+
     class Proxy
       include Utils
-      
+
       def initialize client
         @client = client
         @keys = []
       end
-      
+
       private_reader :client, :keys
-      
+
       def method_missing m, *args, &block
         keys.push m
         if keys.size > 10 # too deep
@@ -118,22 +123,25 @@ module GraphiteAPI
           self
         end
       end
-      
+
     end
-            
+
     def validate options
       options.tap do |opt|
         raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil?
       end
     end
-    
+
     def build_options opt
       default_options.tap do |options_hash|
         options_hash[:backends].push expand_host opt.delete :graphite
         options_hash.merge! opt
-        options_hash.freeze
       end
     end
-    
+
+    def send_metrics
+      connectors.publish buffer.pull :string if buffer.new_records?
+    end
+
   end
 end

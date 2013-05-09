@@ -51,11 +51,12 @@ Creating a new client instance
 require 'graphite-api'
 
 GraphiteAPI::Client.new(
-  graphite: "graphite.example.com:2003", # not optional
-  prefix: ["example","prefix"], # add example.prefix to each key
-  slice: 60 # results are aggregated in 60 seconds slices
-  interval: 60 # send to graphite every 60 seconds
-  cache: 4 * 60 * 60 # set the max age in seconds for records reanimation
+  graphite: "graphite.example.com:2003", # required argument
+  prefix: ["example","prefix"],          # add example.prefix to each key
+  slice: 60,                             # results are aggregated in 60 seconds slices
+  interval: 60,                          # send to graphite every 60 seconds
+                                         # default is 0 ( direct send )
+  cache: 4 * 60 * 60                     # set the max age in seconds for records reanimation
 )
 ```
 
@@ -131,7 +132,7 @@ client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
 
 # lets send the metric every 120 seconds
 client.every(120) do |c|
-  c.webServer.web01.uptime `uptime`.split.first.to_i
+  c.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i)
 end
 ```
 
@@ -143,11 +144,11 @@ require 'graphite-api/core_ext/numeric'
 client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
 
 client.every 10.seconds do |c|
-  c.webServer.web01.uptime `uptime`.split.first.to_i
+  c.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i)
 end
 
 client.every 52.minutes do |c|
-  c.just.fake 12
+  c.metrics("just.fake" => 12)
 end
 ```
 
@@ -159,9 +160,9 @@ require 'graphite-api/core_ext/numeric'
 client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
 
 client.every 26.minutes do |c|
-  c.webServer.shuki.stats 10
-  c.webServer.shuki.x 97
-  c.webServer.shuki.y 121
+  c.metrics("webServer.shuki.stats" => 10)
+  c.metrics("webServer.shuki.x" => 97)
+  c.metrics("webServer.shuki.y" => 121)
 end
 
 client.join # wait for ever...

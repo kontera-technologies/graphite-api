@@ -27,7 +27,7 @@ module GraphiteAPI
     def test_options
       get_obj(default_options(shuki: :tuki)).tap do |obj|
         assert_equal default_options(shuki: :tuki), obj.__send__(:options)
-        Utils.expects(:default_options).returns(:zevel)
+        Utils.expects(:default_middleware_options).returns(:zevel)
         obj.instance_variable_set(:@options,nil)
         assert_equal obj.__send__(:options), :zevel
       end        
