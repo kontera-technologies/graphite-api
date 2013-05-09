@@ -3,7 +3,7 @@ require_relative "../minitest_helper"
 module GraphiteAPI
   class BufferTester < Unit::TestCase
     def test_initialize    
-      assert_raises(ArgumentError) { SafeBuffer.new }
+      assert_raises(ArgumentError) { Buffer.new }
 
       options = {:shuki => :tuki}
       
@@ -153,7 +153,7 @@ module GraphiteAPI
     private
     
     def buffer options = Utils.default_options
-      SafeBuffer.new options
+      Buffer.new options
     end
     
   end

@@ -51,6 +51,7 @@ module GraphiteAPI
       
       every options.fetch :interval do
         connectors.publish buffer.pull :string if buffer.new_records?
+      @buffer  = GraphiteAPI::Buffer.new options
       end
       
     end

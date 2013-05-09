@@ -3,7 +3,7 @@
 # Handle Socket & Client data streams
 # -----------------------------------------------------
 # Usage:
-#     buff = GraphiteAPI::SafeBuffer.new(GraphiteAPI::Utils.default_options)
+#     buff = GraphiteAPI::Buffer.new(GraphiteAPI::Utils.default_options)
 #     buff << {:metric => {"load_avg" => 10},:time => Time.now}
 #     buff << {:metric => {"load_avg" => 30},:time => Time.now}
 #     buff.stream "mem.usage 1"
@@ -20,7 +20,7 @@ require 'thread'
 require 'set'
 
 module GraphiteAPI
-  class SafeBuffer
+  class Buffer
     include Utils
     
     CHARS_TO_BE_IGNORED = ["\r"]
@@ -90,7 +90,7 @@ module GraphiteAPI
     end
     
     def inspect
-      "#<GraphiteAPI::SafeBuffer:%s @quque#size=%s @streamer=%s>" % 
+      "#<GraphiteAPI::Buffer:%s @quque#size=%s @streamer=%s>" % 
         [object_id,queue.size,streamer]
     end
     

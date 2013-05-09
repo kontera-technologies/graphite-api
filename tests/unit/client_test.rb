@@ -13,8 +13,8 @@ module GraphiteAPI
       Client::any_instance.expects(:build_options).with(opt).returns(opt)
       
       # Should initialize these two also
-      GraphiteAPI::SafeBuffer.expects(:new).with(opt).returns(:buffer)
-      GraphiteAPI::ConnectorGroup.expects(:new).with(opt).returns(:connector_group)
+      GraphiteAPI::Buffer.expects(:new).with(opt).returns(:buffer)
+      GraphiteAPI::Connector::Group.expects(:new).with(opt).returns(:connector_group)
 
       Zscheduler.expects(:every)
       Client.new(opt).tap do |client|
