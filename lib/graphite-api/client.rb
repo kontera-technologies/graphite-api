@@ -64,7 +64,7 @@ module GraphiteAPI
     def_delegator Zscheduler, :stop
 
     def every interval, &block
-      Zscheduler.every( interval ) { block.call self }
+      Zscheduler.every( interval ) { block.arity == 1 ? block.call(self) : block.call }
     end
 
     def metrics metric, time = Time.now 
