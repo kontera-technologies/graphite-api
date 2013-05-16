@@ -1,13 +1,13 @@
 require 'zscheduler'
 
 module GraphiteAPI
-  ROOT = File.expand_path(File.dirname(__FILE__))
+  ROOT = File.expand_path File.dirname __FILE__
+
   require "#{ROOT}/graphite-api/version"
 
   autoload :Version,    "#{ROOT}/graphite-api/version"
   autoload :Client,     "#{ROOT}/graphite-api/client"
   autoload :Cache,      "#{ROOT}/graphite-api/cache"
-  autoload :Reactor,    "#{ROOT}/graphite-api/reactor"
   autoload :Connector,  "#{ROOT}/graphite-api/connector"
   autoload :Middleware, "#{ROOT}/graphite-api/middleware"
   autoload :Runner,     "#{ROOT}/graphite-api/runner"

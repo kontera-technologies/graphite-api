@@ -11,12 +11,12 @@ module GraphiteAPI
     
     def run
       Logger.init Hash[[:std,:level].zip options.values_at(:log_file, :log_level) ]
-      options[:daemonize] ? daemonize(options[:pid]) { run! } : run!
+      options[:daemonize] ? daemonize(options[:pid], &method(:run!)) : run!
     end
 
     private
     
-    def daemonize pid
+    def daemonize pid, &block
       block_given? or raise ArgumentError.new "the block is missing..."
 
       fork do
@@ -27,7 +27,7 @@ module GraphiteAPI
         STDOUT.reopen('/dev/null','a')
         STDERR.reopen('/dev/null','a')
         File.open(pid,'w') { |f| f.write(Process.pid) } rescue nil
-        yield
+        block.call
       end
     end
     

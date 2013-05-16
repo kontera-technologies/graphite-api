@@ -31,10 +31,7 @@ module GraphiteAPI
       @options = options
       @queue = Queue.new
       @streamer = Hash.new {|h,k| h[k] = ""}
-
-      if options[:cache]
-        @cache = Cache::Memory.new options
-      end
+      @cache = Cache::Memory.new options if options[:cache]
     end
     
     private_reader :queue, :options, :streamer, :cache
@@ -91,7 +88,7 @@ module GraphiteAPI
     
     def inspect
       "#<GraphiteAPI::Buffer:%s @quque#size=%s @streamer=%s>" % 
-        [object_id,queue.size,streamer]
+        [ object_id, queue.size, streamer]
     end
     
     private

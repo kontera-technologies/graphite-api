@@ -66,7 +66,7 @@ module GraphiteAPI
         end
 
         # Send metrics to graphite every X seconds
-        Zscheduler.every(options[:interval],:on_shutdown => true) do
+        Zscheduler.every(options[:interval], :on_shutdown => true) do
           group.publish buffer.pull :string if buffer.new_records?
         end
 

@@ -13,34 +13,23 @@ require 'socket'
 module GraphiteAPI
   class Connector
     class Group
-      include Utils
-
-      private_reader :options, :connectors
-
       def initialize options
-        @options = options
         @connectors = options[:backends].map { |o| Connector.new(*o) }
       end
 
       def publish messages
-        debug [:connector_group,:publish,messages.size, @connectors]
-        Array(messages).each { |msg| connectors.map {|c| c.puts msg} }
+        Logger.debug [:connector_group, :publish, messages.size, @connectors]
+        Array(messages).each { |msg| @connectors.map {|c| c.puts msg} }
       end
-
     end
-
-    include Utils
     
     def initialize host, port
-      @host = host
-      @port = port
+      @host, @port = host, port
     end
-    
-    private_reader :host, :port
     
     def puts message
       begin
-        debug [:connector,:puts,[host,port].join(":"),message]
+        Logger.debug [:connector,:puts,[@host, @port].join(":"),message]
         socket.puts message + "\n"
       rescue Errno::EPIPE, Errno::EINVAL
         @socket = nil
@@ -56,8 +45,8 @@ module GraphiteAPI
     
     def socket
       if @socket.nil? || @socket.closed?
-        debug [:connector,[host,port]]
-        @socket = ::TCPSocket.new host, port
+        Logger.debug [:connector,[@host,@port]]
+        @socket = ::TCPSocket.new @host, @port
       end
       @socket
     end

@@ -41,9 +41,7 @@ begin
       socket.puts("shuki.tuki3 10 123456789\n")
     end
     
-    EventMachine::PeriodicTimer.new(10) do
-      EM.stop
-    end
+    EventMachine::PeriodicTimer.new(10,&EM.method(:stop))
   }
 
   sleep 1

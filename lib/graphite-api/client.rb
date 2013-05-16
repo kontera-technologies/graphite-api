@@ -1,63 +1,17 @@
-# -----------------------------------------------------
-# Graphite Client
-# Send metrics to graphite (or to some kind of middleware/proxy) 
-# -----------------------------------------------------
-# Usage
-#
-#  client = GraphiteAPI::Client.new(  
-#   :graphite => "graphite.example.com:2003",
-#   :prefix   => ["example","prefix"], # add example.prefix to each key
-#   :slice    => 60.seconds            # results are aggregated in 60 seconds slices
-#   :interval => 60.seconds            # send to graphite every 60 seconds
-#  )
-#  
-#  client.webServer.web01.loadAvg 10.7 
-#  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
-
-#  client.metrics "webServer.web01.loadAvg" => 10.7
-#  # => example.prefix.webServer.web01.loadAvg 10.7 time.now.to_i
-#  
-#  client.metrics({
-#   "webServer.web01.loadAvg"  => 10.7,
-#   "webServer.web01.memUsage" => 40
-#  },Time.at(1326067060))
-#  # => example.prefix.webServer.web01.loadAvg  10.7 1326067060
-#  # => example.prefix.webServer.web01.memUsage 40 1326067060
-# 
-#  #  Timers
-# client.every 10.seconds do |c|
-#   c.webServer.web01.uptime `uptime`.split.first.to_i
-#   # => example.prefix.webServer.web01.uptime 40 1326067060
-# end
-# 
-# client.every 52.minutes do |c|
-#   c.abcd.efghi.jklmnop.qrst 12 
-#   # => example.prefix.abcd.efghi.jklmnop.qrst 12 1326067060
-# end
-# 
-# client.join # wait...
-# -----------------------------------------------------
-
 require File.expand_path '../utils', __FILE__
 
 module GraphiteAPI
   class Client
     include Utils
 
-    private_reader :options, :buffer, :connectors, :direct_send
+    private_reader :options, :buffer, :connectors
 
     def initialize opt
       @options = build_options validate opt.clone
       @buffer  = GraphiteAPI::Buffer.new options
       @connectors = GraphiteAPI::Connector::Group.new options
-      @direct_send = @options[:interval] == 0
-
-      if direct_send
-        options[:slice] = 1
-      else
-        every(options.fetch(:interval),&method(:send_metrics))
-      end
-
+      
+      every options[:interval], &method(:send_metrics) if !options[:direct]
     end
 
     def_delegator Zscheduler, :loop, :join
@@ -69,7 +23,7 @@ module GraphiteAPI
 
     def metrics metric, time = Time.now 
       buffer.push :metric => metric, :time => time
-      send_metrics if direct_send
+      send_metrics if options[:direct]
     end
 
     alias_method :add_metrics, :metrics
@@ -104,26 +58,21 @@ module GraphiteAPI
     protected
 
     class Proxy
-      include Utils
-
       def initialize client
-        @client = client
-        @keys = []
+        @client, @keys = client, []
       end
 
-      private_reader :client, :keys
-
       def method_missing m, *args, &block
-        keys.push m
-        if keys.size > 10 # too deep
-          super
+        if @keys.push(m).size > 10 
+          super # too deep
         elsif args.any?
-          client.metrics(Hash[keys.join("."),args.first],*args[1..-1])
+          @client.metrics Hash[
+            @keys.join('.'), args.first
+          ], *args[1..-1]
         else
           self
         end
       end
-
     end
 
     def validate options
@@ -136,6 +85,8 @@ module GraphiteAPI
       default_options.tap do |options_hash|
         options_hash[:backends].push expand_host opt.delete :graphite
         options_hash.merge! opt
+        options_hash[:direct] = options_hash[:interval] == 0
+        options_hash[:slice] = 1 if options_hash[:direct]
       end
     end
 
