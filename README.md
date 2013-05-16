@@ -185,8 +185,6 @@ GraphiteAPI::Logger.init(
 )
 ```
 
-> more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
-
 ## GraphiteAPI-Middleware Usage
 * After installing GraphiteAPI gem, the `graphite-middleware` command should be available.
 
@@ -244,9 +242,6 @@ client.example.middleware.value 10.2
 client.example.middleware.value2 27
 client.bla.bla.value2 27
 ```
-
-> more examples can be found [here](https://github.com/kontera-technologies/graphite-api/tree/master/examples).
-
 
 ## Example Setup
 <br/>
