@@ -20,4 +20,8 @@ module GraphiteAPI
     GraphiteAPI::VERSION
   end
   
+  def self.new options
+    Client.new options
+  end
+  
 end

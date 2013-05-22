@@ -50,7 +50,7 @@ Creating a new client instance
 ```ruby
 require 'graphite-api'
 
-GraphiteAPI::Client.new(
+GraphiteAPI.new(
   graphite: "graphite.example.com:2003", # required argument
   prefix: ["example","prefix"],          # add example.prefix to each key
   slice: 60,                             # results are aggregated in 60 seconds slices
@@ -64,7 +64,7 @@ Adding simple metrics
 ```ruby
 require 'graphite-api'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 client.metrics "webServer.web01.loadAvg" => 10.7
 # => webServer.web01.loadAvg 10.7 time.now.to_i
@@ -81,7 +81,7 @@ Adding metrics with timestamp
 ```ruby
 require 'graphite-api'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 client.metrics({
   "webServer.web01.loadAvg"  => 10.7,
@@ -95,7 +95,7 @@ Increment records
 ```ruby
 require 'graphite-api'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 client.increment("jobs_in_queue", "num_errors")
 # => jobs_in_queue 1 Time.now.to_i
@@ -115,7 +115,7 @@ Some DSL sweetness
 ```ruby
 require 'graphite-api'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 client.webServer.web01.loadAvg 10.7 
 # => webServer.web01.loadAvg 10.7 time.now.to_i
@@ -128,7 +128,7 @@ Built-in timers support
 ```ruby
 require 'graphite-api'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 # lets send the metric every 120 seconds
 client.every(120) do |c|
@@ -141,7 +141,7 @@ Built-in extension for time declarations stuff, like 2.minutes, 3.hours etc...
 require 'graphite-api'
 require 'graphite-api/core_ext/numeric'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 client.every 10.seconds do |c|
   c.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i)
@@ -157,7 +157,7 @@ Make your own custom metrics daemons, using `client#join`
 require 'graphite-api'
 require 'graphite-api/core_ext/numeric'
 
-client = GraphiteAPI::Client.new( graphite: 'graphite:2003' )
+client = GraphiteAPI.new( graphite: 'graphite:2003' )
 
 client.every 26.minutes do |c|
   c.metrics("webServer.shuki.stats" => 10)
@@ -237,7 +237,7 @@ example.middleware.value2 99 1334929231
 
 ```ruby
 require 'graphite-api'
-client = GraphiteAPI::Client.new(:graphite => 'graphite-middleware-node:2005')
+client = GraphiteAPI.new(:graphite => 'graphite-middleware-node:2005')
 client.example.middleware.value 10.2 
 client.example.middleware.value2 27
 client.bla.bla.value2 27

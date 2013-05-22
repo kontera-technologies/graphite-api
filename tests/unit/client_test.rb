@@ -2,6 +2,10 @@ require_relative "../minitest_helper"
 
 module GraphiteAPI
   class ClientTester < Unit::TestCase
+    
+    def test_nicer_method_to_get_client
+      assert_kind_of ::GraphiteAPI::Client, ::GraphiteAPI.new({:graphite => 'shuki'})
+    end
 
     def test_initialize
       assert_raises(ArgumentError) { Client.new }
