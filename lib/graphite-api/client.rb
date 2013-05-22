@@ -22,6 +22,7 @@ module GraphiteAPI
     end
 
     def metrics metric, time = Time.now 
+      return if metric.empty?
       buffer.push :metric => metric, :time => time
       send_metrics if options[:direct]
     end
