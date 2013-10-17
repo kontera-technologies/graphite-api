@@ -11,7 +11,7 @@ module GraphiteAPI
       @buffer  = GraphiteAPI::Buffer.new options
       @connectors = GraphiteAPI::Connector::Group.new options
       
-      every options[:interval], &method(:send_metrics) if !options[:direct]
+      Zscheduler.every(options[:interval]){ send_metrics } unless options[:direct]
     end
 
     def_delegator Zscheduler, :loop, :join
