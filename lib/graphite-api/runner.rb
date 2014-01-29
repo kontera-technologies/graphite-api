@@ -36,7 +36,7 @@ module GraphiteAPI
         Middleware.start options
       rescue Interrupt
         Logger.info "Shutting down..."
-        Zscheduler.shutdown
+        Zscheduler.stop
       end
     end
 
