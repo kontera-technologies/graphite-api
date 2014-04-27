@@ -126,6 +126,7 @@ module GraphiteAPI
         buff.stream(" 213232\n",:client2)
         buff.stream("a.b 1211 121212\nc.d 1211 121212\n",:client2)
         buff.stream("test.x 10 1334771088\ntest.z 10 1334771088\n",:client2)
+        buff.stream("rabbitmq-monitoring-pack.erans-mbp.search_terms_agg_consume.deliver_rate 319.0 1398605178\n",:client3)
         assert_equal( 
           [
             ["test.shuki.tuki",  246.0,  1334850240],
@@ -137,7 +138,8 @@ module GraphiteAPI
             ["a.b",             1211.0,      121200],
             ["c.d",             1211.0,      121200],
             ["test.x",            10.0,  1334771040],
-            ["test.z",            10.0,  1334771040]
+            ["test.z",            10.0,  1334771040],
+            ["rabbitmq-monitoring-pack.erans-mbp.search_terms_agg_consume.deliver_rate", 319.0, 1398605160]
           ],
           buff.pull)
         

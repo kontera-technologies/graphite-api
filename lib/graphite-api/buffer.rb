@@ -25,7 +25,7 @@ module GraphiteAPI
     
     CHARS_TO_BE_IGNORED = ["\r"]
     END_OF_STREAM = "\n"
-    VALID_MESSAGE = /^[\w|\.]+ \d+(?:\.|\d)* \d+$/
+    VALID_MESSAGE = /^[\w|\.|-]+ \d+(?:\.|\d)* \d+$/
     
     def initialize options
       @options = options

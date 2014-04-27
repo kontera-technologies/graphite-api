@@ -13,15 +13,17 @@ if ENV['with_coverage']
   SimpleCov.start { add_filter "/tests/" }
 end
 
+gem 'minitest'
 require 'minitest/autorun'
-require 'turn/autorun'
-require 'mocha'
+require "mocha/mini_test"
 
 require_relative "../lib/graphite-api"
 
+Minitest::Unit::TestCase
+
 module GraphiteAPI
   module Unit
-    class TestCase < ::Minitest::Unit::TestCase
+    class TestCase < Minitest::Test
     end
   end
   class Zscheduler

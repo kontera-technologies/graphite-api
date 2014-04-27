@@ -11,7 +11,7 @@ end
 
 task(:test => :functional) { ENV['with_coverage'] = "true" }
 
-Rake::TestTask.new(:test) do |t|
+Rake::TestTask.new do |t|
   t.libs << "tests"
   t.pattern = "tests/**/*_test.rb"
 end
