@@ -14,12 +14,11 @@ if ENV['with_coverage']
 end
 
 gem 'minitest'
+require 'minitest'
 require 'minitest/autorun'
 require "mocha/mini_test"
 
 require_relative "../lib/graphite-api"
-
-Minitest::Unit::TestCase
 
 module GraphiteAPI
   module Unit
