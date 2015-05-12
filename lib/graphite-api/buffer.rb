@@ -76,7 +76,7 @@ module GraphiteAPI
       data.map do |time, hash|
         hash.map do |key, value|
           value = cache.incr(time,key,value) if cache
-          results = ["#{prefix}#{key}",("%.2f"%value).to_f, time]
+          results = ["#{prefix}#{key}",("%f"%value).to_f, time]
           format == :string ? results.join(" ") : results
         end
       end.flatten(1)
