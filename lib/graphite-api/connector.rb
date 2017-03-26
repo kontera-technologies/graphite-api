@@ -28,12 +28,13 @@ module GraphiteAPI
     end
     
     def puts message
+      counter = 0
       begin
         Logger.debug [:connector,:puts,[@host, @port].join(":"),message]
         socket.puts message + "\n"
       rescue Errno::EPIPE, Errno::EINVAL, Errno::ETIMEDOUT
         @socket = nil
-      retry
+        (counter += 1) <= 5 ? retry : raise
       end
     end
     

@@ -1,1 +1,1 @@
-rvm use ruby@graphite-api-gems --create
+rvm use ruby-2.3.3@graphite-api-gems --create
