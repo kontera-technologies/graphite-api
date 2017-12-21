@@ -111,19 +111,6 @@ client.increment("jobs_in_queue", "num_errors", by: 20, time: Time.at(123456))
 
 ```
 
-Some DSL sweetness
-```ruby
-require 'graphite-api'
-
-client = GraphiteAPI.new( graphite: 'graphite:2003' )
-
-client.webServer.web01.loadAvg 10.7 
-# => webServer.web01.loadAvg 10.7 time.now.to_i
-
-client.webServer.web01.blaBlaBla(29.1, Time.at(9999999999))
-# => webServer.web01.blaBlaBla 29.1 9999999999
-```
-
 Built-in timers support
 ```ruby
 require 'graphite-api'
@@ -168,8 +155,7 @@ end
 client.join # wait for ever...
 ```
 
-Logging support
-
+Logger
 ```ruby
 # Provide an external logger
 require 'graphite-api'
@@ -179,10 +165,7 @@ GraphiteAPI::Logger.logger = ::Logger.new(STDOUT)
 GraphiteAPI::Logger.logger.level = ::Logger::DEBUG
 
 # Or use the built-in one
-GraphiteAPI::Logger.init(
-  :level => :debug,
-  :std   => 'logger.out' # or STDOUT | STDERR
-)
+GraphiteAPI::Logger.init level: :debug, dev: 'logger.out' # or STDOUT | STDERR
 ```
 
 ## GraphiteAPI-Middleware Usage

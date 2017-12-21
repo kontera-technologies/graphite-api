@@ -19,10 +19,10 @@ module GraphiteAPI
       attr_accessor :logger
       
       # :level => :debug
-      # :std => out|err|file-name
+      # :dev => out|err|file-name
       def init(options)
-        self.logger = ::Logger.new(options[:std] || STDOUT)
-        self.logger.level= ::Logger.const_get "#{options[:level].to_s.upcase}"
+        self.logger = ::Logger.new options.fetch(:dev, STDOUT)
+        self.logger.level= ::Logger.const_get options[:level].to_s.upcase
       end
       
       def method_missing(m,*args,&block)

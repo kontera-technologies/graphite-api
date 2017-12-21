@@ -32,7 +32,7 @@ module GraphiteAPI
       begin
         Logger.debug [:connector,:puts,[@host, @port].join(":"),message]
         socket.puts message + "\n"
-      rescue Errno::EPIPE, Errno::EINVAL, Errno::ETIMEDOUT
+      rescue Exception
         @socket = nil
         (counter += 1) <= 5 ? retry : raise
       end

@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
   s.bindir                = "bin"
 
   s.add_dependency 'eventmachine','>= 0.3.3'
-  s.add_dependency 'zscheduler',  '>= 0.0.3'
+  s.add_dependency 'zscheduler',  '>= 0.0.7'
 end

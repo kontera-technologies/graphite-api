@@ -11,7 +11,7 @@ module GraphiteAPI
       @buffer  = GraphiteAPI::Buffer.new options
       @connectors = GraphiteAPI::Connector::Group.new options
       
-      Zscheduler.every(options[:interval]){ send_metrics } unless options[:direct]
+      Zscheduler.every(options[:interval]) { send_metrics } unless options[:direct]
     end
 
     def_delegator Zscheduler, :loop, :join
@@ -52,29 +52,7 @@ module GraphiteAPI
       sleep while buffer.new_records?
     end
 
-    def method_missing m, *args, &block
-      Proxy.new( self ).send(m,*args,&block)
-    end
-
     protected
-
-    class Proxy
-      def initialize client
-        @client, @keys = client, []
-      end
-
-      def method_missing m, *args, &block
-        if @keys.push(m).size > 10 
-          super # too deep
-        elsif args.any?
-          @client.metrics Hash[
-            @keys.join('.'), args.first
-          ], *args[1..-1]
-        else
-          self
-        end
-      end
-    end
 
     def validate options
       options.tap do |opt|
@@ -93,6 +71,8 @@ module GraphiteAPI
 
     def send_metrics
       connectors.publish buffer.pull :string if buffer.new_records?
+    rescue Exception => e
+      Zscheduler.init_reactor? ? raise : Logger.error("Publish Error: #{e}\n#{e.backtrace.join("\n")}")
     end
 
   end
