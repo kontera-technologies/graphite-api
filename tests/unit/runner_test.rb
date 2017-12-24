@@ -12,7 +12,7 @@ module GraphiteAPI
     
     def test_run
       get_obj(daemonize: true, pid: 10, log_file: 'log', log_level: :debug).tap do |obj|
-        Logger.expects(:init).with(std: 'log', level: :debug)
+        Logger.expects(:init).with(dev: 'log', level: :debug)
         obj.expects(:daemonize).with(10)
         obj.run
       end

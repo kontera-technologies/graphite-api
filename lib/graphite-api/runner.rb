@@ -10,7 +10,7 @@ module GraphiteAPI
     end
     
     def run
-      Logger.init Hash[[:std,:level].zip options.values_at(:log_file, :log_level) ]
+      Logger.init Hash[[:dev,:level].zip options.values_at(:log_file, :log_level) ]
       options[:daemonize] ? daemonize(options[:pid], &method(:run!)) : run!
     end
 
