@@ -10,7 +10,7 @@ module GraphiteAPI
         opts.define_head ""
 
         opts.on("-g", "--graphite HOST:PORT","graphite host, in HOST:PORT format (can be specified multiple times)") do |graphite|
-          options[:backends] << Utils::expand_host(graphite)
+          options[:backends].push graphite
         end
 
         opts.on("-p", "--port PORT","listening port (default #{options[:port]})") do |port|

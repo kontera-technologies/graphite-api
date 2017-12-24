@@ -50,11 +50,6 @@ module GraphiteAPI
       end
     end
     
-    def test_stop
-      Zscheduler.expects :stop
-      get_client.stop
-    end
-    
     def test_every
       client = get_client
       block = proc {'zubi'}
@@ -63,16 +58,6 @@ module GraphiteAPI
       client.every(frequency,&block)
     end
     
-    def test_fancy_metrics
-      get_client.tap do |client|
-        client.expects(:metrics).with("a.b.c.d.e.f.g" => 9)
-        client.a.b.c.d.e.f.g 9
-        
-        client.expects(:metrics).with({"a.b.c.d.e.f.g" => 9}, Time.at(11111))
-        client.a.b.c.d.e.f.g(9, Time.at(11111))
-      end
-    end
-
     def test_client_should_be_thread_safe
       client = get_client
       time1 = Time.at(1234567) # 1234560
@@ -81,10 +66,8 @@ module GraphiteAPI
       (1..10).map do
         Thread.new do
           1.upto(1000) do
-            client.shuki1(1,time1)
-            client.shuki2(1,time1)
-            client.shuki3(1,time2)
-            client.shuki4(1,time2)
+            client.metrics({"shuki1" => 1, "shuki2" => 1},time1)
+            client.metrics({"shuki3" => 1, "shuki4" => 1},time2)
           end
         end
       end.map(&:join)
@@ -119,7 +102,7 @@ module GraphiteAPI
 
     private
 
-    def get_client(options = Utils::default_options) 
+    def get_client(options = GraphiteAPI::Client::DEFAULT_OPTIONS) 
       Zscheduler.expects(:every)
       Client.new(options.merge(:graphite => "localhost", :interval => 60))
     end

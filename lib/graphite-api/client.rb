@@ -1,10 +1,23 @@
-require File.expand_path '../utils', __FILE__
-
+require 'forwardable'
+    
 module GraphiteAPI
   class Client
-    include Utils
+    extend Forwardable
 
-    private_reader :options, :buffer, :connectors
+    DEFAULT_OPTIONS = {
+      :backends => [],
+      :cleaner_interval => 43200,
+      :port => 2003,
+      :log_level => :info,
+      :cache => nil,
+      :host => "localhost",
+      :prefix => [],
+      :interval => 0,
+      :slice => 60,
+      :pid => "/tmp/graphite-middleware.pid"
+    }
+
+    attr_reader :options, :buffer, :connectors
 
     def initialize opt
       @options = build_options validate opt.clone
@@ -61,8 +74,8 @@ module GraphiteAPI
     end
 
     def build_options opt
-      default_options.tap do |options_hash|
-        options_hash[:backends].push expand_host opt.delete :graphite
+      Marshal.load(Marshal.dump(DEFAULT_OPTIONS)).tap do |options_hash|
+        options_hash[:backends].push opt.delete :graphite
         options_hash.merge! opt
         options_hash[:direct] = options_hash[:interval] == 0
         options_hash[:slice] = 1 if options_hash[:direct]
@@ -71,8 +84,6 @@ module GraphiteAPI
 
     def send_metrics
       connectors.publish buffer.pull :string if buffer.new_records?
-    rescue Exception => e
-      Zscheduler.init_reactor? ? raise : Logger.error("Publish Error: #{e}\n#{e.backtrace.join("\n")}")
     end
 
   end

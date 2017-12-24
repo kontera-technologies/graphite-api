@@ -2,7 +2,6 @@ require 'optparse'
 
 module GraphiteAPI
   class Runner
-    include Utils
     
     def initialize argv
       CLI.parse argv, options
@@ -10,7 +9,7 @@ module GraphiteAPI
     end
     
     def run
-      Logger.init Hash[[:std,:level].zip options.values_at(:log_file, :log_level) ]
+      Logger.init Hash[[:dev,:level].zip options.values_at(:log_file, :log_level) ]
       options[:daemonize] ? daemonize(options[:pid], &method(:run!)) : run!
     end
 
@@ -41,7 +40,7 @@ module GraphiteAPI
     end
 
     def options
-      @options ||= Utils.default_middleware_options
+      @options ||= Client::DEFAULT_OPTIONS.merge interval: 60
     end
 
     def validate_options

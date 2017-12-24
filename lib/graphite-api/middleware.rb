@@ -16,34 +16,30 @@
 #   slice            send to graphite in X seconds slices (default is 60)
 #   log_level        info 
 # -----------------------------------------------------
-
 require 'eventmachine'
 require 'socket'
-require File.expand_path '../utils', __FILE__
 
 module GraphiteAPI
   class Middleware < EventMachine::Connection
 
-    include Utils
-    
     def initialize buffer
       @buffer = buffer and super
     end
     
-    private_reader :buffer, :client_id
+    attr_reader :buffer, :client_id
     
     def post_init
       @client_id = peername
-      debug [:middleware, :connecting, client_id]
+      Logger.debug [:middleware, :connecting, client_id]
     end
 
     def receive_data data
-      debug [:middleware, :message, client_id, data]
+      Logger.debug [:middleware, :message, client_id, data]
       buffer.stream data, client_id
     end
 
     def unbind
-      debug [:middleware, :disconnecting, client_id]
+      Logger.debug [:middleware, :disconnecting, client_id]
     end
     
     def peername
@@ -73,5 +69,5 @@ module GraphiteAPI
       end  
     end
     
-  end # Middleware
-end # GraphiteAPI
+  end 
+end 

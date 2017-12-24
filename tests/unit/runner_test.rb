@@ -12,7 +12,7 @@ module GraphiteAPI
     
     def test_run
       get_obj(daemonize: true, pid: 10, log_file: 'log', log_level: :debug).tap do |obj|
-        Logger.expects(:init).with(std: 'log', level: :debug)
+        Logger.expects(:init).with(dev: 'log', level: :debug)
         obj.expects(:daemonize).with(10)
         obj.run
       end
@@ -22,15 +22,6 @@ module GraphiteAPI
         obj.expects(:run)
         obj.run
       end
-    end
-    
-    def test_options
-      get_obj(default_options(shuki: :tuki)).tap do |obj|
-        assert_equal default_options(shuki: :tuki), obj.__send__(:options)
-        Utils.expects(:default_middleware_options).returns(:zevel)
-        obj.instance_variable_set(:@options,nil)
-        assert_equal obj.__send__(:options), :zevel
-      end        
     end
     
     def test_run!
@@ -62,7 +53,7 @@ module GraphiteAPI
     end
     
     def default_options hash
-      Utils.default_options.merge(hash)
+      GraphiteAPI::Client::DEFAULT_OPTIONS.merge hash
     end
     
   end

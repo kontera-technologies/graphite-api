@@ -1,3 +1,5 @@
+$:.unshift File.expand_path("../../lib",__FILE__)
+
 if ENV['with_coverage']
   require 'simplecov'
   require 'simplecov-rcov'
