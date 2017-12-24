@@ -1,4 +1,5 @@
-$:.unshift File.expand_path File.join(File.dirname(__FILE__), '../../lib')
+$:.unshift File.expand_path("../../../lib", __FILE__)
+
 Dir.chdir File.dirname __FILE__
 
 require 'socket'
@@ -12,22 +13,9 @@ module FakeCarboonDaemon
   end
 
   def receive_data data
-    p data
     @data.push data
   end
 end
-
-=begin
-Thread.new do
-  EventMachine.run do
-    EventMachine.start_server("0.0.0.0",1234,FakeCarboonDaemon,[])
-  end
-end
-socket = TCPSocket.new("0.0.0.0", 1234)
-socket.puts("fuck.you 1.3 123456789")
-sleep 10
-exit
-=end
 
 middleware_port  = 9141
 fake_carbon_port = 9876
@@ -35,9 +23,9 @@ middleware_log_file = File.expand_path("../../../middleware.out",__FILE__)
 
 File.new(middleware_log_file,'w').close
 
-options = %W(--port #{middleware_port} --graphite localhost:#{fake_carbon_port} --interval 10 -L debug -l #{middleware_log_file})
+options = %W(--port #{middleware_port} --graphite tcp://localhost:#{fake_carbon_port} --interval 10 -L debug -l #{middleware_log_file})
 
-pid = Process.spawn("ruby","./../../bin/graphite-middleware",*options)
+pid = Process.spawn("ruby", "./../../bin/graphite-middleware", *options)
 
 sleep 5
 
@@ -45,9 +33,9 @@ begin
   data = []
   EventMachine.run {
     EventMachine.start_server("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
+    EventMachine.open_datagram_socket("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
 
     socket = TCPSocket.new("0.0.0.0",middleware_port)
-    socket.puts "zevel.zevel 23 123456789\n"
     
     1.upto(1000) do
       socket.puts("shuki.tuki1 1.1 123456789\n")

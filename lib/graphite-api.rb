@@ -4,8 +4,6 @@ require 'graphite-api/client'
 require 'graphite-api/cache'
 require 'graphite-api/connector'
 require 'graphite-api/middleware'
-require 'graphite-api/runner'
-require 'graphite-api/cli'
 require 'graphite-api/buffer'
 require 'graphite-api/logger'
 

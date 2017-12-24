@@ -45,14 +45,13 @@ module GraphiteAPI
       def socket
         @socket ||= begin
           host, port = @uri.host, @uri.port
-          timeout = Hash[URI.decode_www_form(@uri.query.to_s)].fetch("timeout", 5)
-          addr = Socket.getaddrinfo host, nil
+          timeout = Hash[URI.decode_www_form(@uri.query.to_s)].fetch("timeout", 1)
+          addr = Socket.getaddrinfo host, nil, :INET
           sockaddr = Socket.pack_sockaddr_in port, addr[0][3]
 
           sock = Socket.new(Socket.const_get(addr[0][0]), Socket::SOCK_STREAM, 0)
           sock.setsockopt Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1
           begin
-            sleep 1
             sock.connect_nonblock sockaddr
           rescue IO::WaitWritable
             if IO.select nil, [sock], nil, timeout
@@ -80,7 +79,7 @@ module GraphiteAPI
       end
 
       def publish messages
-        Logger.debug [:connector_group, :publish, messages.size, @connectors]
+        Logger.debug [:connector_group, :publish, messages, @connectors]
         Array(messages).each { |msg| @connectors.map {|c| c.puts msg} }
       end
     end
@@ -89,7 +88,7 @@ module GraphiteAPI
 
     def initialize uri
       @uri = URI.parse uri
-      @uri = @uri.host ? uri : URI.parse("tcp://#{uri}")
+      @uri = @uri.host ? @uri : URI.parse("tcp://#{uri}")
     end
 
     def puts message
@@ -112,7 +111,6 @@ module GraphiteAPI
       end
       @socket
     end
-
 
   end
 end
