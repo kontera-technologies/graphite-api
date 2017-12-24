@@ -53,7 +53,7 @@ module GraphiteAPI
     end
     
     def default_options hash
-      GraphiteAPI::Client::DEFAULT_OPTIONS.merge hash
+      Client.default_options.merge hash
     end
     
   end

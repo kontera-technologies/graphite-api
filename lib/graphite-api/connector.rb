@@ -45,13 +45,14 @@ module GraphiteAPI
       def socket
         @socket ||= begin
           host, port = @uri.host, @uri.port
-          timeout = Hash[URI.decode_www_form(@uri.query.to_s)].fetch("timeout", 1)
+          timeout = Hash[URI.decode_www_form(@uri.query.to_s)].fetch("timeout", 5)
           addr = Socket.getaddrinfo host, nil
           sockaddr = Socket.pack_sockaddr_in port, addr[0][3]
 
           sock = Socket.new(Socket.const_get(addr[0][0]), Socket::SOCK_STREAM, 0)
           sock.setsockopt Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1
           begin
+            sleep 1
             sock.connect_nonblock sockaddr
           rescue IO::WaitWritable
             if IO.select nil, [sock], nil, timeout
@@ -88,6 +89,7 @@ module GraphiteAPI
 
     def initialize uri
       @uri = URI.parse uri
+      @uri = @uri.host ? uri : URI.parse("tcp://#{uri}")
     end
 
     def puts message

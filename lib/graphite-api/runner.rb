@@ -40,7 +40,7 @@ module GraphiteAPI
     end
 
     def options
-      @options ||= Client::DEFAULT_OPTIONS.merge interval: 60
+      @options ||= Client.default_options.merge interval: 60
     end
 
     def validate_options

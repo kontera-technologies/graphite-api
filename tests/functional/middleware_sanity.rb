@@ -12,9 +12,22 @@ module FakeCarboonDaemon
   end
 
   def receive_data data
+    p data
     @data.push data
   end
 end
+
+=begin
+Thread.new do
+  EventMachine.run do
+    EventMachine.start_server("0.0.0.0",1234,FakeCarboonDaemon,[])
+  end
+end
+socket = TCPSocket.new("0.0.0.0", 1234)
+socket.puts("fuck.you 1.3 123456789")
+sleep 10
+exit
+=end
 
 middleware_port  = 9141
 fake_carbon_port = 9876
@@ -34,6 +47,7 @@ begin
     EventMachine.start_server("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
 
     socket = TCPSocket.new("0.0.0.0",middleware_port)
+    socket.puts "zevel.zevel 23 123456789\n"
     
     1.upto(1000) do
       socket.puts("shuki.tuki1 1.1 123456789\n")
@@ -44,7 +58,6 @@ begin
     EventMachine::PeriodicTimer.new(10,&EM.method(:stop))
   }
 
-  sleep 1
   expected = [
     "shuki.tuki1 1100.0 123456780",
     "shuki.tuki2 10000.0 123456780",

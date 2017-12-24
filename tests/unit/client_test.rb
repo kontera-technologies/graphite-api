@@ -102,7 +102,7 @@ module GraphiteAPI
 
     private
 
-    def get_client(options = GraphiteAPI::Client::DEFAULT_OPTIONS) 
+    def get_client(options = Client.default_options) 
       Zscheduler.expects(:every)
       Client.new(options.merge(:graphite => "localhost", :interval => 60))
     end

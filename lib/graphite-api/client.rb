@@ -4,19 +4,6 @@ module GraphiteAPI
   class Client
     extend Forwardable
 
-    DEFAULT_OPTIONS = {
-      :backends => [],
-      :cleaner_interval => 43200,
-      :port => 2003,
-      :log_level => :info,
-      :cache => nil,
-      :host => "localhost",
-      :prefix => [],
-      :interval => 0,
-      :slice => 60,
-      :pid => "/tmp/graphite-middleware.pid"
-    }
-
     attr_reader :options, :buffer, :connectors
 
     def initialize opt
@@ -65,6 +52,21 @@ module GraphiteAPI
       sleep while buffer.new_records?
     end
 
+    def self.default_options
+      {
+        :backends => [],
+        :cleaner_interval => 43200,
+        :port => 2003,
+        :log_level => :info,
+        :cache => nil,
+        :host => "localhost",
+        :prefix => [],
+        :interval => 0,
+        :slice => 60,
+        :pid => "/tmp/graphite-middleware.pid"
+      }
+    end
+
     protected
 
     def validate options
@@ -74,7 +76,7 @@ module GraphiteAPI
     end
 
     def build_options opt
-      Marshal.load(Marshal.dump(DEFAULT_OPTIONS)).tap do |options_hash|
+      self.class.default_options.tap do |options_hash|
         options_hash[:backends].push opt.delete :graphite
         options_hash.merge! opt
         options_hash[:direct] = options_hash[:interval] == 0
