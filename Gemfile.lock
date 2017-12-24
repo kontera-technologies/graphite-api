@@ -3,7 +3,10 @@ GEM
   specs:
     docile (1.1.5)
     eventmachine (1.2.5)
+    eventmachine (1.2.5-java)
+    jruby-openssl (0.9.21-java)
     json (1.8.2)
+    json (1.8.2-java)
     metaclass (0.0.4)
     minitest (5.6.1)
     mocha (1.1.0)
@@ -20,6 +23,7 @@ GEM
       eventmachine
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES
@@ -33,4 +37,4 @@ DEPENDENCIES
   zscheduler (>= 0.0.5)
 
 BUNDLED WITH
-   1.14.5
+   1.16.1

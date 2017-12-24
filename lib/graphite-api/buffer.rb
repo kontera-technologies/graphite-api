@@ -68,8 +68,7 @@ module GraphiteAPI
       while new_records?
         break if ( counter += 1 ) > 1_000_000 # TODO: fix this
         hash = queue.pop
-        time = normalize_time(hash[:time],options[:slice])
-        hash[:metric].each { |k,v| data[time][k] += v.to_f }
+        hash[:metric].each {|k,v| data[normalize_time(hash[:time],options[:slice])][k] += v.to_f}
       end
       
       data.map do |time, hash|
@@ -81,15 +80,15 @@ module GraphiteAPI
       end.flatten(1)
     end
     
-    def new_records?
-      !queue.empty?
-    end
-    
     def inspect
       "#<GraphiteAPI::Buffer:%s @quque#size=%s @streamer=%s>" % 
         [ object_id, queue.size, streamer]
     end
     
+    def new_records?
+      !queue.empty?
+    end
+
     private
 
     def normalize_time time, slice

@@ -4,6 +4,9 @@ module GraphiteAPI
   class Client
     extend Forwardable
 
+    def_delegator Zscheduler, :loop, :join
+    def_delegator Zscheduler, :stop
+
     attr_reader :options, :buffer, :connectors
 
     def initialize opt
@@ -13,9 +16,6 @@ module GraphiteAPI
       
       Zscheduler.every(options[:interval]) { send_metrics } unless options[:direct]
     end
-
-    def_delegator Zscheduler, :loop, :join
-    def_delegator Zscheduler, :stop
 
     def every interval, &block
       Zscheduler.every( interval ) { block.arity == 1 ? block.call(self) : block.call }
@@ -27,24 +27,12 @@ module GraphiteAPI
       send_metrics if options[:direct]
     end
 
-    alias_method :add_metrics, :metrics
-
-    # increment keys
-    #
-    # increment("key1","key2")
-    # => metrics("key1" => 1, "key2" => 1)
-    # 
-    # increment("key1","key2", {:by => 999})
-    # => metrics("key1" => 999, "key2" => 999)
-    #
-    # increment("key1","key2", {:time => Time.at(123456)})
-    # => metrics({"key1" => 1, "key2" => 1},Time.at(123456))
     def increment(*keys)
       opt = {}
       opt.merge! keys.pop if keys.last.is_a? Hash
       by = opt.fetch(:by,1)
       time = opt.fetch(:time,Time.now)
-      metric = keys.inject({}) {|h,k| h.tap { h[k] = by}}
+      metric = keys.inject({}) {|h,k| h.merge k => by }
       metrics(metric, time)
     end
 
