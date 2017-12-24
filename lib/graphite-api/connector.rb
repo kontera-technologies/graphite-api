@@ -88,7 +88,7 @@ module GraphiteAPI
 
     def initialize uri
       @uri = URI.parse uri
-      @uri = @uri.host ? @uri : URI.parse("tcp://#{uri}")
+      @uri = @uri.host ? @uri : URI.parse("udp://#{uri}")
     end
 
     def puts message
@@ -107,7 +107,7 @@ module GraphiteAPI
     def socket
       if @socket.nil? || @socket.closed?
         Logger.debug [:connector, :init, @uri]
-        @socket = @uri.scheme == "udp" ? UDPSocket.new(@uri) : TCPSocket.new(@uri)
+        @socket = @uri.scheme.eql?("tcp") ? TCPSocket.new(@uri) : UDPSocket.new(@uri)
       end
       @socket
     end
