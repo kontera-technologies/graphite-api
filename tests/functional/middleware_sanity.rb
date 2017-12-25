@@ -1,4 +1,5 @@
-$:.unshift File.expand_path File.join(File.dirname(__FILE__), '../../lib')
+$:.unshift File.expand_path("../../../lib", __FILE__)
+
 Dir.chdir File.dirname __FILE__
 
 require 'socket'
@@ -22,9 +23,9 @@ middleware_log_file = File.expand_path("../../../middleware.out",__FILE__)
 
 File.new(middleware_log_file,'w').close
 
-options = %W(--port #{middleware_port} --graphite localhost:#{fake_carbon_port} --interval 10 -L debug -l #{middleware_log_file})
+options = %W(--port #{middleware_port} --graphite tcp://localhost:#{fake_carbon_port} --interval 10 -L debug -l #{middleware_log_file})
 
-pid = Process.spawn("ruby","./../../bin/graphite-middleware",*options)
+pid = Process.spawn("ruby", "./../../bin/graphite-middleware", *options)
 
 sleep 5
 
@@ -32,6 +33,7 @@ begin
   data = []
   EventMachine.run {
     EventMachine.start_server("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
+    EventMachine.open_datagram_socket("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
 
     socket = TCPSocket.new("0.0.0.0",middleware_port)
     
@@ -44,7 +46,6 @@ begin
     EventMachine::PeriodicTimer.new(10,&EM.method(:stop))
   }
 
-  sleep 1
   expected = [
     "shuki.tuki1 1100.0 123456780",
     "shuki.tuki2 10000.0 123456780",

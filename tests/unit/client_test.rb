@@ -50,11 +50,6 @@ module GraphiteAPI
       end
     end
     
-    def test_stop
-      Zscheduler.expects :stop
-      get_client.stop
-    end
-    
     def test_every
       client = get_client
       block = proc {'zubi'}
@@ -107,7 +102,7 @@ module GraphiteAPI
 
     private
 
-    def get_client(options = Utils::default_options) 
+    def get_client(options = Client.default_options) 
       Zscheduler.expects(:every)
       Client.new(options.merge(:graphite => "localhost", :interval => 60))
     end

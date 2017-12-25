@@ -17,11 +17,9 @@ module GraphiteAPI
   class Logger
     class << self
       attr_accessor :logger
-      
-      # :level => :debug
-      # :dev => out|err|file-name
-      def init(options)
-        self.logger = ::Logger.new options.fetch(:dev, STDOUT)
+
+      def init options
+        self.logger = ::Logger.new options[:dev] ||  STDOUT
         self.logger.level= ::Logger.const_get options[:level].to_s.upcase
       end
       

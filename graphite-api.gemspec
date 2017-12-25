@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.homepage              = 'http://www.kontera.com'
   s.license               = 'LGPL-3.0'
   s.executables           = %w(graphite-middleware)
-  s.required_ruby_version = '>= 1.8.7'
+  s.required_ruby_version = '>= 1.9.3'
   s.rubyforge_project     = "graphite-api"
   s.files                 = %w(LICENSE README.md Rakefile) + Dir.glob("{bin,lib,test,tasks}/**/*")
   s.require_path          = "lib"

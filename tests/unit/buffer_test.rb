@@ -154,7 +154,7 @@ module GraphiteAPI
     
     private
     
-    def buffer options = Utils.default_options
+    def buffer options = Client.default_options
       Buffer.new options
     end
     

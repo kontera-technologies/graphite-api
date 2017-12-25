@@ -21,9 +21,8 @@ require 'set'
 
 module GraphiteAPI
   class Buffer
-    include Utils
     
-    CHARS_TO_BE_IGNORED = ["\r"]
+    IGNORE = ["\r"]
     END_OF_STREAM = "\n"
     VALID_MESSAGE = /^[\w|\.|-]+ \d+(?:\.|\d)* \d+$/
     
@@ -34,7 +33,7 @@ module GraphiteAPI
       @cache = Cache::Memory.new options if options[:cache]
     end
     
-    private_reader :queue, :options, :streamer, :cache
+    attr_reader :queue, :options, :streamer, :cache
     
     # this method isn't thread safe
     # use #push for multiple threads support
@@ -44,7 +43,7 @@ module GraphiteAPI
         streamer[client_id] += char 
         
         if closed_stream? streamer[client_id]
-          if valid_stream_message? streamer[client_id]
+          if streamer[client_id] =~ VALID_MESSAGE 
             push stream_message_to_obj streamer[client_id]
           end
           streamer.delete client_id
@@ -55,7 +54,7 @@ module GraphiteAPI
     # Add records to buffer
     # push({:metric => {'a' => 10},:time => Time.now})
     def push obj
-      debug [:buffer,:add, obj]
+      Logger.debug [:buffer,:add, obj]
       queue.push obj
       nil
     end
@@ -63,14 +62,13 @@ module GraphiteAPI
     alias_method :<<, :push
 
     def pull format = nil
-      data = nested_zero_hash
+      data = Hash.new {|h,k| h[k] = Hash.new {|h2,k2| h2[k2] = 0}}
 
       counter = 0
       while new_records?
         break if ( counter += 1 ) > 1_000_000 # TODO: fix this
         hash = queue.pop
-        time = normalize_time(hash[:time],options[:slice])
-        hash[:metric].each { |k,v| data[time][k] += v.to_f }
+        hash[:metric].each {|k,v| data[normalize_time(hash[:time],options[:slice])][k] += v.to_f}
       end
       
       data.map do |time, hash|
@@ -82,16 +80,21 @@ module GraphiteAPI
       end.flatten(1)
     end
     
-    def new_records?
-      !queue.empty?
-    end
-    
     def inspect
       "#<GraphiteAPI::Buffer:%s @quque#size=%s @streamer=%s>" % 
         [ object_id, queue.size, streamer]
     end
     
+    def new_records?
+      !queue.empty?
+    end
+
     private
+
+    def normalize_time time, slice
+      slice = 60 if slice.nil?
+      ((time || Time.now).to_i / slice * slice).to_i
+    end
     
     def stream_message_to_obj message
       parts = message.split
@@ -99,15 +102,11 @@ module GraphiteAPI
     end
     
     def invalid_char? char
-      CHARS_TO_BE_IGNORED.include? char
+      IGNORE.include? char
     end
     
     def closed_stream? string
       string[-1,1] == END_OF_STREAM
-    end
-    
-    def valid_stream_message? message
-      message =~ VALID_MESSAGE
     end
 
     def prefix

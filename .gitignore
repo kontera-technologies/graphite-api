@@ -6,3 +6,4 @@ coverage
 *.rbx
 delme.rb
 middleware.out
+.DS_store
