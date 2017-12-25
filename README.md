@@ -1,13 +1,9 @@
-# GraphiteAPI
-A Ruby API toolkit for [Graphite](http://graphite.wikidot.com/).
-
-## Description
+# Description
 **GraphiteAPI** provides two ways for interacting with **Graphite's Carbon Daemon**, the first is for Ruby applications using the **GraphiteAPI::Client**, the second is through **GraphiteAPI-Middleware** daemon, both methods implements Graphite's [plaintext protocol](http://graphite.readthedocs.org/en/1.0/feeding-carbon.html).
 
 ## Package Content
 * Includes a **simple** client for ruby.
 * Ships with a **GraphiteAPI-Middleware**, which is a lightweight, event-driven, aggregator daemon.
-* Only one gem dependency ( EventMachine ).
 * Utilities like scheduling and caching.
 
 ## Key Features
