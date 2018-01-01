@@ -247,11 +247,6 @@ client.bla.bla.value2 27
 <br/>
 <img src="https://raw.github.com/kontera-technologies/graphite-api/master/examples/middleware_t1.png" align="center">
 
-## TODO:
-* Better documentation
-* Use Redis for caching
-* Multiple backends via client as well
-
 ## Bugs
 
 If you find a bug, feel free to report it @ our [issues tracker](https://github.com/kontera-technologies/graphite-api/issues) on github.
