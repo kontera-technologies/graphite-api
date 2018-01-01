@@ -45,7 +45,7 @@ module GraphiteAPI
       def socket
         @socket ||= begin
           host, port = @uri.host, @uri.port
-          timeout = Hash[URI.decode_www_form(@uri.query.to_s)].fetch("timeout", 1)
+          timeout = Hash[URI.decode_www_form(@uri.query.to_s)].fetch("timeout", 1).to_i
           addr = Socket.getaddrinfo host, nil, :INET
           sockaddr = Socket.pack_sockaddr_in port, addr[0][3]
 
