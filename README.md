@@ -41,19 +41,31 @@ rake install
 ```
 
 ## Client Usage
-Creating a new client instance
+
+Creating a new UDP client
 
 ```ruby
 require 'graphite-api'
 
-GraphiteAPI.new(
-  graphite: "udp://graphite.example.com:2003", # required argument
-  prefix: ["example","prefix"],                # add example.prefix to each key
-  slice: 60,                                   # results are aggregated in 60 seconds slices
-  interval: 60,                                # send to graphite every 60 seconds
-                                               # default is 0 ( direct send )
-  cache: 4 * 60 * 60                           # set the max age in seconds for records reanimation
-)
+options = {
+  graphite: "udp://graphite.example.com:2003", # Required: valid URI {udp,tcp}://host:port/?timeout=seconds
+  prefix: ["example","prefix"],          # Optional: add example.prefix to each key
+  slice: 60,                             # Optional: results are aggregated in 60 seconds slices ( default is 60 )
+  interval: 60,                          # Optional: send to graphite every 60 seconds ( default is 0 - direct send )
+  cache: 4 * 60 * 60                     # Optional: set the max age in seconds for records reanimation ( default is 12 hours  )
+}
+
+client = GraphiteAPI.new options 
+```
+
+TCP Client
+```ruby
+client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003"
+```
+
+TCP Client with 30 seconds timeout
+```ruby
+client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003?timeout=30"
 ```
 
 Adding simple metrics
