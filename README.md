@@ -48,11 +48,20 @@ Creating a new UDP client
 require 'graphite-api'
 
 options = {
-  graphite: "udp://graphite.example.com:2003", # Required: valid URI {udp,tcp}://host:port/?timeout=seconds
-  prefix: ["example","prefix"],          # Optional: add example.prefix to each key
-  slice: 60,                             # Optional: results are aggregated in 60 seconds slices ( default is 60 )
-  interval: 60,                          # Optional: send to graphite every 60 seconds ( default is 0 - direct send )
-  cache: 4 * 60 * 60                     # Optional: set the max age in seconds for records reanimation ( default is 12 hours  )
+  # Required: valid URI {udp,tcp}://host:port/?timeout=seconds
+  graphite: "udp://graphite.example.com:2003", 
+  
+  # Optional: add example.prefix to each key
+  prefix: ["example","prefix"],
+  
+  # Optional: results are aggregated in 60 seconds slices ( default is 60 )
+  slice: 60,
+  
+  # Optional: send to graphite every 60 seconds ( default is 0 - direct send )
+  interval: 60,
+  
+  # Optional: set the max age in seconds for records reanimation ( default is 12 hours )
+  cache: 4 * 60 * 60
 }
 
 client = GraphiteAPI.new options 
