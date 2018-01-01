@@ -79,7 +79,7 @@ module GraphiteAPI
       end
 
       def publish messages
-        Logger.debug [:connector_group, :publish, messages, @connectors]
+        Logger.debug [:connector_group, :publish, messages.size, @connectors]
         Array(messages).each { |msg| @connectors.map {|c| c.puts msg} }
       end
     end
@@ -94,7 +94,7 @@ module GraphiteAPI
     def puts message
       counter = 0
       begin
-        Logger.debug [:connector, :puts, @uri, message]
+        Logger.debug [:connector, :puts, @uri.to_s, message]
         socket.puts message + "\n"
       rescue Exception
         @socket = nil
@@ -102,11 +102,14 @@ module GraphiteAPI
       end
     end
 
+    def inspect
+      "#<#{self.class}:#{object_id}: #{@uri}>"
+    end
+
     private 
 
     def socket
       if @socket.nil? || @socket.closed?
-        Logger.debug [:connector, :init, @uri]
         @socket = @uri.scheme.eql?("tcp") ? TCPSocket.new(@uri) : UDPSocket.new(@uri)
       end
       @socket
