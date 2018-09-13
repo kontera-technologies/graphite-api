@@ -36,13 +36,13 @@ begin
     EventMachine.open_datagram_socket("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
 
     socket = TCPSocket.new("0.0.0.0",middleware_port)
-    
+
     1.upto(1000) do
       socket.puts("shuki.tuki1 1.1 123456789\n")
       socket.puts("shuki.tuki2 10 123456789\n")
       socket.puts("shuki.tuki3 10 123456789\n")
     end
-    
+
     EventMachine::PeriodicTimer.new(10,&EM.method(:stop))
   }
 

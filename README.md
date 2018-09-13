@@ -49,22 +49,22 @@ require 'graphite-api'
 
 options = {
   # Required: valid URI {udp,tcp}://host:port/?timeout=seconds
-  graphite: "udp://graphite.example.com:2003", 
-  
+  graphite: "udp://graphite.example.com:2003",
+
   # Optional: add example.prefix to each key
   prefix: ["example","prefix"],
-  
+
   # Optional: results are aggregated in 60 seconds slices ( default is 60 )
   slice: 60,
-  
+
   # Optional: send to graphite every 60 seconds ( default is 0 - direct send )
   interval: 60,
-  
+
   # Optional: set the max age in seconds for records reanimation ( default is 12 hours )
   cache: 4 * 60 * 60
 }
 
-client = GraphiteAPI.new options 
+client = GraphiteAPI.new options
 ```
 
 TCP Client
@@ -106,6 +106,28 @@ client.metrics({
 },Time.at(1326067060))
 # => webServer.web01.loadAvg  10.7 1326067060
 # => webServer.web01.memUsage 40 1326067060
+```
+
+Verifying connectivity
+```ruby
+require 'graphite-api'
+
+client = GraphiteAPI.new graphite: 'udp://UNKNOWN-HOST:1234'
+client.check!
+
+SocketError: udp://UNKNOWN-HOST:1234: getaddrinfo: nodename nor servname provided, or not known
+	from graphite-api/lib/graphite-api/connector.rb:71:in `connect'
+	from graphite-api/lib/graphite-api/connector.rb:71:in `block in init_udp'
+	from graphite-api/lib/graphite-api/connector.rb:71:in `tap'
+	from graphite-api/lib/graphite-api/connector.rb:71:in `init_udp'
+	from graphite-api/lib/graphite-api/connector.rb:37:in `socket'
+	from graphite-api/lib/graphite-api/connector.rb:30:in `check!'
+	from graphite-api/lib/graphite-api/connector.rb:88:in `block in check!'
+	from graphite-api/lib/graphite-api/connector.rb:86:in `each'
+	from github/graphite-api/lib/graphite-api/connector.rb:86:in `check!'
+	from graphite-api/lib/graphite-api/client.rb:22:in `check!'
+	from (irb):4
+	from ~/.rvm/rubies/ruby-2.3.3/bin/irb:11:in `<main>'
 ```
 
 Increment records
@@ -217,7 +239,7 @@ More Info @ https://github.com/kontera-technologies/graphite-api
   --log-file /tmp/graphite-middleware.out                         \
   --daemonize                                                     \
   --graphite graphite-server:2003                                 \
-  --graphite graphite-backup-server:2003   
+  --graphite graphite-backup-server:2003
 ```
 
 * Send metrics via **UDP/TCP sockets**
@@ -238,7 +260,7 @@ example.middleware.value2 99 1334929231
 ```ruby
 require 'graphite-api'
 client = GraphiteAPI.new(:graphite => 'tcp://graphite-middleware-node:2005')
-client.example.middleware.value 10.2 
+client.example.middleware.value 10.2
 client.example.middleware.value2 27
 client.bla.bla.value2 27
 ```

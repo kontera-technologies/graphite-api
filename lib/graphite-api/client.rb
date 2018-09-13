@@ -1,5 +1,5 @@
 require 'forwardable'
-    
+
 module GraphiteAPI
   class Client
     extend Forwardable
@@ -13,15 +13,20 @@ module GraphiteAPI
       @options = build_options validate opt.clone
       @buffer  = GraphiteAPI::Buffer.new options
       @connectors = GraphiteAPI::Connector::Group.new options
-      
+
       Zscheduler.every(options[:interval]) { send_metrics } unless options[:direct]
+    end
+
+    # throw exception on Socket error
+    def check!
+      connectors.check!
     end
 
     def every interval, &block
       Zscheduler.every( interval ) { block.arity == 1 ? block.call(self) : block.call }
     end
 
-    def metrics metric, time = Time.now 
+    def metrics metric, time = Time.now
       return if metric.empty?
       buffer.push :metric => metric, :time => time
       send_metrics if options[:direct]
