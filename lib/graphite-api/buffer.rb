@@ -31,6 +31,7 @@ module GraphiteAPI
       @queue = Queue.new
       @streamer = Hash.new {|h,k| h[k] = ""}
       @cache = Cache::Memory.new options if options[:cache]
+      @lock = Mutex.new
     end
     
     attr_reader :queue, :options, :streamer, :cache
@@ -65,10 +66,12 @@ module GraphiteAPI
       data = Hash.new {|h,k| h[k] = Hash.new {|h2,k2| h2[k2] = 0}}
 
       counter = 0
-      while new_records?
-        break if ( counter += 1 ) > 1_000_000 # TODO: fix this
-        hash = queue.pop
-        hash[:metric].each {|k,v| data[normalize_time(hash[:time],options[:slice])][k] += v.to_f}
+      @lock.synchronize do
+        while new_records?
+          break if (counter += 1) > 1_000_000 # TODO: fix this
+          hash = queue.pop
+          hash[:metric].each {|k, v| data[normalize_time(hash[:time], options[:slice])][k] += v.to_f}
+        end
       end
       
       data.map do |time, hash|
