@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'thread'
 
 module GraphiteAPI
   class Client
@@ -7,14 +8,16 @@ module GraphiteAPI
     def_delegator Zscheduler, :loop, :join
     def_delegator Zscheduler, :stop
 
-    attr_reader :options, :buffer, :connectors
+    attr_reader :options, :buffer, :connectors, :mu
+    private     :options, :buffer, :connectors, :mu
 
     def initialize opt
       @options = build_options validate opt.clone
       @buffer  = GraphiteAPI::Buffer.new options
       @connectors = GraphiteAPI::Connector::Group.new options
+      @mu = Mutex.new
 
-      Zscheduler.every(options[:interval]) { send_metrics } unless options[:direct]
+      Zscheduler.every(options[:interval],&method(:send_metrics!)) unless options[:direct]
     end
 
     # throw exception on Socket error
@@ -29,7 +32,7 @@ module GraphiteAPI
     def metrics metric, time = Time.now
       return if metric.empty?
       buffer.push :metric => metric, :time => time
-      send_metrics if options[:direct]
+      send_metrics! if options[:direct]
     end
 
     def increment(*keys)
@@ -77,8 +80,8 @@ module GraphiteAPI
       end
     end
 
-    def send_metrics
-      connectors.publish buffer.pull :string if buffer.new_records?
+    def send_metrics!
+      mu.synchronize { connectors.publish buffer.pull :string if buffer.new_records? }
     end
 
   end

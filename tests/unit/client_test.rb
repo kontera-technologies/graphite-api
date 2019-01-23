@@ -95,7 +95,7 @@ module GraphiteAPI
     def test_direct_send
       get_client.tap do |client|
         client.instance_variable_get(:@options)[:direct] = true
-        client.expects(:send_metrics)
+        client.expects(:send_metrics!)
         client.metrics("blabla" => 1)
       end
     end
