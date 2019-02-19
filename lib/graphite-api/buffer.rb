@@ -79,11 +79,11 @@ module GraphiteAPI
 
       counter = 0
       while new_records? and (counter += 1) < 1_000_000
-        metric, time, method = queue.pop.values_at(:metric, :time, :aggregation_method)
-        aggregation_methods[metric] = method if method
+        metrics, time, method = queue.pop.values_at(:metric, :time, :aggregation_method)
 
         normalized_time = normalize_time(time, options[:slice])
-        metric.each do |metric, value|
+        metrics.each do |metric, value|
+          aggregation_methods[metric] = method if method
           data[normalized_time][metric] = AGGREGATORS[aggregation_methods[metric]].call(data[normalized_time][metric], value.to_f)
           cache.set(normalized_time, metric, data[normalized_time][metric]) if cache
         end
