@@ -4,15 +4,15 @@
 # -----------------------------------------------------
 # Usage:
 #     buff = GraphiteAPI::Buffer.new(GraphiteAPI::Client.default_options)
-#     buff << {:metric => {"load_avg" => 10},:time => Time.now}
-#     buff << {:metric => {"load_avg" => 30},:time => Time.now}
+#     buff << {:metric => {"load_avg" => 10},:time => Time.now, :aggregation_method => :avg}
+#     buff << {:metric => {"load_avg" => 30},:time => Time.now, :aggregation_method => :avg}
 #     buff.stream "mem.usage 1"
 #     buff.stream "90 1326842563\n"
 #     buff.stream "shuki.tuki 999 1326842563\n"
 #     buff.pull.each {|o| p o}
 #
 # Produce:
-#    ["load_avg", 40.0, 1326881160]
+#    ["load_avg", 20.0, 1326881160]
 #    ["mem.usage", 190.0, 1326842520]
 #    ["shuki.tuki", 999.0, 1326842520]
 # -----------------------------------------------------
@@ -74,7 +74,7 @@ module GraphiteAPI
     alias_method :<<, :push
 
     def pull format = nil
-      data = Hash.new { |h,time| h[time] = Hash.new { |h2,metric| h2[metric] = cache ? cache.get(time, metric) : nil } }
+      data = Hash.new { |h,time| h[time] = Hash.new { |h2,metric| h2[metric] = cache_get(time, metric) } }
       aggregation_methods = Hash.new { |h, time| h[time] = options[:aggregation_method] }
 
       counter = 0
@@ -85,7 +85,7 @@ module GraphiteAPI
         metrics.each do |metric, value|
           aggregation_methods[metric] = method if method
           data[normalized_time][metric] = AGGREGATORS[aggregation_methods[metric]].call(data[normalized_time][metric], value.to_f)
-          cache.set(normalized_time, metric, data[normalized_time][metric]) if cache
+          cache_set(normalized_time, metric, data[normalized_time][metric])
         end
       end
 
@@ -108,6 +108,14 @@ module GraphiteAPI
     end
 
     private
+
+    def cache_get time, metric
+      cache.get(time, metric) if cache
+    end
+
+    def cache_set time, metric, value
+      cache.set(time, metric, value) if cache
+    end
 
     def normalize_time time, slice
       slice = 60 if slice.nil?
