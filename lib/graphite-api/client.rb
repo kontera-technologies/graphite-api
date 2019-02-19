@@ -29,9 +29,9 @@ module GraphiteAPI
       Zscheduler.every( interval ) { block.arity == 1 ? block.call(self) : block.call }
     end
 
-    def metrics metric, time = Time.now
+    def metrics metric, time = nil, aggregation_method = nil
       return if metric.empty?
-      buffer.push :metric => metric, :time => time
+      buffer.push :metric => metric, :time => (time || Time.now), :aggregation_method => aggregation_method
       send_metrics! if options[:direct]
     end
 
