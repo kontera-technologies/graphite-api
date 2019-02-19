@@ -9,7 +9,7 @@ def message msg
   puts "*** #{msg} ***"
 end
 
-task(:test => :functional) { ENV['with_coverage'] = "true" }
+task(:test => :functional)
 
 Rake::TestTask.new do |t|
   t.libs << "tests"
@@ -18,14 +18,14 @@ end
 
 task :functional do
   some_failed = false
-  
+
   next unless ENV['SKIP_FUNC'].nil?
 
   unless RUBY_COPYRIGHT.end_with?("Matsumoto")
     puts("Functional tests are enabled only on MRI...")
     next
   end
-  
+
   message "Executing GraphiteAPI Functional Tests"
   message "( You can skip them by passing SKIP_FUNC=true )"
 
@@ -55,9 +55,4 @@ GraphiteAPI::GemSpec = eval File.read 'graphite-api.gemspec'
 
 Gem::PackageTask.new(GraphiteAPI::GemSpec) do |p|
   p.gem_spec = GraphiteAPI::GemSpec
-end
-
-task :install => [:gem] do
-   sh "gem install pkg/graphite-api"
-   Rake::Task['clobber_package'].execute
 end
