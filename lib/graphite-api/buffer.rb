@@ -27,15 +27,9 @@ module GraphiteAPI
     VALID_MESSAGE = /^[\w|\.|-]+ \d+(?:\.|\d)* \d+$/
 
     AGGREGATORS = {
-      sum: ->(old_v, new_v) { (old_v || 0) + new_v },
-      avg: ->(old_v, new_v) {
-        sum, size = old_v || [0.0, 0]
-        [sum + new_v, size + 1]
-      },
-      replace: ->(old_v, new_v) { new_v },
-    }
-    FINALIZERS = {
-      avg: ->((sum, size)) { sum / size },
+      sum: ->(*args) { args.reduce(0) { |sum, x| sum + x } },
+      avg: ->(*args) { args.reduce(0) { |sum, x| sum + x } / [args.length, 1].max },
+      replace: ->(*args) { args.last },
     }
 
     def initialize options
@@ -75,7 +69,7 @@ module GraphiteAPI
 
     def pull format = nil
       data = Hash.new { |h,time| h[time] = Hash.new { |h2,metric| h2[metric] = cache_get(time, metric) } }
-      aggregation_methods = Hash.new { |h, time| h[time] = options[:default_aggregation_method] }
+      aggregation_methods = Hash.new { |h, metric| h[metric] = options[:default_aggregation_method] }
 
       counter = 0
       while new_records? and (counter += 1) < 1_000_000
@@ -84,14 +78,14 @@ module GraphiteAPI
         normalized_time = normalize_time(time, options[:slice])
         metrics.each do |metric, value|
           aggregation_methods[metric] = method if method
-          data[normalized_time][metric] = AGGREGATORS[aggregation_methods[metric]].call(data[normalized_time][metric], value.to_f)
+          data[normalized_time][metric].push value.to_f
           cache_set(normalized_time, metric, data[normalized_time][metric])
         end
       end
 
       data.map do |time, metrics|
-        metrics.map do |metric, raw_value|
-          value = (FINALIZERS[aggregation_methods[metric]] || ->(x) {x}).call(raw_value)
+        metrics.map do |metric, raw_values|
+          value = AGGREGATORS[aggregation_methods[metric]].call(*raw_values)
           results = ["#{prefix}#{metric}",("%f"%value).to_f, time]
           format == :string ? results.join(" ") : results
         end
@@ -110,7 +104,11 @@ module GraphiteAPI
     private
 
     def cache_get time, metric
-      cache.get(time, metric) if cache
+      if cache
+        cache.get(time, metric) || []
+      else
+        []
+      end
     end
 
     def cache_set time, metric, value
