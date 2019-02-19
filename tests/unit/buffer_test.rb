@@ -22,7 +22,7 @@ module GraphiteAPI
 
     def test_push_avg_with_no_cache
       t1, t2 = [1362559980, 1362568320]
-      buffer(:aggregation_method => :avg).tap do |buff|
+      buffer(:default_aggregation_method => :avg).tap do |buff|
         buff.push(:metric => {:foo => 10}, :time => t1)
         buff.push(:metric => {:foo => 30}, :time => t1)
         buff.push(:metric => {:foo => 30}, :time => t2)
@@ -50,7 +50,7 @@ module GraphiteAPI
 
     def test_push_replace_with_no_cache
       t1, t2 = [1362559980, 1362568320]
-      buffer(:aggregation_method => :replace).tap do |buff|
+      buffer(:default_aggregation_method => :replace).tap do |buff|
         buff.push(:metric => {:foo => 10}, :time => t1)
         buff.push(:metric => {:foo => 30}, :time => t1)
         buff.push(:metric => {:foo => 30}, :time => t2)

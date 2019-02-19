@@ -60,7 +60,7 @@ module GraphiteAPI
         :interval => 0,
         :slice => 60,
         :pid => "/tmp/graphite-middleware.pid",
-        :aggregation_method => :sum
+        :default_aggregation_method => :sum
       }
     end
 

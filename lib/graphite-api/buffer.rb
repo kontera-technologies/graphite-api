@@ -75,7 +75,7 @@ module GraphiteAPI
 
     def pull format = nil
       data = Hash.new { |h,time| h[time] = Hash.new { |h2,metric| h2[metric] = cache_get(time, metric) } }
-      aggregation_methods = Hash.new { |h, time| h[time] = options[:aggregation_method] }
+      aggregation_methods = Hash.new { |h, time| h[time] = options[:default_aggregation_method] }
 
       counter = 0
       while new_records? and (counter += 1) < 1_000_000
