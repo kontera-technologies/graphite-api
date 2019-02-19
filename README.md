@@ -13,17 +13,9 @@
 * **Thread-Safe** client.
 
 ## Status
-<table>
-  <tr>
-    <td> Version </td>
-    <td><a href="https://rubygems.org/gems/graphite-api"><img src=https://fury-badge.herokuapp.com/rb/graphite-api.png></a> </td>
-  </tr>
-  <tr>
-    <td> Build </td>
-    <td><a href="https://travis-ci.org/kontera-technologies/graphite-api"><img src=https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master></a>
-      </td>
-  </tr>
-</table>
+[![Gem Version](https://badge.fury.io/rb/graphite-api.svg)](https://badge.fury.io/rb/graphite-api)
+[![Build Status](https://travis-ci.org/kontera-technologies/graphite-api.svg?branch=master)](https://travis-ci.org/kontera-technologies/graphite-api)
+[![Test Coverage](https://codecov.io/gh/kontera-technologies/graphite-api/branch/master/graph/badge.svg)](https://codecov.io/gh/kontera-technologies/graphite-api)
 
 ## Installation
 Install stable version
