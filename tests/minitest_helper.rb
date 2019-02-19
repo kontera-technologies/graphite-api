@@ -8,7 +8,7 @@ SimpleCov.start { add_filter "/tests/" }
 SimpleCov.formatter = Class.new do
   def format(result)
      SimpleCov::Formatter::Codecov.new.format(result) if ENV["CODECOV_TOKEN"]
-     SimpleCov::Formatter::RcovFormatter.new.format(result)
+     SimpleCov::Formatter::RcovFormatter.new.format(result) unless ENV["CI"]
   end
 end
 
