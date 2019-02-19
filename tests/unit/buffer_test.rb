@@ -2,11 +2,11 @@ require_relative "../minitest_helper"
 
 module GraphiteAPI
   class BufferTester < Unit::TestCase
-    def test_initialize    
+    def test_initialize
       assert_raises(ArgumentError) { Buffer.new }
 
       options = {:shuki => :tuki}
-      
+
       Buffer.new(options).tap do |buff|
         assert_equal options,  buff.instance_variable_get(:@options)
         assert_kind_of Queue, buff.instance_variable_get(:@queue)
@@ -17,13 +17,69 @@ module GraphiteAPI
       buffer(:cache => 1234).tap do |buff|
         assert_kind_of Cache::Memory, buff.instance_variable_get(:@cache)
       end
-      
+
     end
-    
+
+    def test_push_avg_with_no_cache
+      t1, t2 = [1362559980, 1362568320]
+      buffer(:aggregation_method => :avg).tap do |buff|
+        buff.push(:metric => {:foo => 10}, :time => t1)
+        buff.push(:metric => {:foo => 30}, :time => t1)
+        buff.push(:metric => {:foo => 30}, :time => t2)
+        buff.push(:metric => {:foo => 40}, :time => t2)
+        buff.push(:metric => {:foo => 50}, :time => t2)
+        expected = [
+          ["foo", 20.0, t1],
+          ["foo", 40.0, t2],
+        ]
+        assert_equal expected, buff.pull
+      end
+      buffer().tap do |buff|
+        buff.push(:metric => {:foo => 10}, :time => t1, :aggregation_method => :avg)
+        buff.push(:metric => {:foo => 30}, :time => t1, :aggregation_method => :avg)
+        buff.push(:metric => {:foo => 30}, :time => t2, :aggregation_method => :avg)
+        buff.push(:metric => {:foo => 40}, :time => t2, :aggregation_method => :avg)
+        buff.push(:metric => {:foo => 50}, :time => t2, :aggregation_method => :avg)
+        expected = [
+          ["foo", 20.0, t1],
+          ["foo", 40.0, t2],
+        ]
+        assert_equal expected, buff.pull
+      end
+    end
+
+    def test_push_replace_with_no_cache
+      t1, t2 = [1362559980, 1362568320]
+      buffer(:aggregation_method => :replace).tap do |buff|
+        buff.push(:metric => {:foo => 10}, :time => t1)
+        buff.push(:metric => {:foo => 30}, :time => t1)
+        buff.push(:metric => {:foo => 30}, :time => t2)
+        buff.push(:metric => {:foo => 40}, :time => t2)
+        buff.push(:metric => {:foo => 50}, :time => t2)
+        expected = [
+          ["foo", 30.0, t1],
+          ["foo", 50.0, t2],
+        ]
+        assert_equal expected, buff.pull
+      end
+      buffer().tap do |buff|
+        buff.push(:metric => {:foo => 10}, :time => t1, :aggregation_method => :replace)
+        buff.push(:metric => {:foo => 30}, :time => t1, :aggregation_method => :replace)
+        buff.push(:metric => {:foo => 30}, :time => t2, :aggregation_method => :replace)
+        buff.push(:metric => {:foo => 40}, :time => t2, :aggregation_method => :replace)
+        buff.push(:metric => {:foo => 50}, :time => t2, :aggregation_method => :replace)
+        expected = [
+          ["foo", 30.0, t1],
+          ["foo", 50.0, t2],
+        ]
+        assert_equal expected, buff.pull
+      end
+    end
+
     def test_push_shouldnt_expose_the_queue
       refute buffer.push(:metric => {:shuki => 10})
     end
-    
+
     def test_push_with_cache
       buffer(:cache => 100_000).tap do |buff|
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362568320)
@@ -34,7 +90,7 @@ module GraphiteAPI
           ["blabla", 160.0, 1362568320]
         ]
         assert_equal expected, buff.pull
-        
+
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1234567389)
         buff.push(:metric => {:blabla => 10}, :time => 1362568320)
         expected = [
@@ -45,7 +101,7 @@ module GraphiteAPI
         assert_equal expected, buff.pull
       end
     end
-    
+
     def test_push
       buffer.tap do |buff|
         buff.push(:metric => {:shuki => 10, :blabla => 80})
@@ -54,14 +110,14 @@ module GraphiteAPI
           ["blabla", 80.0]
         ]
         assert_equal(expected,buff.pull.map {|o| o[0..1]})
-        
+
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565860)
         expected = [
           ["shuki", 10.0, 1362565860],
           ["blabla", 80.0, 1362565860]
         ]
         assert_equal expected, buff.pull
-        
+
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565860)
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565860)
         expected = [
@@ -69,7 +125,7 @@ module GraphiteAPI
           ["blabla", 160.0, 1362565860]
         ]
         assert_equal expected, buff.pull
-        
+
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565812)
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565860)
         expected = [
@@ -79,8 +135,8 @@ module GraphiteAPI
           ["blabla", 80.0, 1362565860]
         ]
         assert_equal expected, buff.pull
-        
-        
+
+
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565812)
         buff.push(:metric => {:shuki => 10}, :time => 1362565812)
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362565860)
@@ -91,7 +147,7 @@ module GraphiteAPI
           ["blabla", 80.0, 1362565860]
         ]
         assert_equal expected, buff.pull
-        
+
         buff.push(:metric => {:shuki => 1.9, :blabla => 80}, :time => 1362565812)
         buff.push(:metric => {:shuki => 0.2, :blabla => 80.1}, :time => 1362565812)
         expected = [
@@ -101,10 +157,10 @@ module GraphiteAPI
         assert_equal expected, buff.pull
       end
     end
-    
+
     def test_stream
       now = 1334850240
-      
+
       buffer.tap do |buff|
         buff.stream "test.shuki.tuki 123 #{now}"
         buff.stream "\n"
@@ -117,7 +173,7 @@ module GraphiteAPI
         buff.stream "tov"
         buff.stream "\n"
         buff.stream "ken.tov 11.2332 231231321\n"
-        buff.stream "ken.tovv\t11.2332\t231231321\n"                
+        buff.stream "ken.tovv\t11.2332\t231231321\n"
         buff.stream("client1",:client1)
         buff.stream("client2",:client2)
         buff.stream(" 1",:client1)
@@ -127,7 +183,7 @@ module GraphiteAPI
         buff.stream("a.b 1211 121212\nc.d 1211 121212\n",:client2)
         buff.stream("test.x 10 1334771088\ntest.z 10 1334771088\n",:client2)
         buff.stream("rabbitmq-monitoring-pack.erans-mbp.search_terms_agg_consume.deliver_rate 319.0 1398605178\n",:client3)
-        assert_equal( 
+        assert_equal(
           [
             ["test.shuki.tuki",  246.0,  1334850240],
             ["mem.usage",        190.0,  1326842520],
@@ -142,7 +198,7 @@ module GraphiteAPI
             ["rabbitmq-monitoring-pack.erans-mbp.search_terms_agg_consume.deliver_rate", 319.0, 1398605160]
           ],
           buff.pull)
-        
+
         buff.instance_variable_get(:@streamer).tap do |streamer|
           refute streamer.has_key? nil
           refute streamer.has_key? :client1
@@ -151,12 +207,12 @@ module GraphiteAPI
       end
 
     end
-    
+
     private
 
     def buffer options = {}
       Buffer.new Client.default_options.merge options
     end
-    
+
   end
 end
