@@ -7,7 +7,7 @@ module GraphiteAPI
 
       options = {:shuki => :tuki}
       
-      buffer(options).tap do |buff|
+      Buffer.new(options).tap do |buff|
         assert_equal options,  buff.instance_variable_get(:@options)
         assert_kind_of Queue, buff.instance_variable_get(:@queue)
         assert_equal Hash.new, buff.instance_variable_get(:@streamer)
@@ -25,7 +25,7 @@ module GraphiteAPI
     end
     
     def test_push_with_cache
-      buffer(:cache => 100000).tap do |buff|
+      buffer(:cache => 100_000).tap do |buff|
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362568320)
         buff.pull
         buff.push(:metric => {:shuki => 10, :blabla => 80}, :time => 1362568320)
@@ -153,9 +153,9 @@ module GraphiteAPI
     end
     
     private
-    
-    def buffer options = Client.default_options
-      Buffer.new options
+
+    def buffer options = {}
+      Buffer.new Client.default_options.merge options
     end
     
   end
