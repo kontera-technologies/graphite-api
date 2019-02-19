@@ -32,14 +32,6 @@ Install stable version
 gem install graphite-api
 ```
 
-Install the latest from github
-
-```
-git clone git://github.com/kontera-technologies/graphite-api.git
-cd graphite-api
-rake install
-```
-
 ## Client Usage
 
 Creating a new UDP client
