@@ -45,7 +45,11 @@ options = {
   interval: 60,
 
   # Optional: set the max age in seconds for records reanimation ( default is 12 hours )
-  cache: 4 * 60 * 60
+  cache: 4 * 60 * 60,
+
+  # Optional: The default aggregation method for multiple reports in the same slice (default is :add).
+  # Possible options: :add, :avg, :replace
+  aggregation_method: :avg
 }
 
 client = GraphiteAPI.new options
@@ -59,6 +63,11 @@ client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003"
 TCP Client with 30 seconds timeout
 ```ruby
 client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003?timeout=30"
+```
+
+TCP Client with custom aggregation method
+```ruby
+client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003", aggregation_method: :avg
 ```
 
 Adding simple metrics
@@ -90,6 +99,24 @@ client.metrics({
 },Time.at(1326067060))
 # => webServer.web01.loadAvg  10.7 1326067060
 # => webServer.web01.memUsage 40 1326067060
+```
+
+Adding metrics with custom aggregation method
+```ruby
+require 'graphite-api'
+
+client = GraphiteAPI.new( graphite: 'udp://graphite:2003' )
+
+client.metrics({
+  "webServer.web01.loadAvg"  => 10,
+  "webServer.web01.memUsage" => 40
+},Time.at(1326067060), :avg)
+client.metrics({
+  "webServer.web01.loadAvg"  => 20,
+  "webServer.web01.memUsage" => 50
+},Time.at(1326067060), :avg)
+# => webServer.web01.loadAvg  15 1326067060
+# => webServer.web01.memUsage 45 1326067060
 ```
 
 Verifying connectivity
@@ -209,6 +236,7 @@ Usage: graphite-middleware [options]
     -i, --interval INT               report every X seconds (default 60)
     -s, --slice SECONDS              send to graphite in X seconds slices (default 60)
     -r, --reanimation HOURS          reanimate records that are younger than X hours, please see README
+    -m, --aggregation-method method  The aggregation method (add, avg or replace) for multiple reports in the same time slice (default add)
 
 More Info @ https://github.com/kontera-technologies/graphite-api
 ```
