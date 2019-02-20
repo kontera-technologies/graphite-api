@@ -69,15 +69,15 @@ module GraphiteAPI
 
     def pull format = nil
       data = Hash.new { |h,time| h[time] = Hash.new { |h2,metric| h2[metric] = cache_get(time, metric) } }
-      aggregation_methods = Hash.new { |h, metric| h[metric] = options[:default_aggregation_method] }
+      aggregation_methods = Hash.new
 
       counter = 0
       while new_records? and (counter += 1) < 1_000_000
-        metrics, time, method = queue.pop.values_at(:metric, :time, :aggregation_method)
+        metrics, time, method_name = queue.pop.values_at(:metric, :time, :aggregation_method)
 
         normalized_time = normalize_time(time, options[:slice])
         metrics.each do |metric, value|
-          aggregation_methods[metric] = method if method
+          aggregation_methods[metric] = method_name || options[:default_aggregation_method]
           data[normalized_time][metric].push value.to_f
           cache_set(normalized_time, metric, data[normalized_time][metric])
         end

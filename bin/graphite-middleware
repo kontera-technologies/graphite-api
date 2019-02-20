@@ -47,7 +47,7 @@ OptionParser.new do |opts|
     (options[:cache] = exp.to_i * 3600) if exp.to_i > 0
   end
 
-  opts.on("-m", "--aggregation-method method","The aggregation method (add, avg or replace) for multiple reports in the same time slice (default add)") do |exp|
+  opts.on("-m", "--aggregation-method method","The aggregation method (sum, avg or replace) for multiple reports in the same time slice (default sum)") do |exp|
     options[:default_aggregation_method] = exp.to_sym if ["add", "avg", "replace"].include? exp
   end
 

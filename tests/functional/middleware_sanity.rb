@@ -33,7 +33,6 @@ begin
   data = []
   EventMachine.run {
     EventMachine.start_server("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
-    EventMachine.open_datagram_socket("0.0.0.0", fake_carbon_port, FakeCarboonDaemon, data)
 
     socket = TCPSocket.new("0.0.0.0",middleware_port)
 

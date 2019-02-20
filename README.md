@@ -49,7 +49,7 @@ options = {
 
   # Optional: The default aggregation method for multiple reports in the same slice (default is :add).
   # Possible options: :add, :avg, :replace
-  aggregation_method: :avg
+  default_aggregation_method: :avg
 }
 
 client = GraphiteAPI.new options
@@ -67,7 +67,7 @@ client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003?timeout=30"
 
 TCP Client with custom aggregation method
 ```ruby
-client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003", aggregation_method: :avg
+client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003", default_aggregation_method: :avg
 ```
 
 Adding simple metrics
@@ -236,7 +236,7 @@ Usage: graphite-middleware [options]
     -i, --interval INT               report every X seconds (default 60)
     -s, --slice SECONDS              send to graphite in X seconds slices (default 60)
     -r, --reanimation HOURS          reanimate records that are younger than X hours, please see README
-    -m, --aggregation-method method  The aggregation method (add, avg or replace) for multiple reports in the same time slice (default add)
+    -m, --aggregation-method method  The aggregation method (sum, avg or replace) for multiple reports in the same time slice (default sum)
 
 More Info @ https://github.com/kontera-technologies/graphite-api
 ```
