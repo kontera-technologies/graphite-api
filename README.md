@@ -47,7 +47,7 @@ options = {
   # Optional: set the max age in seconds for records reanimation ( default is 12 hours )
   cache: 4 * 60 * 60,
 
-  # Optional: The default aggregation method for multiple reports in the same slice (default is :add).
+  # Optional: The default aggregation method for multiple reports in the same slice (default is :sum).
   # Possible options: :sum, :avg, :replace
   default_aggregation_method: :avg
 }
