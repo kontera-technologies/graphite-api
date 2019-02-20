@@ -6,17 +6,17 @@ module GraphiteAPI
     def test_set_and_get
       cache.tap do |obj|
         obj.set(1, :tuki, "1")
-        assert_equal 1.0, obj.get(1, :tuki)
+        assert_equal "1", obj.get(1, :tuki)
 
         obj.set(1, :tuki, 1.12)
         assert_equal 1.12, obj.get(1, :tuki)
 
         obj.set(1, :tuki, "1.12")
-        assert_equal 1.12, obj.get(1, :tuki)
-        assert_equal 1.12, obj.get(1, :tuki)
-        assert_equal 1.12, obj.get(1, :tuki)
         
-        assert_equal 0, obj.get(2, :blablabla)
+        assert_equal "1.12", obj.get(1, :tuki)
+        assert_equal "1.12", obj.get(1, :tuki)
+        assert_equal "1.12", obj.get(1, :tuki)
+        assert_equal nil, obj.get(2, :blablabla)
       end
     end
     
@@ -30,7 +30,7 @@ module GraphiteAPI
         assert_equal 10, obj.get(time, :shuki)
         
         obj.__send__(:clean,59)
-        assert_equal 0, obj.get(time, :shuki)
+        assert_equal nil, obj.get(time, :shuki)
       end
     end
     

@@ -1,21 +1,17 @@
 $:.unshift File.expand_path("../../lib",__FILE__)
 
-if ENV['with_coverage']
-  require 'simplecov'
-  require 'simplecov-rcov'
+require 'simplecov'
+require 'simplecov-rcov'
+require 'codecov'
 
-  class SimpleCov::Formatter::MergedFormatter
-    def format(result)
-       SimpleCov::Formatter::HTMLFormatter.new.format(result)
-       SimpleCov::Formatter::RcovFormatter.new.format(result)
-    end
+SimpleCov.start { add_filter "/tests/" }
+SimpleCov.formatter = Class.new do
+  def format(result)
+     SimpleCov::Formatter::Codecov.new.format(result) if ENV["CODECOV_TOKEN"]
+     SimpleCov::Formatter::RcovFormatter.new.format(result) unless ENV["CI"]
   end
-
-  SimpleCov.formatter = SimpleCov::Formatter::MergedFormatter
-  SimpleCov.start { add_filter "/tests/" }
 end
 
-gem 'minitest'
 require 'minitest'
 require 'minitest/autorun'
 require "mocha/mini_test"

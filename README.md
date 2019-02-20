@@ -13,31 +13,15 @@
 * **Thread-Safe** client.
 
 ## Status
-<table>
-  <tr>
-    <td> Version </td>
-    <td><a href="https://rubygems.org/gems/graphite-api"><img src=https://fury-badge.herokuapp.com/rb/graphite-api.png></a> </td>
-  </tr>
-  <tr>
-    <td> Build </td>
-    <td><a href="https://travis-ci.org/kontera-technologies/graphite-api"><img src=https://travis-ci.org/kontera-technologies/graphite-api.png?branch=master></a>
-      </td>
-  </tr>
-</table>
+[![Gem Version](https://badge.fury.io/rb/graphite-api.svg)](https://badge.fury.io/rb/graphite-api)
+[![Build Status](https://travis-ci.org/kontera-technologies/graphite-api.svg?branch=master)](https://travis-ci.org/kontera-technologies/graphite-api)
+[![Test Coverage](https://codecov.io/gh/kontera-technologies/graphite-api/branch/master/graph/badge.svg)](https://codecov.io/gh/kontera-technologies/graphite-api)
 
 ## Installation
 Install stable version
 
 ```
 gem install graphite-api
-```
-
-Install the latest from github
-
-```
-git clone git://github.com/kontera-technologies/graphite-api.git
-cd graphite-api
-rake install
 ```
 
 ## Client Usage
@@ -61,7 +45,11 @@ options = {
   interval: 60,
 
   # Optional: set the max age in seconds for records reanimation ( default is 12 hours )
-  cache: 4 * 60 * 60
+  cache: 4 * 60 * 60,
+
+  # Optional: The default aggregation method for multiple reports in the same slice (default is :add).
+  # Possible options: :sum, :avg, :replace
+  default_aggregation_method: :avg
 }
 
 client = GraphiteAPI.new options
@@ -75,6 +63,11 @@ client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003"
 TCP Client with 30 seconds timeout
 ```ruby
 client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003?timeout=30"
+```
+
+TCP Client with custom aggregation method
+```ruby
+client = GraphiteAPI.new graphite: "tcp://graphite.example.com:2003", default_aggregation_method: :avg
 ```
 
 Adding simple metrics
@@ -106,6 +99,24 @@ client.metrics({
 },Time.at(1326067060))
 # => webServer.web01.loadAvg  10.7 1326067060
 # => webServer.web01.memUsage 40 1326067060
+```
+
+Adding metrics with custom aggregation method
+```ruby
+require 'graphite-api'
+
+client = GraphiteAPI.new( graphite: 'udp://graphite:2003' )
+
+client.metrics({
+  "webServer.web01.loadAvg"  => 10,
+  "webServer.web01.memUsage" => 40
+},Time.at(1326067060), :avg)
+client.metrics({
+  "webServer.web01.loadAvg"  => 20,
+  "webServer.web01.memUsage" => 50
+},Time.at(1326067060), :avg)
+# => webServer.web01.loadAvg  15 1326067060
+# => webServer.web01.memUsage 45 1326067060
 ```
 
 Verifying connectivity
@@ -225,6 +236,7 @@ Usage: graphite-middleware [options]
     -i, --interval INT               report every X seconds (default 60)
     -s, --slice SECONDS              send to graphite in X seconds slices (default 60)
     -r, --reanimation HOURS          reanimate records that are younger than X hours, please see README
+    -m, --aggregation-method method  The aggregation method (sum, avg or replace) for multiple reports in the same time slice (default sum)
 
 More Info @ https://github.com/kontera-technologies/graphite-api
 ```

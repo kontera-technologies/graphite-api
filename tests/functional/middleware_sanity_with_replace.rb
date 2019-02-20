@@ -23,7 +23,7 @@ middleware_log_file = File.expand_path("../../../middleware.out",__FILE__)
 
 File.new(middleware_log_file,'w').close
 
-options = %W(--port #{middleware_port} --graphite tcp://localhost:#{fake_carbon_port} --interval 10 -L debug -l #{middleware_log_file})
+options = %W(--port #{middleware_port} --graphite tcp://localhost:#{fake_carbon_port} --interval 10 --aggregation-method replace -L debug -l #{middleware_log_file})
 
 pid = Process.spawn("ruby", "./../../bin/graphite-middleware", *options)
 
@@ -37,18 +37,20 @@ begin
     socket = TCPSocket.new("0.0.0.0",middleware_port)
 
     1.upto(1000) do
-      socket.puts("shuki.tuki1 1.1 123456789\n")
+      socket.puts("shuki.tuki1 1.0 123456789\n")
+      socket.puts("shuki.tuki1 1.2 123456789\n")
       socket.puts("shuki.tuki2 10 123456789\n")
       socket.puts("shuki.tuki3 10 123456789\n")
+      socket.puts("shuki.tuki3 50 123456789\n")
     end
 
     EventMachine::PeriodicTimer.new(10,&EM.method(:stop))
   }
 
   expected = [
-    "shuki.tuki1 1100.0 123456780",
-    "shuki.tuki2 10000.0 123456780",
-    "shuki.tuki3 10000.0 123456780"
+    "shuki.tuki1 1.2 123456780",
+    "shuki.tuki2 10.0 123456780",
+    "shuki.tuki3 50.0 123456780"
   ]
   if expected == data.map {|o| o.split("\n")}.flatten(1).map(&:strip)
     FileUtils.rm_rf middleware_log_file

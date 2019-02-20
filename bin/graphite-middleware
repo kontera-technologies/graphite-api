@@ -31,7 +31,7 @@ OptionParser.new do |opts|
     options[:pid] = pid_file
   end
 
-  opts.on("-d", "--daemonize","run in background") do 
+  opts.on("-d", "--daemonize","run in background") do
     options[:daemonize] = true
   end
 
@@ -47,8 +47,13 @@ OptionParser.new do |opts|
     (options[:cache] = exp.to_i * 3600) if exp.to_i > 0
   end
 
+  opts.on("-m", "--aggregation-method method","The aggregation method (sum, avg or replace) for multiple reports in the same time slice (default sum)") do |exp|
+    raise "Invalid aggregation method. Valid values are sum, avg or replace." unless ["sum", "avg", "replace"].include? exp
+    options[:default_aggregation_method] = exp.to_sym
+  end
+
   opts.on("-v", "--version","Show version and exit") do |exp|
-    puts "Version #{GraphiteAPI.version}" 
+    puts "Version #{GraphiteAPI.version}"
     exit
   end
 

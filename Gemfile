@@ -8,6 +8,7 @@ group :test do
   gem 'rake', '>= 0.9.2.2'
   gem "simplecov-rcov"
   gem "simplecov"
+  gem 'codecov'
   gem 'minitest'
   gem 'mocha'
 end

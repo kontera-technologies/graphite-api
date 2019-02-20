@@ -11,17 +11,13 @@ module GraphiteAPI
       end
 
       def set time, key, value
-        cache[time.to_i][key] = value.to_f 
-      end
-
-      def incr time, key, value
-        set(time, key, value.to_f + get(time, key))
+        cache[time.to_i][key] = value
       end
 
       private
 
       def cache
-        @cache ||= Hash.new {|h,k| h[k] = Hash.new {|h2,k2| h2[k2] = 0}}
+        @cache ||= Hash.new {|h,k| h[k] = Hash.new}
       end
 
       def clean max_age
