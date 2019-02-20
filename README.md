@@ -48,7 +48,7 @@ options = {
   cache: 4 * 60 * 60,
 
   # Optional: The default aggregation method for multiple reports in the same slice (default is :add).
-  # Possible options: :add, :avg, :replace
+  # Possible options: :sum, :avg, :replace
   default_aggregation_method: :avg
 }
 
