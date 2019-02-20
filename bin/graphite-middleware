@@ -48,7 +48,8 @@ OptionParser.new do |opts|
   end
 
   opts.on("-m", "--aggregation-method method","The aggregation method (sum, avg or replace) for multiple reports in the same time slice (default sum)") do |exp|
-    options[:default_aggregation_method] = exp.to_sym if ["add", "avg", "replace"].include? exp
+    raise "Invalid aggregation method. Valid values are sum, avg or replace." unless ["sum", "avg", "replace"].include? exp
+    options[:default_aggregation_method] = exp.to_sym
   end
 
   opts.on("-v", "--version","Show version and exit") do |exp|
