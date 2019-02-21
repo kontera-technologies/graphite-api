@@ -5,7 +5,7 @@ module GraphiteAPI
   class Client
     extend Forwardable
 
-    def_delegator Zscheduler, :loop, :join
+    def_delegator Zscheduler, :loop #, :join
     def_delegator Zscheduler, :stop
 
     attr_reader :options, :buffer, :connectors, :mu

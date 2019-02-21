@@ -24,7 +24,7 @@ module GraphiteAPI
 
     IGNORE = ["\r"]
     END_OF_STREAM = "\n"
-    VALID_MESSAGE = /^[\w|\.|-]+ \d+(?:\.|\d)* \d+$/
+    VALID_MESSAGE = /^[\w\.-]+ \d+(?:\.|\d)* \d+$/
 
     AGGREGATORS = {
       sum: ->(*args) { args.reduce(0) { |sum, x| sum + x } },
@@ -73,11 +73,11 @@ module GraphiteAPI
 
       counter = 0
       while new_records? and (counter += 1) < 1_000_000
-        metrics, time, method_name = queue.pop.values_at(:metric, :time, :aggregation_method)
+        item = queue.pop
+        normalized_time = normalize_time(item[:time], options[:slice])
 
-        normalized_time = normalize_time(time, options[:slice])
-        metrics.each do |metric, value|
-          aggregation_methods[metric] = method_name || options[:default_aggregation_method]
+        item[:metric].each do |metric, value|
+          aggregation_methods[metric] = item[:aggregation_method] || options[:default_aggregation_method]
           data[normalized_time][metric].push value.to_f
           cache_set(normalized_time, metric, data[normalized_time][metric])
         end

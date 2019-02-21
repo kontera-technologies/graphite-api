@@ -23,7 +23,13 @@ module GraphiteAPI
     class TestCase < Minitest::Test
     end
   end
-  class Zscheduler
-    def self.every(*);end
+
+  module MockServer
+    def initialize db
+      @db = db
+    end
+    def receive_data data
+      @db.push data
+    end
   end
 end

@@ -8,6 +8,7 @@ module GraphiteAPI
     def initialize uri
       @uri = URI.parse uri
       @uri = @uri.host ? @uri : URI.parse("udp://#{uri}")
+      @socket = nil
     end
 
     def puts message
