@@ -17,7 +17,11 @@ Rake::TestTask.new(:functional => :prepare) do |t|
   t.pattern = "tests/functional/*_test.rb"
 end
 
-task(:test => [:unit, :functional])
+Rake::TestTask.new(:all => :prepare) do |t|
+  t.pattern = "tests/**/*_test.rb"
+end
+
+task(:test => :all)
 
 task :default => :test
 
