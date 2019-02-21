@@ -47,8 +47,8 @@ options = {
   # Optional: set the max age in seconds for records reanimation ( default is 12 hours )
   cache: 4 * 60 * 60,
 
-  # Optional: The default aggregation method for multiple reports in the same slice (default is :add).
-  # Possible options: :add, :avg, :replace
+  # Optional: The default aggregation method for multiple reports in the same slice (default is :sum).
+  # Possible options: :sum, :avg, :replace
   default_aggregation_method: :avg
 }
 
@@ -126,19 +126,7 @@ require 'graphite-api'
 client = GraphiteAPI.new graphite: 'udp://UNKNOWN-HOST:1234'
 client.check!
 
-SocketError: udp://UNKNOWN-HOST:1234: getaddrinfo: nodename nor servname provided, or not known
-	from graphite-api/lib/graphite-api/connector.rb:71:in `connect'
-	from graphite-api/lib/graphite-api/connector.rb:71:in `block in init_udp'
-	from graphite-api/lib/graphite-api/connector.rb:71:in `tap'
-	from graphite-api/lib/graphite-api/connector.rb:71:in `init_udp'
-	from graphite-api/lib/graphite-api/connector.rb:37:in `socket'
-	from graphite-api/lib/graphite-api/connector.rb:30:in `check!'
-	from graphite-api/lib/graphite-api/connector.rb:88:in `block in check!'
-	from graphite-api/lib/graphite-api/connector.rb:86:in `each'
-	from github/graphite-api/lib/graphite-api/connector.rb:86:in `check!'
-	from graphite-api/lib/graphite-api/client.rb:22:in `check!'
-	from (irb):4
-	from ~/.rvm/rubies/ruby-2.3.3/bin/irb:11:in `<main>'
+# SocketError: udp://UNKNOWN-HOST:1234: getaddrinfo: nodename nor servname provided, or not known
 ```
 
 Increment records
