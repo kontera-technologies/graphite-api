@@ -7,4 +7,3 @@ rvm:
   - 2.6
   - jruby-9.1
   - jruby-9.2
-script: rake test TEST=tests/functional/middleware_sanity_test.rb TESTOPTS="--name=test_with_defaults"
