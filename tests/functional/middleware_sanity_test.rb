@@ -8,8 +8,8 @@ module GraphiteAPI
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
     def setup
-      @middleware_port = PORTS.pop
-      @mock_server_port = PORTS.pop
+      @middleware_port = random_non_repeating_port
+      @mock_server_port = random_non_repeating_port
       @data = []
       EM.stop if EM.reactor_running?
     end

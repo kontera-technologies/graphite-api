@@ -31,7 +31,11 @@ module GraphiteAPI
 
   module Functional
     class TestCase < Minitest::Test
-      PORTS = (1000..9999).to_a.shuffle
+      def random_non_repeating_port
+        @ports ||= (1000..9999).to_a.shuffle
+        @ports.pop
+      end
+
     end
   end
 

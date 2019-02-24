@@ -6,8 +6,8 @@ module GraphiteAPI
     EM_STOP_AFTER = 4
 
     def setup
-      @tcp_port = PORTS.pop
-      @udp_port = PORTS.pop
+      @tcp_port = random_non_repeating_port
+      @udp_port = random_non_repeating_port
       @tcp_data = []
       @udp_data = []
       EM.stop if EM.reactor_running?
