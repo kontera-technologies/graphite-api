@@ -40,7 +40,7 @@ module GraphiteAPI
       Process.kill(:KILL, pid)
     end
 
-    def _test_with_avg
+    def test_with_avg
       options = %W(--port #{@middleware_port} --graphite tcp://localhost:#{@mock_server_port} --aggregation-method avg --interval 2 -L error)
       pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
       sleep 1
@@ -59,7 +59,7 @@ module GraphiteAPI
       Process.kill(:KILL, pid)
     end
 
-    def _test_with_replace
+    def test_with_replace
       options = %W(--port #{@middleware_port} --graphite tcp://localhost:#{@mock_server_port} --aggregation-method replace --interval 2 -L error)
       pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
       sleep 1
