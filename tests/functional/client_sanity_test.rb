@@ -13,6 +13,10 @@ module GraphiteAPI
       EM.stop if EM.reactor_running?
     end
 
+    def teardown
+      EM.stop if EM.reactor_running?
+    end
+
     def test_clients_with_avg_aggregation
       EventMachine.run {
         start_servers
@@ -21,7 +25,6 @@ module GraphiteAPI
             client.metrics({"default.foo" => 20}, Time.at(123456789))
             client.metrics({"default.foo" => 31}, Time.at(123456789))
           end
-          EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
         }
       }
 
@@ -36,7 +39,6 @@ module GraphiteAPI
             client.metrics({"default.foo" => 20}, Time.at(123456789))
             client.metrics({"default.foo" => 40}, Time.at(123456789))
           end
-          EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
         }
       }
 
@@ -57,7 +59,6 @@ module GraphiteAPI
             client.metrics({"replace.foo" => 5}, Time.at(123456789), :replace)
             client.metrics({"replace.foo" => 10}, Time.at(123456789), :replace)
           end
-          EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
         }
       }
 
@@ -84,6 +85,7 @@ module GraphiteAPI
     end
 
     def assert_expected_equals_data expected
+      sleep EM_STOP_AFTER
       assert_equal expected.sort, @tcp_data.map {|x| x.split("\n")}.flatten.sort
       assert_equal expected.sort, @udp_data.map {|x| x.split("\n")}.flatten.sort
     end
