@@ -21,11 +21,11 @@ Rake::TestTask.new(:all => :prepare) do |t|
   t.pattern = "tests/**/*_test.rb"
 end
 
-Rake::TestTask.new(:only_client => :prepare) do |t|
-  t.pattern = "tests/functional/client_sanity_test.rb"
+Rake::TestTask.new(:travis => :prepare) do |t|
+  t.test_files = FileList['tests/functional/middleware_sanity_test.rb', 'tests/functional/client_sanity_test.rb', 'tests/unit/buffer_test.rb']
 end
 
-task(:test => :functional)
+task(:test => :travis)
 
 task :default => :test
 
