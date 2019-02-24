@@ -12,11 +12,7 @@ module GraphiteAPI
       @middleware_port = random_non_repeating_port
       @mock_server_port = random_non_repeating_port
       @data = []
-      EM.stop if EM.reactor_running?
-    end
-
-    def teardown
-      EM.stop if EM.reactor_running?
+      stop_em_if_running
     end
 
     def test_with_defaults

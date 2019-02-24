@@ -10,14 +10,11 @@ module GraphiteAPI
       @udp_port = random_non_repeating_port
       @tcp_data = []
       @udp_data = []
-      EM.stop if EM.reactor_running?
-    end
-
-    def teardown
-      EM.stop if EM.reactor_running?
+      stop_em_if_running
     end
 
     def test_clients_with_avg_aggregation
+      puts "EM.reactor_running!" if EM.reactor_running?
       EventMachine.run {
         start_servers
         clients(:default_aggregation_method => :avg).each { |client|

@@ -36,6 +36,10 @@ module GraphiteAPI
         @ports.pop
       end
 
+      def stop_em_if_running
+        EM.stop if EM.reactor_running?
+        sleep 0.1 while EM.reactor_running?
+      end
     end
   end
 
