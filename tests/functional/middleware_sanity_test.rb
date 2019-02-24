@@ -7,6 +7,8 @@ module GraphiteAPI
     EM_STOP_AFTER = 4
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
+    # self.parallelize_me!
+
     def setup
       @middleware_port = Random.rand(1000..4999)
       @mock_server_port = Random.rand(5000..9999)
@@ -25,6 +27,7 @@ module GraphiteAPI
           socket.puts("shuki.tuki2 10 123456789\n")
           socket.puts("shuki.tuki3 10 123456789\n")
         end
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       expected = [
@@ -48,6 +51,7 @@ module GraphiteAPI
           socket.puts("shuki.tuki1 1.0 123456789\n")
           socket.puts("shuki.tuki1 1.2 123456789\n")
         end
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       assert_expected_equals_data ["shuki.tuki1 1.1 123456780"]
@@ -66,6 +70,7 @@ module GraphiteAPI
           socket.puts("shuki.tuki1 10.0 123456789\n")
           socket.puts("shuki.tuki1 5.0 123456789\n")
         end
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       assert_expected_equals_data ["shuki.tuki1 5.0 123456780"]

@@ -20,6 +20,7 @@ module GraphiteAPI
             client.metrics({"default.foo" => 20}, Time.at(123456789))
             client.metrics({"default.foo" => 31}, Time.at(123456789))
           end
+          EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
         }
       }
 
@@ -34,6 +35,7 @@ module GraphiteAPI
             client.metrics({"default.foo" => 20}, Time.at(123456789))
             client.metrics({"default.foo" => 40}, Time.at(123456789))
           end
+          EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
         }
       }
 
@@ -54,6 +56,7 @@ module GraphiteAPI
             client.metrics({"replace.foo" => 5}, Time.at(123456789), :replace)
             client.metrics({"replace.foo" => 10}, Time.at(123456789), :replace)
           end
+          EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
         }
       }
 
