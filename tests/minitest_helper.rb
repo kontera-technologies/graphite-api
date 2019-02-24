@@ -28,6 +28,7 @@ module GraphiteAPI
       def self.every(*);end
     end
   end
+
   module Functional
     class TestCase < Minitest::Test
     end

@@ -7,12 +7,11 @@ module GraphiteAPI
     EM_STOP_AFTER = 4
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
-    # self.parallelize_me!
-
     def setup
       @middleware_port = 9123
       @mock_server_port = 9124
       @data = []
+      EM.stop if EM.reactor_running?
     end
 
     def test_with_defaults

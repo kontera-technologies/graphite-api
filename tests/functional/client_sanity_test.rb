@@ -10,6 +10,7 @@ module GraphiteAPI
       @udp_port = 9126
       @tcp_data = []
       @udp_data = []
+      EM.stop if EM.reactor_running?
     end
 
     def test_clients_with_avg_aggregation
