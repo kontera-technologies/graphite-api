@@ -5,7 +5,7 @@ require 'socket'
 module GraphiteAPI
   class MiddlewareSanityTester < Functional::TestCase
     EM_STOP_AFTER = 4
-    SERVER_STARTUP_WAIT = 2
+    SERVER_STARTUP_WAIT = 4
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
     def setup
