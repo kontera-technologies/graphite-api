@@ -4,8 +4,6 @@ require 'eventmachine'
 module GraphiteAPI
   class ClientSanityTester < Unit::TestCase
     EM_STOP_AFTER = 4
-    
-    self.parallelize_me!
 
     def setup
       @tcp_port = Random.rand(1000..4999)

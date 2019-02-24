@@ -7,8 +7,6 @@ module GraphiteAPI
     EM_STOP_AFTER = 4
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
-    self.parallelize_me!
-
     def setup
       @middleware_port = Random.rand(1000..4999)
       @mock_server_port = Random.rand(5000..9999)
