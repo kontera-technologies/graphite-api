@@ -3,10 +3,13 @@ require 'eventmachine'
 
 module GraphiteAPI
   class ClientSanityTester < Unit::TestCase
-    TCP_PORT = 9875
-    UDP_PORT = 9876
+    EM_STOP_AFTER = 4
+    
+    self.parallelize_me!
 
     def setup
+      @tcp_port = Random.rand(1000..4999)
+      @udp_port = Random.rand(5000..9999)
       @tcp_data = []
       @udp_data = []
     end
@@ -19,7 +22,6 @@ module GraphiteAPI
             client.metrics({"default.foo" => 20}, Time.at(123456789))
             client.metrics({"default.foo" => 31}, Time.at(123456789))
           end
-          EventMachine::Timer.new(2,&EM.method(:stop))
         }
       }
 
@@ -34,7 +36,6 @@ module GraphiteAPI
             client.metrics({"default.foo" => 20}, Time.at(123456789))
             client.metrics({"default.foo" => 40}, Time.at(123456789))
           end
-          EventMachine::Timer.new(2,&EM.method(:stop))
         }
       }
 
@@ -55,7 +56,6 @@ module GraphiteAPI
             client.metrics({"replace.foo" => 5}, Time.at(123456789), :replace)
             client.metrics({"replace.foo" => 10}, Time.at(123456789), :replace)
           end
-          EventMachine::Timer.new(2,&EM.method(:stop))
         }
       }
 
@@ -70,19 +70,19 @@ module GraphiteAPI
     end
 
     def start_servers
-      EventMachine.start_server("0.0.0.0", TCP_PORT, MockServer, @tcp_data)
-      EventMachine.open_datagram_socket("0.0.0.0", UDP_PORT, MockServer, @udp_data)
+      EventMachine.start_server("0.0.0.0", @tcp_port, MockServer, @tcp_data)
+      EventMachine.open_datagram_socket("0.0.0.0", @udp_port, MockServer, @udp_data)
     end
 
     def clients opts={}
       [
-        GraphiteAPI.new({graphite: "tcp://localhost:#{TCP_PORT}", interval: 2}.merge(opts)),
-        GraphiteAPI.new({graphite: "udp://localhost:#{UDP_PORT}", interval: 2}.merge(opts))
+        GraphiteAPI.new({graphite: "tcp://localhost:#{@tcp_port}", interval: 2}.merge(opts)),
+        GraphiteAPI.new({graphite: "udp://localhost:#{@udp_port}", interval: 2}.merge(opts))
       ]
     end
 
     def assert_expected_equals_data expected
-      sleep 4 # Removing this will fail the test with --seed=48010
+      sleep EM_STOP_AFTER # Removing this will fail the test with --seed=48010
       assert_equal expected.sort, @tcp_data.map {|x| x.split("\n")}.flatten.sort
       assert_equal expected.sort, @udp_data.map {|x| x.split("\n")}.flatten.sort
     end
