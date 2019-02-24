@@ -31,6 +31,7 @@ module GraphiteAPI
           socket.puts("shuki.tuki2 10 123456789\n")
           socket.puts("shuki.tuki3 10 123456789\n")
         end
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       expected = [
@@ -54,6 +55,7 @@ module GraphiteAPI
           socket.puts("shuki.tuki1 1.0 123456789\n")
           socket.puts("shuki.tuki1 1.2 123456789\n")
         end
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       assert_expected_equals_data ["shuki.tuki1 1.1 123456780"]
@@ -72,6 +74,7 @@ module GraphiteAPI
           socket.puts("shuki.tuki1 10.0 123456789\n")
           socket.puts("shuki.tuki1 5.0 123456789\n")
         end
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       assert_expected_equals_data ["shuki.tuki1 5.0 123456780"]
@@ -85,7 +88,6 @@ module GraphiteAPI
     end
 
     def assert_expected_equals_data expected
-      sleep EM_STOP_AFTER
       assert_equal expected, @data.map {|o| o.split("\n")}.flatten(1).map(&:strip)
     end
   end

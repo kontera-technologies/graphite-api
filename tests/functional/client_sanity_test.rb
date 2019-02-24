@@ -26,6 +26,7 @@ module GraphiteAPI
             client.metrics({"default.foo" => 31}, Time.at(123456789))
           end
         }
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       assert_expected_equals_data ["default.foo 25.5 123456780"]
@@ -40,6 +41,7 @@ module GraphiteAPI
             client.metrics({"default.foo" => 40}, Time.at(123456789))
           end
         }
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       assert_expected_equals_data ["default.foo 40.0 123456780"]
@@ -60,6 +62,7 @@ module GraphiteAPI
             client.metrics({"replace.foo" => 10}, Time.at(123456789), :replace)
           end
         }
+        EventMachine::Timer.new(EM_STOP_AFTER, &EM.method(:stop))
       }
 
       expected = [
@@ -85,7 +88,6 @@ module GraphiteAPI
     end
 
     def assert_expected_equals_data expected
-      sleep EM_STOP_AFTER
       assert_equal expected.sort, @tcp_data.map {|x| x.split("\n")}.flatten.sort
       assert_equal expected.sort, @udp_data.map {|x| x.split("\n")}.flatten.sort
     end
