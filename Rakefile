@@ -21,11 +21,11 @@ Rake::TestTask.new(:all => :prepare) do |t|
   t.pattern = "tests/**/*_test.rb"
 end
 
-Rake::TestTask.new(:only_middleware => :prepare) do |t|
-  t.pattern = "tests/functional/middleware_sanity_test.rb"
+Rake::TestTask.new(:only_client => :prepare) do |t|
+  t.pattern = "tests/functional/client_sanity_test.rb"
 end
 
-task(:test => :only_middleware)
+task(:test => :only_client)
 
 task :default => :test
 
