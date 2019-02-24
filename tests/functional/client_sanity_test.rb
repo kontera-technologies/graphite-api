@@ -2,7 +2,7 @@ require_relative "../minitest_helper"
 require 'eventmachine'
 
 module GraphiteAPI
-  class ClientSanityTester < Unit::TestCase
+  class ClientSanityTester < Functional::TestCase
     EM_STOP_AFTER = 4
 
     def setup
@@ -83,7 +83,6 @@ module GraphiteAPI
     end
 
     def assert_expected_equals_data expected
-      sleep EM_STOP_AFTER # Removing this will fail the test with --seed=48010
       assert_equal expected.sort, @tcp_data.map {|x| x.split("\n")}.flatten.sort
       assert_equal expected.sort, @udp_data.map {|x| x.split("\n")}.flatten.sort
     end

@@ -22,6 +22,15 @@ module GraphiteAPI
   module Unit
     class TestCase < Minitest::Test
     end
+
+    # Disable Zscheduler on unit tests.
+    class Zscheduler
+      def self.every(*);end
+    end
+  end
+  module Functional
+    class TestCase < Minitest::Test
+    end
   end
 
   module MockServer

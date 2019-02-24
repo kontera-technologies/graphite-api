@@ -3,7 +3,7 @@ require 'eventmachine'
 require 'socket'
 
 module GraphiteAPI
-  class MiddlewareSanityTester < Unit::TestCase
+  class MiddlewareSanityTester < Functional::TestCase
     EM_STOP_AFTER = 4
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
@@ -79,7 +79,6 @@ module GraphiteAPI
     end
 
     def assert_expected_equals_data expected
-      sleep EM_STOP_AFTER # Removing this will fail the test with --seed=48010
       assert_equal expected, @data.map {|o| o.split("\n")}.flatten(1).map(&:strip)
     end
   end
