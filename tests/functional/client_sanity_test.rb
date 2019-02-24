@@ -6,8 +6,8 @@ module GraphiteAPI
     EM_STOP_AFTER = 4
 
     def setup
-      @tcp_port = Random.rand(1000..4999)
-      @udp_port = Random.rand(5000..9999)
+      @tcp_port = Random.rand(9125)
+      @udp_port = Random.rand(9126)
       @tcp_data = []
       @udp_data = []
     end

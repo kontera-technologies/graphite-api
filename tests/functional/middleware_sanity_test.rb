@@ -10,8 +10,8 @@ module GraphiteAPI
     # self.parallelize_me!
 
     def setup
-      @middleware_port = Random.rand(1000..4999)
-      @mock_server_port = Random.rand(5000..9999)
+      @middleware_port = Random.rand(9123)
+      @mock_server_port = Random.rand(9124)
       @data = []
     end
 
