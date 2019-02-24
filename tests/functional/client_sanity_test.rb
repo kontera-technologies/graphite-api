@@ -14,7 +14,6 @@ module GraphiteAPI
     end
 
     def test_clients_with_avg_aggregation
-      puts "EM.reactor_running!" if EM.reactor_running?
       EventMachine.run {
         start_servers
         clients(:default_aggregation_method => :avg).each { |client|
@@ -73,14 +72,14 @@ module GraphiteAPI
     end
 
     def start_servers
-      EventMachine.start_server("0.0.0.0", @tcp_port, MockServer, @tcp_data)
-      EventMachine.open_datagram_socket("0.0.0.0", @udp_port, MockServer, @udp_data)
+      EventMachine.start_server("127.0.0.1", @tcp_port, MockServer, @tcp_data)
+      EventMachine.open_datagram_socket("127.0.0.1", @udp_port, MockServer, @udp_data)
     end
 
     def clients opts={}
       [
-        GraphiteAPI.new({graphite: "tcp://localhost:#{@tcp_port}", interval: 2}.merge(opts)),
-        GraphiteAPI.new({graphite: "udp://localhost:#{@udp_port}", interval: 2}.merge(opts))
+        GraphiteAPI.new({graphite: "tcp://127.0.0.1:#{@tcp_port}", interval: 2}.merge(opts)),
+        GraphiteAPI.new({graphite: "udp://127.0.0.1:#{@udp_port}", interval: 2}.merge(opts))
       ]
     end
 

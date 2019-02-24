@@ -5,7 +5,6 @@ require 'socket'
 module GraphiteAPI
   class MiddlewareSanityTester < Functional::TestCase
     EM_STOP_AFTER = 4
-    SERVER_STARTUP_WAIT = 4
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
     def setup
@@ -20,8 +19,8 @@ module GraphiteAPI
       pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
       sleep 1
       EventMachine.run {
-        EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
-        socket = TCPSocket.new("0.0.0.0",@middleware_port)
+        EventMachine.start_server("127.0.0.1", @mock_server_port, MockServer, @data)
+        socket = TCPSocket.new("127.0.0.1", @middleware_port)
         1.upto(1000) do
           socket.puts("shuki.tuki1 1.1 123456789\n")
           socket.puts("shuki.tuki2 10 123456789\n")
@@ -45,8 +44,8 @@ module GraphiteAPI
       pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
       sleep 1
       EventMachine.run {
-        EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
-        socket = TCPSocket.new("0.0.0.0",@middleware_port)
+        EventMachine.start_server("127.0.0.1", @mock_server_port, MockServer, @data)
+        socket = TCPSocket.new("127.0.0.1", @middleware_port)
         1.upto(1000) do
           socket.puts("shuki.tuki1 1.0 123456789\n")
           socket.puts("shuki.tuki1 1.2 123456789\n")
@@ -64,8 +63,8 @@ module GraphiteAPI
       pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
       sleep 1
       EventMachine.run {
-        EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
-        socket = TCPSocket.new("0.0.0.0",@middleware_port)
+        EventMachine.start_server("127.0.0.1", @mock_server_port, MockServer, @data)
+        socket = TCPSocket.new("127.0.0.1", @middleware_port)
         1.upto(1000) do
           socket.puts("shuki.tuki1 10.0 123456789\n")
           socket.puts("shuki.tuki1 5.0 123456789\n")
@@ -76,11 +75,6 @@ module GraphiteAPI
       assert_expected_equals_data ["shuki.tuki1 5.0 123456780"]
     ensure
       Process.kill(:KILL, pid)
-    end
-
-    def start_server
-      EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
-      sleep SERVER_STARTUP_WAIT
     end
 
     def assert_expected_equals_data expected
