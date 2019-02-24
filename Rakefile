@@ -25,7 +25,7 @@ Rake::TestTask.new(:only_client => :prepare) do |t|
   t.pattern = "tests/functional/client_sanity_test.rb"
 end
 
-task(:test => :only_client)
+task(:test => :functional)
 
 task :default => :test
 
