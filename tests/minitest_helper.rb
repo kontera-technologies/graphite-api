@@ -19,10 +19,6 @@ require "mocha/mini_test"
 require_relative "../lib/graphite-api"
 
 module GraphiteAPI
-  def jruby?
-    RUBY_PLATFORM == "java"
-  end
-
   module Unit
     class TestCase < Minitest::Test
       def disable_zscheduler

@@ -5,7 +5,7 @@ require 'socket'
 module GraphiteAPI
   class MiddlewareSanityTester < Functional::TestCase
     EM_STOP_AFTER = 4
-    MIDDLEWARE_STARTUP_WAIT = jruby? ? 4 : 1
+    MIDDLEWARE_STARTUP_WAIT = 1
     MIDDLEWARE_STOP_WAIT = 1
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 

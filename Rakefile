@@ -21,7 +21,12 @@ Rake::TestTask.new(:all => :prepare) do |t|
   t.pattern = "tests/**/*_test.rb"
 end
 
-task(:test => :all)
+# Disable functional tests on JRuby
+if RUBY_PLATFORM == "java"
+  task(:test => :unit)
+else
+  task(:test => :all)
+end
 
 task :default => :test
 

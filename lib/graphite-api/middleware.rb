@@ -45,8 +45,6 @@ module GraphiteAPI
     def peername
       port, *ip = get_peername[2,6].unpack "nC4"
       [ip.join("."),port].join ":"
-    rescue
-      "no-peername"
     end
     
     private :peername
@@ -68,8 +66,8 @@ module GraphiteAPI
           group.publish buffer.pull :string if buffer.new_records?
         end
 
-      end  
+      end
     end
-    
-  end 
-end 
+
+  end
+end
