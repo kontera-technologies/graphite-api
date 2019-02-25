@@ -5,6 +5,8 @@ require 'socket'
 module GraphiteAPI
   class MiddlewareSanityTester < Functional::TestCase
     EM_STOP_AFTER = 4
+    MIDDLEWARE_STARTUP_WAIT = jruby? ? 4 : 1
+    MIDDLEWARE_STOP_WAIT = 1
     MIDDLEWARE_BIN_FILE = File.expand_path("../../../bin/graphite-middleware", __FILE__)
 
     def setup
@@ -14,13 +16,23 @@ module GraphiteAPI
       stop_em_if_running
     end
 
+    def start_middleware middleware_port, mock_server_port, aggregation_method=nil, interval=2
+      options = %W(--port #{middleware_port} --graphite tcp://localhost:#{mock_server_port} --interval #{interval} -L error)
+      options += ["--aggregation-method", aggregation_method] if aggregation_method
+      @pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
+      sleep MIDDLEWARE_STARTUP_WAIT
+    end
+
+    def teardown
+      Process.kill(:KILL, @pid)
+      sleep MIDDLEWARE_STOP_WAIT
+    end
+
     def test_with_defaults
-      options = %W(--port #{@middleware_port} --graphite tcp://localhost:#{@mock_server_port} --interval 2 -L error)
-      pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
-      sleep 1
+      start_middleware @middleware_port, @mock_server_port
       EventMachine.run {
-        EventMachine.start_server("127.0.0.1", @mock_server_port, MockServer, @data)
-        socket = TCPSocket.new("127.0.0.1", @middleware_port)
+        EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
+        socket = TCPSocket.new("0.0.0.0", @middleware_port)
         1.upto(1000) do
           socket.puts("shuki.tuki1 1.1 123456789\n")
           socket.puts("shuki.tuki2 10 123456789\n")
@@ -35,17 +47,13 @@ module GraphiteAPI
         "shuki.tuki3 10000.0 123456780"
       ]
       assert_expected_equals_data expected
-    ensure
-      Process.kill(:KILL, pid)
     end
 
     def test_with_avg
-      options = %W(--port #{@middleware_port} --graphite tcp://localhost:#{@mock_server_port} --aggregation-method avg --interval 2 -L error)
-      pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
-      sleep 1
+      start_middleware @middleware_port, @mock_server_port, 'avg'
       EventMachine.run {
-        EventMachine.start_server("127.0.0.1", @mock_server_port, MockServer, @data)
-        socket = TCPSocket.new("127.0.0.1", @middleware_port)
+        EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
+        socket = TCPSocket.new("0.0.0.0", @middleware_port)
         1.upto(1000) do
           socket.puts("shuki.tuki1 1.0 123456789\n")
           socket.puts("shuki.tuki1 1.2 123456789\n")
@@ -54,17 +62,13 @@ module GraphiteAPI
       }
 
       assert_expected_equals_data ["shuki.tuki1 1.1 123456780"]
-    ensure
-      Process.kill(:KILL, pid)
     end
 
     def test_with_replace
-      options = %W(--port #{@middleware_port} --graphite tcp://localhost:#{@mock_server_port} --aggregation-method replace --interval 2 -L error)
-      pid = Process.spawn("ruby", MIDDLEWARE_BIN_FILE, *options)
-      sleep 1
+      start_middleware @middleware_port, @mock_server_port, 'replace'
       EventMachine.run {
-        EventMachine.start_server("127.0.0.1", @mock_server_port, MockServer, @data)
-        socket = TCPSocket.new("127.0.0.1", @middleware_port)
+        EventMachine.start_server("0.0.0.0", @mock_server_port, MockServer, @data)
+        socket = TCPSocket.new("0.0.0.0", @middleware_port)
         1.upto(1000) do
           socket.puts("shuki.tuki1 10.0 123456789\n")
           socket.puts("shuki.tuki1 5.0 123456789\n")
@@ -73,8 +77,6 @@ module GraphiteAPI
       }
 
       assert_expected_equals_data ["shuki.tuki1 5.0 123456780"]
-    ensure
-      Process.kill(:KILL, pid)
     end
 
     def assert_expected_equals_data expected

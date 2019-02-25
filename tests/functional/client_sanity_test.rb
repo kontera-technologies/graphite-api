@@ -72,20 +72,19 @@ module GraphiteAPI
     end
 
     def start_servers
-      EventMachine.start_server("127.0.0.1", @tcp_port, MockServer, @tcp_data)
-      EventMachine.open_datagram_socket("127.0.0.1", @udp_port, MockServer, @udp_data)
+      EventMachine.start_server("0.0.0.0", @tcp_port, MockServer, @tcp_data)
+      EventMachine.open_datagram_socket("0.0.0.0", @udp_port, MockServer, @udp_data) unless jruby? # UDP cannot be tested in JRuby
     end
 
     def clients opts={}
-      [
-        GraphiteAPI.new({graphite: "tcp://127.0.0.1:#{@tcp_port}", interval: 2}.merge(opts)),
-        GraphiteAPI.new({graphite: "udp://127.0.0.1:#{@udp_port}", interval: 2}.merge(opts))
-      ]
+      clients = [GraphiteAPI.new({graphite: "tcp://localhost:#{@tcp_port}", interval: 2}.merge(opts))]
+      clients + [GraphiteAPI.new({graphite: "udp://localhost:#{@udp_port}", interval: 2}.merge(opts))] unless jruby? # UDP cannot be tested in JRuby
+      return clients
     end
 
     def assert_expected_equals_data expected
       assert_equal expected.sort, @tcp_data.map {|x| x.split("\n")}.flatten.sort
-      assert_equal expected.sort, @udp_data.map {|x| x.split("\n")}.flatten.sort
+      assert_equal expected.sort, @udp_data.map {|x| x.split("\n")}.flatten.sort unless jruby? # UDP cannot be tested in JRuby
     end
   end
 end
