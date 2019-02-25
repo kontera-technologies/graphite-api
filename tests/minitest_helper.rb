@@ -21,9 +21,32 @@ require_relative "../lib/graphite-api"
 module GraphiteAPI
   module Unit
     class TestCase < Minitest::Test
+      def disable_zscheduler
+        Zscheduler.stubs(:every)
+      end
     end
   end
-  class Zscheduler
-    def self.every(*);end
+
+  module Functional
+    class TestCase < Minitest::Test
+      def random_non_repeating_port
+        @ports ||= (1000..9999).to_a.shuffle
+        @ports.pop
+      end
+
+      def stop_em_if_running
+        EM.stop if EM.reactor_running?
+        sleep 0.1 while EM.reactor_running?
+      end
+    end
+  end
+
+  module MockServer
+    def initialize db
+      @db = db
+    end
+    def receive_data data
+      @db.push data
+    end
   end
 end

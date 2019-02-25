@@ -66,8 +66,8 @@ module GraphiteAPI
           group.publish buffer.pull :string if buffer.new_records?
         end
 
-      end  
+      end
     end
-    
-  end 
-end 
+
+  end
+end

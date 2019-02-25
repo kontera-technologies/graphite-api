@@ -2,6 +2,9 @@ require_relative "../minitest_helper"
 
 module GraphiteAPI
   class ClientTester < Unit::TestCase
+    def setup
+      disable_zscheduler
+    end
 
     def test_nicer_method_to_get_client
       assert_kind_of ::GraphiteAPI::Client, ::GraphiteAPI.new({:graphite => 'shuki'})
