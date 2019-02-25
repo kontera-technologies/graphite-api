@@ -78,7 +78,7 @@ module GraphiteAPI
 
     def clients opts={}
       clients = [GraphiteAPI.new({graphite: "tcp://localhost:#{@tcp_port}", interval: 2}.merge(opts))]
-      clients + [GraphiteAPI.new({graphite: "udp://localhost:#{@udp_port}", interval: 2}.merge(opts))] unless jruby? # UDP cannot be tested in JRuby
+      clients += [GraphiteAPI.new({graphite: "udp://localhost:#{@udp_port}", interval: 2}.merge(opts))] unless jruby? # UDP cannot be tested in JRuby
       return clients
     end
 
