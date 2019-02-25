@@ -25,6 +25,9 @@ module GraphiteAPI
 
   module Unit
     class TestCase < Minitest::Test
+      def disable_zscheduler
+        Zscheduler.stubs(:every)
+      end
     end
   end
 
