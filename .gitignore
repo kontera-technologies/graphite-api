@@ -1,9 +1,17 @@
+# OS files
+.DS_store
+
+# Build files
 pkg
 graphite-api_build
+coverage
+Gemfile.lock
+
+# Temporary files
 *.swo
 *.swp
-coverage
+
+# Other
 *.rbx
 delme.rb
 middleware.out
-.DS_store
