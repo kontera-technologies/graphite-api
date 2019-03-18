@@ -1,14 +1,12 @@
 # Description
-**GraphiteAPI** provides two ways for interacting with **Graphite's Carbon Daemon**, the first is for Ruby applications using the **GraphiteAPI::Client**, the second is through **GraphiteAPI-Middleware** daemon, both methods implements Graphite's [plaintext protocol](http://graphite.readthedocs.org/en/1.0/feeding-carbon.html).
+**GraphiteAPI** provides a way for interacting with **Graphite's Carbon Daemon** using the **GraphiteAPI::Client**, that implements Graphite's [plaintext protocol](http://graphite.readthedocs.org/en/1.0/feeding-carbon.html).
 
 ## Package Content
 * Includes a **simple** client for ruby.
-* Ships with a **GraphiteAPI-Middleware**, which is a lightweight, event-driven, aggregator daemon.
 * Utilities like scheduling and caching.
 
 ## Key Features
-* **Multiple Graphite Servers Support** - GraphiteAPI-Middleware supports sending aggregated data to multiple graphite servers, in a multiplex fashion, useful for large data centers and backup purposes
-* **Reanimation mode** - support cases which the same keys (same timestamps as well) can be received simultaneously and asynchronously from multiple input sources, in these cases GraphiteAPI-Middleware will "reanimate" old records (records that were already sent to Graphite server), and will send the sum of the reanimated record value + the value of the record that was just received to the graphite server; this new summed record should override the key with the new value on Graphite database.
+* **Reanimation mode** - support cases which the same keys (same timestamps as well) can be received simultaneously and asynchronously from multiple input sources, in these cases GraphiteAPI will "reanimate" old records (records that were already sent to Graphite server), and will send the sum of the reanimated record value + the value of the record that was just received to the graphite server; this new summed record should override the key with the new value on Graphite database.
 * **non-blocking I/O** ( EventMachine aware ).
 * **Thread-Safe** client.
 
@@ -205,69 +203,6 @@ GraphiteAPI::Logger.logger.level = ::Logger::DEBUG
 # Or use the built-in one
 GraphiteAPI::Logger.init level: :debug, dev: 'logger.out' # or STDOUT | STDERR
 ```
-
-## GraphiteAPI-Middleware Usage
-* After installing GraphiteAPI gem, the `graphite-middleware` command should be available.
-
-```
-[root@graphite-middleware-node]# graphite-middleware --help
-
-GraphiteAPI Middleware Server
-
-Usage: graphite-middleware [options]
-    -g, --graphite HOST:PORT         graphite host, in HOST:PORT format (can be specified multiple times)
-    -p, --port PORT                  listening port (default 2003)
-    -l, --log-file FILE              log file
-    -L, --log-level LEVEL            log level (default warn)
-    -P, --pid-file FILE              pid file (default /var/run/graphite-middleware.pid)
-    -d, --daemonize                  run in background
-    -i, --interval INT               report every X seconds (default 60)
-    -s, --slice SECONDS              send to graphite in X seconds slices (default 60)
-    -r, --reanimation HOURS          reanimate records that are younger than X hours, please see README
-    -m, --aggregation-method method  The aggregation method (sum, avg or replace) for multiple reports in the same time slice (default sum)
-
-More Info @ https://github.com/kontera-technologies/graphite-api
-```
-
-* launch **GraphiteAPI-Middleware** daemon
-
-```
-[root@graphite-middleware-node]# graphite-middleware              \
-  --port 2005                                                     \
-  --interval 60                                                   \
-  --log-level debug                                               \
-  --log-file /tmp/graphite-middleware.out                         \
-  --daemonize                                                     \
-  --graphite graphite-server:2003                                 \
-  --graphite graphite-backup-server:2003
-```
-
-* Send metrics via **UDP/TCP sockets**
-
-```
-[root@graphite-middleware-node] telnet localhost 2005
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-example.middleware.value 10.2 1335008343
-example.middleware.value2 99 1334929231
-^C
-[root@graphite-middleware-node]
-```
-
-* Or via **GraphtieAPI client**
-
-```ruby
-require 'graphite-api'
-client = GraphiteAPI.new(:graphite => 'tcp://graphite-middleware-node:2005')
-client.example.middleware.value 10.2
-client.example.middleware.value2 27
-client.bla.bla.value2 27
-```
-
-## Example Setup
-<br/>
-<img src="https://raw.github.com/kontera-technologies/graphite-api/master/examples/middleware_t1.png" align="center">
 
 ## Bugs
 
