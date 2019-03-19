@@ -11,4 +11,5 @@ group :test do
   gem 'codecov'
   gem 'minitest'
   gem 'mocha'
+  gem "gem-release", "~> 2.0"
 end
