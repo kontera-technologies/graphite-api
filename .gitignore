@@ -1,5 +1,6 @@
-# OS files
+# OS/IDE files
 .DS_store
+.idea
 
 # Build files
 pkg
