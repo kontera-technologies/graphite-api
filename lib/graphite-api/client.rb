@@ -76,13 +76,13 @@ module GraphiteAPI
 
     def validate options
       options.tap do |opt|
-        raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil? and opt[:backends].to_a.empty?
+        raise ArgumentError.new ":graphite must be specified" if opt[:graphite].nil?
       end
     end
 
     def build_options opt
       self.class.default_options.tap do |options_hash|
-        options_hash[:backends].push opt.delete :graphite if opt[:graphite]
+        options_hash[:backends] = Array(opt.delete :graphite)
         options_hash.merge! opt
         options_hash[:direct] = options_hash[:interval] == 0
         options_hash[:slice] = 1 if options_hash[:direct]
