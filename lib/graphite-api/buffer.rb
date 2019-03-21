@@ -24,6 +24,9 @@ module GraphiteAPI
 
     IGNORE = ["\r"]
     END_OF_STREAM = "\n"
+
+    # Matches the metric name (string with dots and dashes), at least one space, the metric value (int or float),
+    # at least one space and finally the metric timestamp (int)
     VALID_MESSAGE = /^[\w.-]+ +\d+(?:\.\d+)? +\d+$/
 
     AGGREGATORS = {
