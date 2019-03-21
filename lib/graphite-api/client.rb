@@ -10,6 +10,8 @@ module GraphiteAPI
     def_delegator :timers, :pause
     def_delegator :timers, :resume
 
+    def_delegator :buffer, :stream
+
     attr_reader :options, :buffer, :connectors, :mu
     private     :options, :buffer, :connectors, :mu
 
