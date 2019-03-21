@@ -81,12 +81,16 @@ module GraphiteAPI
     end
 
     def build_options opt
-      self.class.default_options.tap do |options_hash|
-        options_hash[:backends].push opt.delete :graphite
-        options_hash.merge! opt
-        options_hash[:direct] = options_hash[:interval] == 0
-        options_hash[:slice] = 1 if options_hash[:direct]
-      end
+      self.class.default_options.
+        merge(opt).
+        tap { |options|
+          options.merge!(
+            backends: options[:graphite].clone,
+            direct: options[:interval] == 0
+          )
+          options.merge!(slice: 1) if options[:direct]
+          options.delete :graphite
+        }
     end
 
     def send_metrics! *_
