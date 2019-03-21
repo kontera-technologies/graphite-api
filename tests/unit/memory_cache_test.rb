@@ -16,7 +16,7 @@ module GraphiteAPI
         assert_equal "1.12", obj.get(1, :tuki)
         assert_equal "1.12", obj.get(1, :tuki)
         assert_equal "1.12", obj.get(1, :tuki)
-        assert_equal nil, obj.get(2, :blablabla)
+        assert_nil obj.get(2, :blablabla)
       end
     end
     
@@ -30,14 +30,14 @@ module GraphiteAPI
         assert_equal 10, obj.get(time, :shuki)
         
         obj.__send__(:clean,59)
-        assert_equal nil, obj.get(time, :shuki)
+        assert_nil obj.get(time, :shuki)
       end
     end
     
     private
 
     def cache
-      Zscheduler.expects(:every).with(120)
+      # Zscheduler.expects(:every).with(120)
       Cache::Memory.new(:options)
     end
   end

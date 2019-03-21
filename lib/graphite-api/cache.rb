@@ -1,9 +1,11 @@
+require 'timers'
+
 module GraphiteAPI
   module Cache
     class Memory
 
       def initialize options
-        Zscheduler.every(120) { clean(options[:cache]) }
+        Timers::Group.new.every(120) { clean(options[:cache]) }
       end
 
       def get time, key

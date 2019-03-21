@@ -17,6 +17,15 @@ Gem::Specification.new do |s|
   s.files                 = %w(LICENSE README.md Rakefile) + Dir.glob("{lib,test,tasks}/**/*")
   s.require_path          = "lib"
 
-  s.add_dependency 'eventmachine','>= 0.3.3'
-  s.add_dependency 'zscheduler',  '>= 0.0.7'
+  s.add_runtime_dependency 'timers', '~> 4.3'
+  s.add_runtime_dependency 'jruby-openssl' if RUBY_PLATFORM == 'java'
+
+  s.add_development_dependency 'rake', '>= 0.9.2.2'
+  s.add_development_dependency 'minitest'
+  s.add_development_dependency 'eventmachine'
+  s.add_development_dependency 'mocha'
+  s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'codecov'
+  s.add_development_dependency 'simplecov-rcov'
+  s.add_development_dependency 'gem-release', '~> 2.0'
 end

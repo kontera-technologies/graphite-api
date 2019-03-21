@@ -3,7 +3,7 @@ require_relative "../minitest_helper"
 module GraphiteAPI
   class ClientTester < Unit::TestCase
     def setup
-      disable_zscheduler
+      # disable_zscheduler
     end
 
     def test_nicer_method_to_get_client
@@ -23,7 +23,7 @@ module GraphiteAPI
       GraphiteAPI::Buffer.expects(:new).with(opt).returns(:buffer)
       GraphiteAPI::Connector::Group.expects(:new).with(opt).returns(:connector_group)
 
-      Zscheduler.expects(:every)
+      # Zscheduler.expects(:every)
       Client.new(opt).tap do |client|
         assert_equal opt, client.instance_variable_get(:@options)
         assert_equal :buffer, client.instance_variable_get(:@buffer)
@@ -68,7 +68,7 @@ module GraphiteAPI
       client = get_client
       block = proc {'zubi'}
       frequency = 21
-      Zscheduler::expects(:every).with(frequency,&block)
+      # Zscheduler::expects(:every).with(frequency,&block)
       client.every(frequency,&block)
     end
 
@@ -117,7 +117,7 @@ module GraphiteAPI
     private
 
     def get_client(options = Client.default_options)
-      Zscheduler.expects(:every)
+      # Zscheduler.expects(:every)
       Client.new(options.merge(:graphite => "localhost", :interval => 60))
     end
 
