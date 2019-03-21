@@ -1,10 +1,10 @@
-$:.unshift File.expand_path('../lib',__FILE__)
-
-require 'graphite-api'
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'graphite-api/version'
 
 Gem::Specification.new do |s|
   s.name                  = "graphite-api"
-  s.version               = GraphiteAPI.version
+  s.version               = GraphiteAPI::VERSION
   s.platform              = Gem::Platform::RUBY
   s.summary               = "Graphite Ruby Client"
   s.description           = "Graphite API - A Simple ruby client, aggregator daemon and API tools"
