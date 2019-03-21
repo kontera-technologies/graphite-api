@@ -3,9 +3,10 @@ require 'timers'
 module GraphiteAPI
   module Cache
     class Memory
+      extend Forwardable
 
-      def initialize options
-        Timers::Group.new.every(120) { clean(options[:cache]) }
+      def initialize options, timers=false
+        timers.every(120) { clean(options[:cache]) } if timers
       end
 
       def get time, key

@@ -6,22 +6,24 @@ module GraphiteAPI
   class Client
     extend Forwardable
 
-    def_delegator :@timers, :cancel
-    def_delegator :@timers, :pause
-    def_delegator :@timers, :resume
+    def_delegator :timers, :cancel
+    def_delegator :timers, :pause
+    def_delegator :timers, :resume
 
     attr_reader :options, :buffer, :connectors, :mu
     private     :options, :buffer, :connectors, :mu
 
     def initialize opt
       @options = build_options validate opt.clone
-      @buffer  = GraphiteAPI::Buffer.new options
+      @buffer  = GraphiteAPI::Buffer.new options, timers
       @connectors = GraphiteAPI::Connector::Group.new options
       @mu = Mutex.new
-      @timers = Timers::Group.new
-      @timers.every(options[:interval], true, &method(:send_metrics!)) unless options[:direct]
 
-      Thread.new { loop { @timers.wait } }
+      timers.every(options[:interval], true, &method(:send_metrics!)) unless options[:direct]
+    end
+
+    def timers
+      @timers ||= Timers::Group.new.tap {|t| Thread.new { loop { t.wait } } }
     end
 
     # throw exception on Socket error

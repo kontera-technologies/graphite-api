@@ -1,7 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class ConnectorGroupTester < Unit::TestCase
+  class ConnectorGroupTester < UnitTestCase
     def test_initialize
       Connector.expects(:new).with(:backend1).returns(:backend1)
       Connector.expects(:new).with(:backend2).returns(:backend2)

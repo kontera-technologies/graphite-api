@@ -2,7 +2,7 @@ require_relative "../minitest_helper"
 require 'eventmachine'
 
 module GraphiteAPI
-  class ClientSanityTester < Functional::TestCase
+  class ClientSanityTester < FunctionalTestCase
     EM_STOP_AFTER = 4
 
     def setup
@@ -11,6 +11,12 @@ module GraphiteAPI
       @tcp_data = []
       @udp_data = []
       stop_em_if_running
+    end
+
+    def teardown
+      Thread.list.each do |thread|
+        thread.exit unless thread == Thread.current
+      end
     end
 
     def test_clients_with_avg_aggregation

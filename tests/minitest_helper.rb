@@ -14,30 +14,36 @@ end
 
 require 'minitest'
 require 'minitest/autorun'
-require "mocha/mini_test"
+require "mocha/minitest"
 
 require_relative "../lib/graphite-api"
 
 module GraphiteAPI
-  module Unit
-    class TestCase < Minitest::Test
-      # def disable_zscheduler
-      #   Zscheduler.stubs(:every)
-      # end
+
+  class BaseTestCase < Minitest::Test
+    def teardown
+      teardown_threads
+    end
+
+    def teardown_threads
+      Thread.list.each do |thread|
+        thread.exit unless thread == Thread.current
+      end
     end
   end
 
-  module Functional
-    class TestCase < Minitest::Test
-      def random_non_repeating_port
-        @ports ||= (1000..9999).to_a.shuffle
-        @ports.pop
-      end
+  class UnitTestCase < BaseTestCase
+  end
 
-      def stop_em_if_running
-        EM.stop if EM.reactor_running?
-        sleep 0.1 while EM.reactor_running?
-      end
+  class FunctionalTestCase < BaseTestCase
+    def random_non_repeating_port
+      @ports ||= (1000..9999).to_a.shuffle
+      @ports.pop
+    end
+
+    def stop_em_if_running
+      EM.stop if EM.reactor_running?
+      sleep 0.1 while EM.reactor_running?
     end
   end
 

@@ -1,11 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class BufferTester < Unit::TestCase
-    def setup
-      # disable_zscheduler
-    end
-
+  class BufferTester < UnitTestCase
     def test_initialize
       assert_raises(ArgumentError) { Buffer.new }
 

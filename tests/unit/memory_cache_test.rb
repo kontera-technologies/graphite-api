@@ -1,7 +1,7 @@
 require_relative "../minitest_helper"
 
 module GraphiteAPI
-  class MemoryCacheTester < Unit::TestCase
+  class MemoryCacheTester < UnitTestCase
 
     def test_set_and_get
       cache.tap do |obj|
@@ -37,7 +37,6 @@ module GraphiteAPI
     private
 
     def cache
-      # Zscheduler.expects(:every).with(120)
       Cache::Memory.new(:options)
     end
   end

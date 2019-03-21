@@ -197,8 +197,6 @@ sleep 4.minutes # Client will send 2 messages.
 client.cancel
 client.resume
 sleep 6.minutes # After cancel, client will not send any more messages.
-
-
 ```
 
 Make your own custom metrics daemons, using `client#join`
