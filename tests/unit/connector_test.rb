@@ -2,7 +2,7 @@ require_relative "../minitest_helper"
 require 'socket'
 
 module GraphiteAPI
-  class ConnectorTester < Unit::TestCase
+  class ConnectorTester < UnitTestCase
 
     def test_right_socket_class
       Connector.new("udp://localhost:1234").tap do |obj|

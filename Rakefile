@@ -2,6 +2,7 @@ $:.unshift File.join(File.dirname(__FILE__), 'lib')
 Dir.chdir File.dirname __FILE__
 
 require 'graphite-api'
+require "bundler/gem_tasks"
 require "rake/testtask"
 require 'rubygems/package_task'
 

@@ -175,6 +175,30 @@ client.every 52.minutes do |c|
 end
 ```
 
+Stopping the client loop
+```ruby
+require 'graphite-api'
+
+client = GraphiteAPI.new( graphite: 'tcp://graphite:2003' )
+
+# Lets send the metric every 2 minutes.
+client.every(2.minutes) do |c|
+  c.metrics("webServer.web01.uptime" => `uptime`.split.first.to_i)
+end
+
+sleep 2.minutes # Client will send one message.
+
+client.pause
+sleep 6.minutes # Client will not send any messages.
+
+client.resume
+sleep 4.minutes # Client will send 2 messages.
+
+client.cancel
+client.resume
+sleep 6.minutes # After cancel, client will not send any more messages.
+```
+
 Make your own custom metrics daemons, using `client#join`
 ```ruby
 require 'graphite-api'

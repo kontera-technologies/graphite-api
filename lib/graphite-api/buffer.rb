@@ -24,7 +24,10 @@ module GraphiteAPI
 
     IGNORE = ["\r"]
     END_OF_STREAM = "\n"
-    VALID_MESSAGE = /^[\w|\.|-]+ \d+(?:\.|\d)* \d+$/
+
+    # Matches the metric name (string with dots and dashes), at least one space, the metric value (int or float),
+    # at least one space and finally the metric timestamp (int)
+    VALID_MESSAGE = /^[\w.-]+ +\d+(?:\.\d+)? +\d+$/
 
     AGGREGATORS = {
       sum: ->(*args) { args.reduce(0) { |sum, x| sum + x } },
@@ -32,11 +35,11 @@ module GraphiteAPI
       replace: ->(*args) { args.last },
     }
 
-    def initialize options
+    def initialize options, timers=false
       @options = options
       @queue = Queue.new
       @streamer = Hash.new {|h,k| h[k] = ""}
-      @cache = Cache::Memory.new(options) if options[:cache]
+      @cache = Cache::Memory.new(options, timers) if options[:cache]
     end
 
     attr_reader :queue, :options, :streamer, :cache

@@ -1,4 +1,3 @@
-require 'zscheduler'
 require 'graphite-api/version'
 require 'graphite-api/client'
 require 'graphite-api/cache'

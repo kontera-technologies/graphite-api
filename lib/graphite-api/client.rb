@@ -1,22 +1,31 @@
 require 'forwardable'
 require 'thread'
+require 'timers'
 
 module GraphiteAPI
   class Client
     extend Forwardable
 
-    def_delegator Zscheduler, :loop, :stop
+    def_delegator :timers, :cancel
+    def_delegator :timers, :pause
+    def_delegator :timers, :resume
+
+    def_delegator :buffer, :stream
 
     attr_reader :options, :buffer, :connectors, :mu
     private     :options, :buffer, :connectors, :mu
 
     def initialize opt
       @options = build_options validate opt.clone
-      @buffer  = GraphiteAPI::Buffer.new options
+      @buffer  = GraphiteAPI::Buffer.new options, timers
       @connectors = GraphiteAPI::Connector::Group.new options
       @mu = Mutex.new
 
-      Zscheduler.every(options[:interval],&method(:send_metrics!)) unless options[:direct]
+      timers.every(options[:interval], true, &method(:send_metrics!)) unless options[:direct]
+    end
+
+    def timers
+      @timers ||= Timers::Group.new.tap {|t| Thread.new { loop { t.wait } } }
     end
 
     # throw exception on Socket error
@@ -25,7 +34,7 @@ module GraphiteAPI
     end
 
     def every interval, &block
-      Zscheduler.every( interval ) { block.arity == 1 ? block.call(self) : block.call }
+      @timers.every(interval) { block.arity == 1 ? block.call(self) : block.call }
     end
 
     def metrics metric, time = nil, aggregation_method = nil
@@ -73,14 +82,14 @@ module GraphiteAPI
 
     def build_options opt
       self.class.default_options.tap do |options_hash|
-        options_hash[:backends].push opt.delete :graphite
+        options_hash[:backends] = Array(opt.delete :graphite)
         options_hash.merge! opt
         options_hash[:direct] = options_hash[:interval] == 0
         options_hash[:slice] = 1 if options_hash[:direct]
       end
     end
 
-    def send_metrics!
+    def send_metrics! *_
       mu.synchronize { connectors.publish buffer.pull :string if buffer.new_records? }
     end
 
