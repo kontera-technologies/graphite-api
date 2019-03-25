@@ -10,6 +10,8 @@ module GraphiteAPI
     def_delegator :timers, :pause
     def_delegator :timers, :resume
 
+    def_delegator :buffer, :stream
+
     attr_reader :options, :buffer, :connectors, :mu
     private     :options, :buffer, :connectors, :mu
 
@@ -80,7 +82,7 @@ module GraphiteAPI
 
     def build_options opt
       self.class.default_options.tap do |options_hash|
-        options_hash[:backends].push opt.delete :graphite
+        options_hash[:backends] = Array(opt.delete :graphite)
         options_hash.merge! opt
         options_hash[:direct] = options_hash[:interval] == 0
         options_hash[:slice] = 1 if options_hash[:direct]
