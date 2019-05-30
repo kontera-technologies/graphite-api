@@ -13,11 +13,11 @@ module GraphiteAPI
     def_delegator :buffer, :stream
 
     attr_reader :options, :buffer, :connectors, :mu
-    private     :options, :buffer, :connectors, :mu
+    private :options, :buffer, :connectors, :mu
 
     def initialize opt
       @options = build_options validate opt.clone
-      @buffer  = GraphiteAPI::Buffer.new options, timers
+      @buffer = GraphiteAPI::Buffer.new options, timers
       @connectors = GraphiteAPI::Connector::Group.new options
       @mu = Mutex.new
 
@@ -25,7 +25,9 @@ module GraphiteAPI
     end
 
     def timers
-      @timers ||= Timers::Group.new.tap {|t| Thread.new { loop { t.wait } } }
+      @timers ||= Timers::Group.new.tap { |t| Thread.new { loop {
+        t.wait { |n| sleep(n.nil? ? 0.01 : [n, 0].max) }
+      } } }
     end
 
     # throw exception on Socket error
@@ -46,9 +48,9 @@ module GraphiteAPI
     def increment(*keys)
       opt = {}
       opt.merge! keys.pop if keys.last.is_a? Hash
-      by = opt.fetch(:by,1)
-      time = opt.fetch(:time,Time.now)
-      metric = keys.inject({}) {|h,k| h.merge k => by }
+      by = opt.fetch(:by, 1)
+      time = opt.fetch(:time, Time.now)
+      metric = keys.inject({}) { |h, k| h.merge k => by }
       metrics(metric, time)
     end
 
