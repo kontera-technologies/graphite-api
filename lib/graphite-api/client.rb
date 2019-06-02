@@ -26,7 +26,7 @@ module GraphiteAPI
 
     def timers
       @timers ||= Timers::Group.new.tap { |t| Thread.new { loop {
-        t.wait { |n| sleep(n.nil? ? 0.01 : [n, 0].max) }
+        t.wait { |n| sleep(n.nil? ? 0.1 : [n, 0].max) }
       } } }
     end
 
